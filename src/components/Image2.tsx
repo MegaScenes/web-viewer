@@ -21,34 +21,37 @@ const Image2: React.FC<ImageProps> = ({ imageData }) => {
 			);
 
 			R.makeRotationFromQuaternion(Q);
+
 			const R_T = R.clone().transpose();
-			const position = new THREE.Vector3(
+			const translation = new THREE.Vector3(
 				imageData.tvec[0],
 				-imageData.tvec[1],
 				-imageData.tvec[2]
 			);
-			position.applyMatrix4(R_T).negate();
+			translation.applyMatrix4(R_T).negate();
 
 			const forward = new THREE.Vector3(0, 0, 1);
 			forward.applyMatrix4(R);
 
+			const position = new THREE.Vector3(
+				imageData.tvec[0],
+				imageData.tvec[1],
+				imageData.tvec[2]
+			);
+
 			// cone position + rotation
-			coneRef.current.position.copy(position);
+			coneRef.current.position.copy(translation);
 			//coneRef.current.rotation.copy(rotation);
-			//coneRef.current.quaternion.copy(quaternion);
-			coneRef.current.lookAt(position.clone().add(forward));
+			//coneRef.current.quaternion.copy(Q);
+			coneRef.current.lookAt(position.clone().add(forward.clone()));
 			//coneRef.current.rotateX(Math.PI);
 
 			// debugging
 			const arrowHelper = new THREE.ArrowHelper(
-				new THREE.Vector3(
-					forward.clone().x,
-					forward.clone().y,
-					forward.clone().z
-				),
+				new THREE.Vector3(forward.x, forward.y, forward.z),
 				new THREE.Vector3(0, 0, 0),
 				0.1,
-				0x111111
+				0xffffee
 			);
 			coneRef.current.add(arrowHelper);
 
@@ -60,7 +63,7 @@ const Image2: React.FC<ImageProps> = ({ imageData }) => {
 			}
 
 			// base of cone position + rotation
-			baseRef.current.position.copy(position);
+			baseRef.current.position.copy(translation);
 			baseRef.current.rotation.copy(coneRef.current.rotation);
 			baseRef.current.rotateX(-Math.PI / 2);
 			baseRef.current.rotateZ(Math.PI / 4);

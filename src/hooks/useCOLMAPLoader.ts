@@ -1,5 +1,4 @@
 "use client";
-import assert from "assert";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 
@@ -140,7 +139,7 @@ const parseCOLMAP = (buffer: ArrayBuffer): THREE.Points => {
 
 		const error = dataview.getFloat64(offset, true);
 		offset += 8;
-		const c = enhanceColor(r, g, b, 2, 2);
+		const c = enhanceColor(r, g, b, 1, 1);
 		points.push(x, y, z);
 		colors.push(c.r / 255, c.g / 255, c.b / 255);
 
@@ -200,7 +199,7 @@ export const useImageData = (url: string): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
 
 	useEffect(() => {
-		async function fetchImageData() {
+		const fetchImageData = async () => {
 			try {
 				const response = await fetch(url);
 				const buffer = await response.arrayBuffer();
@@ -209,7 +208,7 @@ export const useImageData = (url: string): ImageData[] => {
 			} catch (error) {
 				console.error("Failed to load image data:", error);
 			}
-		}
+		};
 
 		fetchImageData();
 	}, [url]);
@@ -221,7 +220,7 @@ export const useCameraData = (url: string): CameraData[] => {
 	const [cameras, setCameras] = useState<CameraData[]>([]);
 
 	useEffect(() => {
-		async function fetchCameraData() {
+		const fetchCameraData = async () => {
 			try {
 				const response = await fetch(url);
 				const buffer = await response.arrayBuffer();
@@ -230,7 +229,7 @@ export const useCameraData = (url: string): CameraData[] => {
 			} catch (error) {
 				console.error("Failed to load camera data:", error);
 			}
-		}
+		};
 
 		fetchCameraData();
 	}, [url]);
