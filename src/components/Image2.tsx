@@ -15,8 +15,8 @@ const Image2: React.FC<ImageProps> = ({ imageData }) => {
 			const R = new THREE.Matrix4();
 			const Q = new THREE.Quaternion(
 				imageData.qvec[1],
-				-imageData.qvec[2],
-				-imageData.qvec[3],
+				imageData.qvec[2],
+				imageData.qvec[3],
 				imageData.qvec[0]
 			);
 
@@ -25,13 +25,26 @@ const Image2: React.FC<ImageProps> = ({ imageData }) => {
 			const R_T = R.clone().transpose();
 			const translation = new THREE.Vector3(
 				imageData.tvec[0],
-				-imageData.tvec[1],
-				-imageData.tvec[2]
+				imageData.tvec[1],
+				imageData.tvec[2]
 			);
 			translation.applyMatrix4(R_T).negate();
 
+			// apply 180 deg rotation about z-axis to convert
+			// from colmap's world coord axes to three's axes
+			const Ry_180deg = new THREE.Matrix4();
+			Ry_180deg.set(
+				-1,  0, 0, 0,
+				 0, -1, 0, 0,
+				 0,  0, 1, 0,
+				 0,  0, 0, 1 
+			);
+			translation.applyMatrix4(Ry_180deg);
+			R.premultiply(Ry_180deg);
+			R_T.premultiply(Ry_180deg);
+
 			const forward = new THREE.Vector3(0, 0, 1);
-			forward.applyMatrix4(R);
+			forward.applyMatrix4(R_T);
 
 			const position = new THREE.Vector3(
 				imageData.tvec[0],
@@ -39,12 +52,9 @@ const Image2: React.FC<ImageProps> = ({ imageData }) => {
 				imageData.tvec[2]
 			);
 
-			// cone position + rotation
 			coneRef.current.position.copy(translation);
-			//coneRef.current.rotation.copy(rotation);
-			//coneRef.current.quaternion.copy(Q);
-			coneRef.current.lookAt(position.clone().add(forward.clone()));
-			//coneRef.current.rotateX(Math.PI);
+			// coneRef.current.lookAt(position.clone().add(forward.clone()));
+			// coneRef.current.lookAt(new THREE.Vector3(0, 0, 0));
 
 			// debugging
 			const arrowHelper = new THREE.ArrowHelper(

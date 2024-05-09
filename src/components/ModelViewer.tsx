@@ -21,7 +21,6 @@ const ModelViewer: React.FC<PointCloudViewerProps> = ({
 
 	useEffect(() => {
 		if (pointCloud) {
-			pointCloud.rotation.y = Math.PI;
 			pointCloud.rotation.z = Math.PI;
 		}
 	}, [pointCloud]);
