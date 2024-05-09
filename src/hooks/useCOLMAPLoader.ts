@@ -18,19 +18,6 @@ export type ImageData = {
 	tvec: number[];
 	cameraId: number;
 	name: string;
-	position: THREE.Vector3;
-	rotation: THREE.Euler;
-};
-
-const convertToCoord = (
-	qvec: number[],
-	tvec: number[]
-): { position: THREE.Vector3; rotation: THREE.Euler } => {
-	const quaternion = new THREE.Quaternion(qvec[1], qvec[2], qvec[3], qvec[0]);
-	const position = new THREE.Vector3(tvec[0], tvec[1], tvec[2]);
-	const rotation = new THREE.Euler().setFromQuaternion(quaternion, "XYZ");
-
-	return { position, rotation };
 };
 
 const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
@@ -73,16 +60,12 @@ const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
 		offset += 8;
 		offset += Number(numPoints2D) * 24;
 
-		const { position, rotation } = convertToCoord(qvec, tvec);
-
 		images.push({
 			id: imageId,
 			qvec,
 			tvec,
 			cameraId,
 			name: imageName,
-			position,
-			rotation,
 		});
 	}
 
@@ -139,7 +122,7 @@ const parseCOLMAP = (buffer: ArrayBuffer): THREE.Points => {
 
 		const error = dataview.getFloat64(offset, true);
 		offset += 8;
-		const c = enhanceColor(r, g, b, 1, 1);
+		const c = enhanceColor(r, g, b, 1.5, 1.5);
 		points.push(x, y, z);
 		colors.push(c.r / 255, c.g / 255, c.b / 255);
 

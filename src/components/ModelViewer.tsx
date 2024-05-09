@@ -4,8 +4,6 @@ import { useCOLMAPLoader, useImageData } from "../hooks/useCOLMAPLoader";
 import { OrbitControls } from "@react-three/drei";
 
 import Image from "./Image";
-import Image2 from "./Image2";
-import Image3 from "./Image3";
 
 interface PointCloudViewerProps {
 	pointsUrl: string;
@@ -31,7 +29,7 @@ const ModelViewer: React.FC<PointCloudViewerProps> = ({
 			<pointLight />
 			{pointCloud && <primitive object={pointCloud} />}
 			{images.map((imageData) => (
-				<Image2 key={imageData.id} imageData={imageData} />
+				<Image key={imageData.id} imageData={imageData} />
 			))}
 			<OrbitControls
 				minDistance={0}
