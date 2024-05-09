@@ -41,12 +41,6 @@ const Image: React.FC<ImageProps> = ({ imageData }) => {
 			const forward = new THREE.Vector3(0, 0, 1);
 			forward.applyMatrix4(R_T);
 
-			const position = new THREE.Vector3(
-				imageData.tvec[0],
-				imageData.tvec[1],
-				imageData.tvec[2]
-			);
-
 			coneRef.current.position.copy(translation);
 
 			// debugging
