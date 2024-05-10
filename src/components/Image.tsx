@@ -28,6 +28,8 @@ const Image: React.FC<ImageProps> = ({ imageData }) => {
 				imageData.tvec[1],
 				imageData.tvec[2]
 			);
+
+			// position = -R^T • tvec
 			translation.applyMatrix4(R_T).negate();
 
 			// apply 180 deg rotation about z-axis to convert
@@ -38,34 +40,25 @@ const Image: React.FC<ImageProps> = ({ imageData }) => {
 			R.premultiply(Ry_180deg);
 			R_T.premultiply(Ry_180deg);
 
+			// view direction = [0 0 1] @ R^T
 			const forward = new THREE.Vector3(0, 0, 1);
 			forward.applyMatrix4(R_T);
 
-			const position = new THREE.Vector3(
-				imageData.tvec[0],
-				imageData.tvec[1],
-				imageData.tvec[2]
-			);
-
-			coneRef.current.position.copy(translation);
-
 			// debugging
-			const arrowHelper = new THREE.ArrowHelper(
-				new THREE.Vector3(forward.x, forward.y, forward.z),
-				new THREE.Vector3(0, 0, 0),
-				0.1,
-				0xffffee
-			);
-			//coneRef.current.add(arrowHelper);
-			coneRef.current.lookAt(translation.clone().add(forward));
-			coneRef.current.rotateX(-Math.PI / 2);
+			// const dir = new THREE.ArrowHelper(
+			// 	new THREE.Vector3(forward.x, forward.y, forward.z),
+			// 	new THREE.Vector3(0, 0, 0),
+			// 	0.1,
+			// 	0xffffee
+			// );
+			//coneRef.current.add(dir);
 
-			if (imageData.id === 2587) {
-				console.log(imageData.qvec);
-				console.log(imageData.tvec);
-				console.log(R);
-				console.log(forward);
-			}
+			// position
+			coneRef.current.position.copy(translation);
+			// viewing direction
+			coneRef.current.lookAt(translation.clone().add(forward));
+			// orient bottom of cone in view direction
+			coneRef.current.rotateX(-Math.PI / 2);
 
 			// base of cone position + rotation
 			baseRef.current.position.copy(translation);
