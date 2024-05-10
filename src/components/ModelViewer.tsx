@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import { useCOLMAPLoader, useImageData } from "../hooks/useCOLMAPLoader";
+import { Canvas, useLoader } from "@react-three/fiber";
+import * as THREE from "three";
+import { usePointLoader, useImageData } from "../hooks/useCOLMAPLoader";
 import { OrbitControls } from "@react-three/drei";
 
 import Image from "./Image";
@@ -14,14 +15,23 @@ const ModelViewer: React.FC<PointCloudViewerProps> = ({
 	pointsUrl,
 	imagesUrl,
 }) => {
-	const pointCloud = useCOLMAPLoader(pointsUrl);
+	const pointCloud = usePointLoader(pointsUrl);
 	const images = useImageData(imagesUrl);
+	const circleTexture = useLoader(THREE.TextureLoader, "/images/circle.png");
 
 	useEffect(() => {
-		if (pointCloud) {
+		if (pointCloud && circleTexture) {
+			pointCloud.material = new THREE.PointsMaterial({
+				map: circleTexture,
+				size: 0.005,
+				transparent: true,
+				depthWrite: false,
+				alphaTest: 0.5,
+				vertexColors: true,
+			});
 			pointCloud.rotation.z = Math.PI;
 		}
-	}, [pointCloud]);
+	}, [pointCloud, circleTexture]);
 
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
@@ -36,7 +46,7 @@ const ModelViewer: React.FC<PointCloudViewerProps> = ({
 				maxDistance={20}
 				rotateSpeed={0.5}
 				zoomSpeed={0.5}
-				panSpeed={0.5}
+				panSpeed={2}
 			/>
 			<axesHelper args={[10]} />
 		</Canvas>

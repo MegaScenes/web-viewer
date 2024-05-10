@@ -5,6 +5,8 @@ import {
 	IconMinusVertical,
 } from "@tabler/icons-react";
 
+import Card from "./Card";
+
 const SidePanel: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [iconState, setIconState] = useState("right");
@@ -15,9 +17,7 @@ const SidePanel: React.FC = () => {
 			setIconState("right");
 		} else {
 			setIsOpen(true);
-			setTimeout(() => {
-				setIconState("line");
-			}, 50);
+			setIconState("line");
 		}
 	};
 
@@ -64,14 +64,25 @@ const SidePanel: React.FC = () => {
 		}
 	};
 
+	const array = new Array(10).fill(null);
+
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
-				className={`transform transition-all duration-350 ${
+				className={`transform transition-all duration-350 overflow-y-auto ${
 					isOpen ? "translate-x-0" : "-translate-x-full"
-				} bg-darkgrey h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg`}
+				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
 			>
-				<h2 className="text-white">Side Panel Content</h2>
+				<div className="flex flex-col w-11/12 mt-2">
+					<h2 className="text-xl font-bold mb-4 text-whiteish">
+						Results
+					</h2>
+					<div className="flex flex-col gap-4">
+						{array.map((index) => (
+							<Card key={index} />
+						))}
+					</div>
+				</div>
 			</div>
 			<div
 				className="relative flex items-center"

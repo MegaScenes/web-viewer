@@ -6,12 +6,7 @@ const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
 });
 
-import {
-	IconZoomIn,
-	IconZoomOut,
-	IconRefresh,
-	IconMenu2,
-} from "@tabler/icons-react";
+import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
 
@@ -31,10 +26,10 @@ const Home = () => {
 					</div>
 				</div>
 				<div className="flex-grow relative bg-gray-100">
-					<div className="absolute w-full h-full bg-greyish">
+					<div className="absolute w-full h-full bg-darkgrey">
 						<ModelViewer
-							pointsUrl="/qutb_minar/0/points3D.bin"
-							imagesUrl="/qutb_minar/0/images.bin"
+							pointsUrl="/data/statue_of_liberty/0/points3D.bin"
+							imagesUrl="/data/statue_of_liberty/0/images.bin"
 						/>
 					</div>
 
