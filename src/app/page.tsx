@@ -1,6 +1,5 @@
 "use client";
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
@@ -9,8 +8,26 @@ const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
+import { Scene } from "@/types/scene";
 
-const Home = () => {
+const Home: React.FC = () => {
+	const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleSelectScene = (scene: Scene) => {
+		setIsLoading(true);
+		setSelectedScene(scene);
+	};
+
+	useEffect(() => {
+		if (selectedScene) {
+			const timer = setTimeout(() => {
+				setIsLoading(false);
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [selectedScene]);
+
 	return (
 		<>
 			<div className="flex flex-col h-screen">
@@ -20,17 +37,29 @@ const Home = () => {
 							type="search"
 							name="search bar"
 							placeholder="Search for scene..."
-							className="w-full min-w-96 mx-4 p-2 text-black bg-white rounded shadow-lg"
+							className="w-full min-w-96 mx-4 p-2 text-black bg-white rounded shadow-xl"
 						/>
 						<OptionsDropdown />
 					</div>
 				</div>
 				<div className="flex-grow relative bg-gray-100">
-					<div className="absolute w-full h-full bg-darkgrey">
-						<ModelViewer
-							pointsUrl="/data/statue_of_liberty/0/points3D.bin"
-							imagesUrl="/data/statue_of_liberty/0/images.bin"
-						/>
+					<div className="absolute w-full h-full bg-darkgrey flex items-center justify-center">
+						{isLoading && (
+							<div className="flex items-center justify-center absolute inset-0">
+								<div className="border-t-transparent border-solid animate-spin rounded-full border-white border-4 h-8 w-8"></div>
+							</div>
+						)}
+						{selectedScene ? (
+							<ModelViewer
+								points={selectedScene.points}
+								images={selectedScene.images}
+								onLoaded={() => setIsLoading(false)}
+							/>
+						) : (
+							<div className="flex items-center justify-center h-full text-white">
+								<span>No scene selected</span>
+							</div>
+						)}
 					</div>
 
 					<button
@@ -53,7 +82,7 @@ const Home = () => {
 					</button>
 				</div>
 			</div>
-			<SidePanel />
+			<SidePanel onSelect={handleSelectScene} />
 		</>
 	);
 };

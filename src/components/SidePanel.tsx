@@ -6,8 +6,13 @@ import {
 } from "@tabler/icons-react";
 
 import Card from "./Card";
+import { Scene } from "@/types/scene";
 
-const SidePanel: React.FC = () => {
+interface SidePanelProps {
+	onSelect: (data: Scene) => void;
+}
+
+const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [iconState, setIconState] = useState("right");
 
@@ -64,7 +69,27 @@ const SidePanel: React.FC = () => {
 		}
 	};
 
-	const array = new Array(10).fill(null);
+	// random data
+	const scenes: Scene[] = [
+		{
+			name: "Garden",
+			imgUrl: "/images/garden.jpeg",
+			points: "/data/garden/0/points3D.bin",
+			images: "/data/garden/0/images.bin",
+		},
+		{
+			name: "Statue of Liberty",
+			imgUrl: "/images/statue_of_liberty.jpeg",
+			points: "/data/statue_of_liberty/5/points3D.bin",
+			images: "/data/statue_of_liberty/5/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			imgUrl: "/images/qutb_minar.jpeg",
+			points: "/data/qutb_minar/2/points3D.bin",
+			images: "/data/qutb_minar/2/images.bin",
+		},
+	];
 
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
@@ -78,8 +103,12 @@ const SidePanel: React.FC = () => {
 						Results
 					</h2>
 					<div className="flex flex-col gap-4">
-						{array.map((index) => (
-							<Card key={index} />
+						{scenes.map((scene, index) => (
+							<Card
+								key={index}
+								scene={scene}
+								onClick={onSelect}
+							/>
 						))}
 					</div>
 				</div>

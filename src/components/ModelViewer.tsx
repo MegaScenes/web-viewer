@@ -6,17 +6,19 @@ import { OrbitControls } from "@react-three/drei";
 
 import Image from "./Image";
 
-interface PointCloudViewerProps {
-	pointsUrl: string;
-	imagesUrl: string;
+interface ModelViewerProps {
+	points: string;
+	images: string;
+	onLoaded?: () => void;
 }
 
-const ModelViewer: React.FC<PointCloudViewerProps> = ({
-	pointsUrl,
-	imagesUrl,
+const ModelViewer: React.FC<ModelViewerProps> = ({
+	points,
+	images,
+	onLoaded,
 }) => {
-	const pointCloud = usePointLoader(pointsUrl);
-	const images = useImageData(imagesUrl);
+	const pointCloud = usePointLoader(points);
+	const imgs = useImageData(images);
 	const circleTexture = useLoader(THREE.TextureLoader, "/images/circle.png");
 
 	useEffect(() => {
@@ -30,15 +32,18 @@ const ModelViewer: React.FC<PointCloudViewerProps> = ({
 				vertexColors: true,
 			});
 			pointCloud.rotation.z = Math.PI;
+			if (imgs.length > 0 && typeof onLoaded === "function") {
+				onLoaded();
+			}
 		}
-	}, [pointCloud, circleTexture]);
+	}, [pointCloud, circleTexture, onLoaded]);
 
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
 			<pointLight />
 			{pointCloud && <primitive object={pointCloud} />}
-			{images.map((imageData) => (
+			{imgs.map((imageData) => (
 				<Image key={imageData.id} imageData={imageData} />
 			))}
 			<OrbitControls
