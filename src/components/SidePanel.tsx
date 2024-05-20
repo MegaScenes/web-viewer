@@ -5,7 +5,14 @@ import {
 	IconMinusVertical,
 } from "@tabler/icons-react";
 
-const SidePanel: React.FC = () => {
+import Card from "./Card";
+import { Scene } from "@/types/scene";
+
+interface SidePanelProps {
+	onSelect: (data: Scene) => void;
+}
+
+const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [iconState, setIconState] = useState("right");
 
@@ -15,9 +22,7 @@ const SidePanel: React.FC = () => {
 			setIconState("right");
 		} else {
 			setIsOpen(true);
-			setTimeout(() => {
-				setIconState("line");
-			}, 50);
+			setIconState("line");
 		}
 	};
 
@@ -64,14 +69,49 @@ const SidePanel: React.FC = () => {
 		}
 	};
 
+	// random data
+	const scenes: Scene[] = [
+		{
+			name: "Garden",
+			imgUrl: "/images/garden.jpeg",
+			points: "/data/garden/0/points3D.bin",
+			images: "/data/garden/0/images.bin",
+		},
+		{
+			name: "Statue of Liberty",
+			imgUrl: "/images/statue_of_liberty.jpeg",
+			points: "/data/statue_of_liberty/5/points3D.bin",
+			images: "/data/statue_of_liberty/5/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			imgUrl: "/images/qutb_minar.jpeg",
+			points: "/data/qutb_minar/2/points3D.bin",
+			images: "/data/qutb_minar/2/images.bin",
+		},
+	];
+
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
-				className={`transform transition-all duration-350 ${
+				className={`transform transition-all duration-350 overflow-y-auto ${
 					isOpen ? "translate-x-0" : "-translate-x-full"
-				} bg-darkgrey h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg`}
+				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
 			>
-				<h2 className="text-white">Side Panel Content</h2>
+				<div className="flex flex-col w-11/12 mt-2">
+					<h2 className="text-xl font-bold mb-4 text-whiteish">
+						Results
+					</h2>
+					<div className="flex flex-col gap-4">
+						{scenes.map((scene, index) => (
+							<Card
+								key={index}
+								scene={scene}
+								onClick={onSelect}
+							/>
+						))}
+					</div>
+				</div>
 			</div>
 			<div
 				className="relative flex items-center"

@@ -100,7 +100,7 @@ const enhanceColor = (
 	};
 };
 
-const parseCOLMAP = (buffer: ArrayBuffer): THREE.Points => {
+const parsePointData = (buffer: ArrayBuffer): THREE.Points => {
 	const points: number[] = [];
 	const colors: number[] = [];
 	const dataview = new DataView(buffer);
@@ -220,14 +220,14 @@ export const useCameraData = (url: string): CameraData[] => {
 	return cameras;
 };
 
-export const useCOLMAPLoader = (url: string): THREE.Points | undefined => {
+export const usePointLoader = (url: string): THREE.Points | undefined => {
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const response = await fetch(url);
 				const buffer = await response.arrayBuffer();
-				const cloud = parseCOLMAP(buffer);
+				const cloud = parsePointData(buffer);
 				setPointCloud(cloud);
 			} catch (error) {
 				console.error("Failed to load point cloud:", error);

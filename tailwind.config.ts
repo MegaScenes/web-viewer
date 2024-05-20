@@ -16,8 +16,11 @@ const config: Config = {
 			},
 			colors: {
 				transparent: "transparent",
-				greyish: "#151515",
+				greyish: "#252525",
 				darkgrey: "#090909",
+				whiteish: "#d0d0d0",
+				offwhite: "#E0E0E0",
+				offblack: "#202020",
 			},
 		},
 	},
