@@ -18,6 +18,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	clearScene,
 }) => {
 	const controlsRef = useRef(null);
+
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
