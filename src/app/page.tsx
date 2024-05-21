@@ -13,18 +13,20 @@ import { Scene } from "@/types/scene";
 const Home: React.FC = () => {
 	const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+	const [clearScene, setClearScene] = useState(false);
 
 	const handleSelectScene = (scene: Scene) => {
 		setIsLoading(true);
-		setSelectedScene(scene);
+		setClearScene(true);
+		setTimeout(() => {
+			setSelectedScene(scene);
+			setClearScene(false);
+		}, 1000);
 	};
 
 	useEffect(() => {
 		if (selectedScene) {
-			const timer = setTimeout(() => {
-				setIsLoading(false);
-			}, 5000);
-			return () => clearTimeout(timer);
+			setIsLoading(false);
 		}
 	}, [selectedScene]);
 
@@ -54,6 +56,7 @@ const Home: React.FC = () => {
 								points={selectedScene.points}
 								images={selectedScene.images}
 								onLoaded={() => setIsLoading(false)}
+								clearScene={clearScene}
 							/>
 						) : (
 							<div className="flex items-center justify-center h-full text-white">
