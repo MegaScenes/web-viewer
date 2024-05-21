@@ -3,6 +3,7 @@ import { useThree, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { usePointLoader, useImageData } from "../hooks/useCOLMAPLoader";
 import Cameras from "./Cameras";
+import { useProgress } from "@react-three/drei";
 
 interface SceneProps {
 	points: string;
@@ -19,7 +20,8 @@ const Scene: React.FC<SceneProps> = ({
 	onLoaded,
 	controlsRef,
 }) => {
-	const { scene, camera } = useThree();
+	const { scene } = useThree();
+	const { progress, loaded, total } = useProgress();
 
 	const pointCloud = usePointLoader(points);
 	const imgs = useImageData(images);
@@ -60,7 +62,7 @@ const Scene: React.FC<SceneProps> = ({
 			setAreImagesReady(true);
 		}
 
-		if (isPointCloudReady && areImagesReady) {
+		if (isPointCloudReady && areImagesReady && loaded === total) {
 			setAxesKey(Date.now());
 			if (typeof onLoaded === "function") {
 				onLoaded();
