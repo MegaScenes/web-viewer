@@ -73,19 +73,19 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 	const scenes: Scene[] = [
 		{
 			name: "Garden",
-			imgUrl: "/images/garden.jpeg",
+			imgUrl: "/web-viewer/images/garden.jpeg",
 			points: "/data/garden/0/points3D.bin",
 			images: "/data/garden/0/images.bin",
 		},
 		{
 			name: "Statue of Liberty",
-			imgUrl: "/images/statue_of_liberty.jpeg",
+			imgUrl: "/web-viewer/images/statue_of_liberty.jpeg",
 			points: "/data/statue_of_liberty/5/points3D.bin",
 			images: "/data/statue_of_liberty/5/images.bin",
 		},
 		{
 			name: "Qutb Minar",
-			imgUrl: "/images/qutb_minar.jpeg",
+			imgUrl: "/web-viewer/images/qutb_minar.jpeg",
 			points: "/data/qutb_minar/2/points3D.bin",
 			images: "/data/qutb_minar/2/images.bin",
 		},
