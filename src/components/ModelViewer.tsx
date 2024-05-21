@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { usePointLoader, useImageData } from "../hooks/useCOLMAPLoader";
@@ -10,13 +10,17 @@ interface ModelViewerProps {
 	points: string;
 	images: string;
 	onLoaded?: () => void;
+	clearScene: boolean;
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = ({
 	points,
 	images,
 	onLoaded,
+	clearScene,
 }) => {
+	const [isReady, setIsReady] = useState(false);
+
 	const pointCloud = usePointLoader(points);
 	const imgs = useImageData(images);
 	const circleTexture = useLoader(
@@ -25,7 +29,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	);
 
 	useEffect(() => {
-		if (pointCloud && circleTexture) {
+		setIsReady(false); // Reset ready state on clearScene change
+		if (!clearScene && pointCloud && circleTexture && imgs.length > 0) {
 			pointCloud.material = new THREE.PointsMaterial({
 				map: circleTexture,
 				size: 0.005,
@@ -35,20 +40,22 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				vertexColors: true,
 			});
 			pointCloud.rotation.z = Math.PI;
-			if (imgs.length > 0 && typeof onLoaded === "function") {
+			setIsReady(true);
+			if (typeof onLoaded === "function") {
 				onLoaded();
 			}
 		}
-	}, [pointCloud, circleTexture, onLoaded]);
+	}, [pointCloud, circleTexture, imgs, onLoaded, clearScene]);
 
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
 			<pointLight />
-			{pointCloud && <primitive object={pointCloud} />}
-			{imgs.map((imageData) => (
-				<Image key={imageData.id} imageData={imageData} />
-			))}
+			{isReady && pointCloud && <primitive object={pointCloud} />}
+			{isReady &&
+				imgs.map((imageData) => (
+					<Image key={imageData.id} imageData={imageData} />
+				))}
 			<OrbitControls
 				minDistance={0}
 				maxDistance={20}
