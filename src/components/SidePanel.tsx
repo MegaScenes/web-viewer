@@ -74,20 +74,20 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 		{
 			name: "Garden",
 			imgUrl: "/web-viewer/images/garden.jpeg",
-			points: "/data/garden/0/points3D.bin",
-			images: "/data/garden/0/images.bin",
+			points: "/web-viewer/data/garden/0/points3D.bin",
+			images: "/web-viewer/data/garden/0/images.bin",
 		},
 		{
 			name: "Statue of Liberty",
 			imgUrl: "/web-viewer/images/statue_of_liberty.jpeg",
-			points: "/data/statue_of_liberty/5/points3D.bin",
-			images: "/data/statue_of_liberty/5/images.bin",
+			points: "/web-viewer/data/statue_of_liberty/5/points3D.bin",
+			images: "/web-viewer/data/statue_of_liberty/5/images.bin",
 		},
 		{
 			name: "Qutb Minar",
 			imgUrl: "/web-viewer/images/qutb_minar.jpeg",
-			points: "/data/qutb_minar/2/points3D.bin",
-			images: "/data/qutb_minar/2/images.bin",
+			points: "/web-viewer/data/qutb_minar/2/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/2/images.bin",
 		},
 	];
 
