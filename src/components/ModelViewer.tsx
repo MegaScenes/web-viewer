@@ -19,7 +19,10 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 }) => {
 	const pointCloud = usePointLoader(points);
 	const imgs = useImageData(images);
-	const circleTexture = useLoader(THREE.TextureLoader, "/images/circle.png");
+	const circleTexture = useLoader(
+		THREE.TextureLoader,
+		"/web-viewer/images/circle.png"
+	);
 
 	useEffect(() => {
 		if (pointCloud && circleTexture) {
