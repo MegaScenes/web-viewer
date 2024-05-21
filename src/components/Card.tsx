@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 import { IconHash, IconFileCode } from "@tabler/icons-react";
 import { Scene } from "@/types/scene";
@@ -16,7 +17,7 @@ const card: React.FC<CardProps> = ({ scene, onClick }) => {
 		>
 			<div className="bg-whiteish shadow-lg rounded-lg h-[80px] flex flex-col justify-center items-center">
 				<div className="flex flex-row h-[80px] w-full gap-2 justify-start">
-					<img
+					<Image
 						src={scene.imgUrl}
 						alt={scene.name}
 						className="h-[80px] w-[80px] rounded-tl-lg rounded-bl-lg"
