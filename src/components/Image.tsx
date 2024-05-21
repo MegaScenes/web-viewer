@@ -4,9 +4,10 @@ import type { ImageData } from "../hooks/useCOLMAPLoader";
 
 interface ImageProps {
 	imageData: ImageData;
+	onLoaded: () => void;
 }
 
-const Image: React.FC<ImageProps> = ({ imageData }) => {
+const Image: React.FC<ImageProps> = ({ imageData, onLoaded }) => {
 	const coneRef = useRef<THREE.Mesh>(null);
 	const baseRef = useRef<THREE.Mesh>(null);
 
@@ -66,20 +67,21 @@ const Image: React.FC<ImageProps> = ({ imageData }) => {
 			baseRef.current.rotateX(-Math.PI / 2);
 			baseRef.current.rotateZ(Math.PI / 4);
 
-			const baseOffset = new THREE.Vector3(0, -0.015, 0);
+			const baseOffset = new THREE.Vector3(0, -0.15, 0);
 			baseOffset.applyQuaternion(coneRef.current.quaternion);
 			baseRef.current.position.add(baseOffset);
+			onLoaded();
 		}
-	}, [imageData]);
+	}, [imageData, onLoaded]);
 
 	return (
 		<>
 			<mesh ref={coneRef}>
-				<coneGeometry args={[0.01, 0.03, 4]} />
+				<coneGeometry args={[0.1, 0.3, 4]} />
 				<meshBasicMaterial color="red" wireframe />
 			</mesh>
 			<mesh ref={baseRef}>
-				<planeGeometry args={[0.014, 0.014]} />
+				<planeGeometry args={[0.14, 0.14]} />
 				<meshBasicMaterial color="red" side={THREE.DoubleSide} />
 			</mesh>
 		</>
