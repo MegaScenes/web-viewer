@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useThree, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { usePointLoader, useImageData } from "../hooks/useCOLMAPLoader";
-import Image from "./Image";
+import Cameras from "./Cameras";
 
 interface SceneProps {
 	points: string;
@@ -28,6 +28,13 @@ const Scene: React.FC<SceneProps> = ({
 	const [areImagesReady, setAreImagesReady] = useState(false);
 
 	const isReady = isPointCloudReady && areImagesReady;
+
+	const handleAllImagesLoaded = () => {
+		//console.log("all images have been loaded and rendered");
+		if (typeof onLoaded === "function") {
+			onLoaded();
+		}
+	};
 
 	useEffect(() => {
 		if (clearScene) {
@@ -74,9 +81,10 @@ const Scene: React.FC<SceneProps> = ({
 			{isReady && (
 				<>
 					{pointCloud && <primitive object={pointCloud} />}
-					{imgs.map((imageData) => (
-						<Image key={imageData.id} imageData={imageData} />
-					))}
+					<Cameras
+						imageData={imgs}
+						onAllImagesLoaded={handleAllImagesLoaded}
+					/>
 				</>
 			)}
 		</>
