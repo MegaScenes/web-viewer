@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
@@ -17,6 +17,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	onLoaded,
 	clearScene,
 }) => {
+	const controlsRef = useRef(null);
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
@@ -26,15 +27,18 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				images={images}
 				clearScene={clearScene}
 				onLoaded={onLoaded}
+				controlsRef={controlsRef}
 			/>
 			<OrbitControls
+				ref={controlsRef}
 				minDistance={0}
 				maxDistance={20}
 				rotateSpeed={0.5}
 				zoomSpeed={0.5}
 				panSpeed={2}
+				enableDamping={true}
+				dampingFactor={0.2}
 			/>
-			<axesHelper args={[10]} />
 		</Canvas>
 	);
 };

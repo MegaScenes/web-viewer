@@ -9,6 +9,7 @@ interface SceneProps {
 	images: string;
 	onLoaded?: () => void;
 	clearScene: boolean;
+	controlsRef: React.RefObject<any>;
 }
 
 const Scene: React.FC<SceneProps> = ({
@@ -16,8 +17,10 @@ const Scene: React.FC<SceneProps> = ({
 	images,
 	clearScene,
 	onLoaded,
+	controlsRef,
 }) => {
-	const { scene } = useThree();
+	const { scene, camera } = useThree();
+
 	const pointCloud = usePointLoader(points);
 	const imgs = useImageData(images);
 	const circleTexture = useLoader(
@@ -26,21 +29,17 @@ const Scene: React.FC<SceneProps> = ({
 	);
 	const [isPointCloudReady, setIsPointCloudReady] = useState(false);
 	const [areImagesReady, setAreImagesReady] = useState(false);
-
-	const isReady = isPointCloudReady && areImagesReady;
-
-	const handleAllImagesLoaded = () => {
-		//console.log("all images have been loaded and rendered");
-		if (typeof onLoaded === "function") {
-			onLoaded();
-		}
-	};
+	const [axesKey, setAxesKey] = useState(Date.now());
 
 	useEffect(() => {
 		if (clearScene) {
 			scene.clear();
 			setIsPointCloudReady(false);
 			setAreImagesReady(false);
+			if (controlsRef && controlsRef.current) {
+				controlsRef.current.reset();
+			}
+			setAxesKey(Date.now());
 			return;
 		}
 
@@ -61,8 +60,11 @@ const Scene: React.FC<SceneProps> = ({
 			setAreImagesReady(true);
 		}
 
-		if (isReady && typeof onLoaded === "function") {
-			onLoaded();
+		if (isPointCloudReady && areImagesReady) {
+			setAxesKey(Date.now());
+			if (typeof onLoaded === "function") {
+				onLoaded();
+			}
 		}
 	}, [
 		scene,
@@ -73,18 +75,19 @@ const Scene: React.FC<SceneProps> = ({
 		clearScene,
 		isPointCloudReady,
 		areImagesReady,
-		isReady,
+		controlsRef,
 	]);
 
 	return (
 		<>
-			{isReady && (
+			{isPointCloudReady && areImagesReady && (
 				<>
 					{pointCloud && <primitive object={pointCloud} />}
 					<Cameras
 						imageData={imgs}
-						onAllImagesLoaded={handleAllImagesLoaded}
+						onAllImagesLoaded={() => setAreImagesReady(true)}
 					/>
+					<axesHelper args={[10]} key={axesKey} />
 				</>
 			)}
 		</>
