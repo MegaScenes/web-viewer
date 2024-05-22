@@ -5,9 +5,9 @@
 name: Deploy Next.js site to Pages
 
 on:
-    # Runs on pushes targeting the default branch
+    # Runs on pushes targeting the static-site branch
     push:
-        branches: ["main", "static-site"]
+        branches: ["static-site"]
 
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
