@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import Image from "./Image";
 import type { ImageData } from "../hooks/useCOLMAPLoader";
 
@@ -8,6 +9,7 @@ interface CamerasProps {
 }
 
 const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
+	const groupRef = useRef<THREE.Group>(null);
 	const [loadedCount, setLoadedCount] = useState(0);
 
 	useEffect(() => {
@@ -20,8 +22,26 @@ const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
 		setLoadedCount((prev) => prev + 1);
 	};
 
+	useEffect(() => {
+		if (groupRef.current) {
+			const scene = groupRef.current.parent;
+			if (scene) {
+				scene.add(groupRef.current);
+			}
+		}
+
+		return () => {
+			if (groupRef.current) {
+				const scene = groupRef.current.parent;
+				if (scene) {
+					scene.remove(groupRef.current);
+				}
+			}
+		};
+	}, []);
+
 	return (
-		<>
+		<group ref={groupRef}>
 			{imageData.map((image, index) => (
 				<Image
 					key={index}
@@ -29,7 +49,7 @@ const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
 					onLoaded={handleImageLoaded}
 				/>
 			))}
-		</>
+		</group>
 	);
 };
 

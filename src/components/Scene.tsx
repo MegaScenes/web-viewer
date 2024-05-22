@@ -21,7 +21,7 @@ const Scene: React.FC<SceneProps> = ({
 	controlsRef,
 }) => {
 	const { scene } = useThree();
-	const { progress, loaded, total } = useProgress();
+	const { loaded, total } = useProgress();
 
 	const pointCloud = usePointLoader(points);
 	const imgs = useImageData(images);
@@ -78,6 +78,8 @@ const Scene: React.FC<SceneProps> = ({
 		isPointCloudReady,
 		areImagesReady,
 		controlsRef,
+		loaded,
+		total,
 	]);
 
 	return (
