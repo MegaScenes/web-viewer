@@ -26,7 +26,7 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		if (selectedScene) {
-			setIsLoading(false);
+			setIsLoading(true);
 		}
 	}, [selectedScene]);
 
