@@ -18,10 +18,8 @@ const Home: React.FC = () => {
 	const handleSelectScene = (scene: Scene) => {
 		setIsLoading(true);
 		setClearScene(true);
-		setTimeout(() => {
-			setSelectedScene(scene);
-			setClearScene(false);
-		}, 1000);
+		setSelectedScene(scene);
+		setClearScene(false);
 	};
 
 	useEffect(() => {
