@@ -8,6 +8,7 @@ const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
+import SearchBar from "../components/SearchBar";
 import { Scene } from "@/types/scene";
 
 const Home: React.FC = () => {
@@ -32,13 +33,8 @@ const Home: React.FC = () => {
 		<>
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
-					<div className="flex flex-row items-center justify-between mr-3">
-						<input
-							type="search"
-							name="search bar"
-							placeholder="Search for scene..."
-							className="w-full min-w-96 mx-4 p-2 text-black bg-white rounded shadow-xl"
-						/>
+					<div className="flex flex-row items-center justify-between mr-3 gap-2">
+						<SearchBar />
 						<OptionsDropdown />
 					</div>
 				</div>
@@ -52,8 +48,8 @@ const Home: React.FC = () => {
 						{selectedScene ? (
 							<ModelViewer
 								key={selectedScene.name}
-								points={selectedScene.points}
-								images={selectedScene.images}
+								points={selectedScene.points!}
+								images={selectedScene.images!}
 								onLoaded={() => setIsLoading(false)}
 								clearScene={clearScene}
 							/>
