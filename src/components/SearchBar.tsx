@@ -23,6 +23,7 @@ const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
 	const outerProps = React.useContext(OuterElementContext);
 	return <div ref={ref} {...props} {...outerProps} />;
 });
+OuterElementType.displayName = "OuterElementType";
 
 const ListboxComponent = React.forwardRef<
 	HTMLDivElement,
@@ -72,6 +73,7 @@ const ListboxComponent = React.forwardRef<
 		</div>
 	);
 });
+ListboxComponent.displayName = "ListboxComponent";
 
 const SearchBar: React.FC = () => {
 	const [inputValue, setInputValue] = useState("");

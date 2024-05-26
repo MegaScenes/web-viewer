@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { ImageData } from "../hooks/useCOLMAPLoader";
 
-interface ImageProps {
+interface CameraProps {
 	imageData: ImageData;
 	onLoaded: () => void;
 }
 
-const Image: React.FC<ImageProps> = ({ imageData, onLoaded }) => {
+const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 	const coneRef = useRef<THREE.Mesh>(null);
 	const baseRef = useRef<THREE.Mesh>(null);
 
@@ -88,4 +88,4 @@ const Image: React.FC<ImageProps> = ({ imageData, onLoaded }) => {
 	);
 };
 
-export default Image;
+export default Camera;
