@@ -150,13 +150,15 @@ const SearchBar: React.FC = () => {
 								? "20px 20px 0 0"
 								: "20px",
 							backgroundColor: "white",
+							paddingLeft: "15px",
+							paddingRight: "15px",
 						},
 					}}
 					className="w-full"
 				/>
 			)}
 			ListboxComponent={ListboxComponent}
-			className="w-full min-w-96 mx-4 text-black shadow-xl"
+			className="w-full min-w-96 text-black shadow-xl"
 		/>
 	);
 };
