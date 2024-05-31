@@ -47,7 +47,7 @@ const Home: React.FC = () => {
 						)}
 						{selectedScene ? (
 							<ModelViewer
-								key={selectedScene.name}
+								key={selectedScene.no}
 								points={selectedScene.points!}
 								images={selectedScene.images!}
 								onLoaded={() => setIsLoading(false)}
