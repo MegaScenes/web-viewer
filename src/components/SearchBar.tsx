@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import { VariableSizeList as List } from "react-window";
 import scenesRaw from "../../public/data/scenes.json";
 import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
 
 interface SceneData {
 	cat_name: string;
@@ -79,6 +80,7 @@ const SearchBar: React.FC = () => {
 	const [inputValue, setInputValue] = useState("");
 	const [value, setValue] = useState<string | null>(null);
 	const [options, setOptions] = useState(processedOptions);
+	const router = useRouter();
 
 	useEffect(() => {
 		const debouncedFilter = debounce((input) => {
@@ -110,7 +112,17 @@ const SearchBar: React.FC = () => {
 			onInputChange={(event, newInputValue) =>
 				setInputValue(newInputValue)
 			}
-			onChange={(event, newValue) => setValue(newValue)}
+			onChange={(event, maybeValue) => {
+				setValue(maybeValue);
+				if (maybeValue) {
+					// Url encoding
+					const revertName = encodeURIComponent(
+						maybeValue.replace(/\s+/g, "_")
+					);
+
+					router.push(`/?scene=${revertName}`);
+				}
+			}}
 			options={options}
 			renderInput={(params) => (
 				<TextField

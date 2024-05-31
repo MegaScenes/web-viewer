@@ -14,16 +14,18 @@ const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 	useEffect(() => {
 		if (coneRef.current && baseRef.current) {
 			const R = new THREE.Matrix4();
+			// quaternion matrix
 			const Q = new THREE.Quaternion(
 				imageData.qvec[1],
 				imageData.qvec[2],
 				imageData.qvec[3],
 				imageData.qvec[0]
 			);
-
+			// rotation matrix
 			R.makeRotationFromQuaternion(Q);
-
+			// transpose of rotation matrix
 			const R_T = R.clone().transpose();
+			// translation vector
 			const translation = new THREE.Vector3(
 				imageData.tvec[0],
 				imageData.tvec[1],
