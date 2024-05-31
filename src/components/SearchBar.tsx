@@ -80,6 +80,7 @@ const SearchBar: React.FC = () => {
 	const [inputValue, setInputValue] = useState("");
 	const [value, setValue] = useState<string | null>(null);
 	const [options, setOptions] = useState(processedOptions);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -101,6 +102,10 @@ const SearchBar: React.FC = () => {
 			debouncedFilter.cancel();
 		};
 	}, [inputValue]);
+
+	const dynamicBorder = isDropdownOpen
+		? "rounded-t-[20px]"
+		: "rounded-[20px]";
 
 	return (
 		<Autocomplete
@@ -124,10 +129,13 @@ const SearchBar: React.FC = () => {
 				}
 			}}
 			options={options}
+			open={isDropdownOpen}
+			onOpen={() => setIsDropdownOpen(true)}
+			onClose={() => setIsDropdownOpen(false)}
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					placeholder="Search for scene"
+					placeholder={`Search ${scenesData.length} scenes`}
 					variant="outlined"
 					InputLabelProps={{
 						...params.InputLabelProps,
@@ -136,13 +144,19 @@ const SearchBar: React.FC = () => {
 					}}
 					InputProps={{
 						...params.InputProps,
-						style: { height: "42px" },
+						style: {
+							height: "40px",
+							borderRadius: isDropdownOpen
+								? "20px 20px 0 0"
+								: "20px",
+							backgroundColor: "white",
+						},
 					}}
 					className="w-full"
 				/>
 			)}
 			ListboxComponent={ListboxComponent}
-			className="w-full min-w-96 mx-4 text-black bg-white rounded shadow-xl"
+			className="w-full min-w-96 mx-4 text-black shadow-xl"
 		/>
 	);
 };

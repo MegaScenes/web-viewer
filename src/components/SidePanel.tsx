@@ -70,27 +70,48 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 	};
 
 	// random data
-	const scenes: Scene[] = [
+	const reconstructions: Scene[] = [
 		{
-			name: "Garden",
-			normalized_name: "Garden",
-			imgUrl: "/web-viewer/images/garden.jpeg",
-			points: "/web-viewer/data/garden/0/points3D.bin",
-			images: "/web-viewer/data/garden/0/images.bin",
-		},
-		{
-			name: "Statue of Liberty",
-			normalized_name: "Statue of Liberty",
-			imgUrl: "/web-viewer/images/statue_of_liberty.jpeg",
-			points: "/web-viewer/data/statue_of_liberty/5/points3D.bin",
-			images: "/web-viewer/data/statue_of_liberty/5/images.bin",
+			name: "Qutb Minar",
+			normalized_name: "Qutb Minar",
+			no: 1,
+			points: "/web-viewer/data/qutb_minar/1/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/1/images.bin",
 		},
 		{
 			name: "Qutb Minar",
 			normalized_name: "Qutb Minar",
-			imgUrl: "/web-viewer/images/qutb_minar.jpeg",
+			no: 2,
 			points: "/web-viewer/data/qutb_minar/2/points3D.bin",
 			images: "/web-viewer/data/qutb_minar/2/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			normalized_name: "Qutb Minar",
+			no: 3,
+			points: "/web-viewer/data/qutb_minar/3/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/3/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			normalized_name: "Qutb Minar",
+			no: 4,
+			points: "/web-viewer/data/qutb_minar/4/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/4/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			normalized_name: "Qutb Minar",
+			no: 5,
+			points: "/web-viewer/data/qutb_minar/5/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/5/images.bin",
+		},
+		{
+			name: "Qutb Minar",
+			normalized_name: "Qutb Minar",
+			no: 6,
+			points: "/web-viewer/data/qutb_minar/6/points3D.bin",
+			images: "/web-viewer/data/qutb_minar/6/images.bin",
 		},
 	];
 
@@ -102,15 +123,15 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
 			>
 				<div className="flex flex-col w-11/12 mt-2">
-					<h2 className="text-xl font-bold mb-4 text-whiteish">
-						Results
+					<h2 className="text-xl font-bold mb-4 text-offwhite">
+						Reconstructions for "Qutb Minar":
 					</h2>
 					<div className="flex flex-col gap-4">
-						{scenes.map((scene, index) => (
+						{reconstructions.map((scene, index) => (
 							<Card
 								key={index}
 								scene={scene}
-								onClick={onSelect}
+								onClick={() => onSelect(scene)}
 							/>
 						))}
 					</div>
