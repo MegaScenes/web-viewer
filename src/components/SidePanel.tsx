@@ -124,7 +124,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 			>
 				<div className="flex flex-col w-11/12 mt-2">
 					<h2 className="text-xl font-bold mb-4 text-offwhite">
-						Reconstructions for "Qutb Minar":
+						Reconstructions for &quot;Qutb Minar&quot;:
 					</h2>
 					<div className="flex flex-col gap-4">
 						{reconstructions.map((scene, index) => (
