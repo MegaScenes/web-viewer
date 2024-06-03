@@ -81,6 +81,8 @@ const Scene: React.FC<SceneProps> = ({
 		pointCloud,
 		circleTexture,
 		imgs,
+		onLoaded,
+		updateCounts,
 		clearScene,
 		isPointCloudReady,
 		areImagesReady,

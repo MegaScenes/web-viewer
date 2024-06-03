@@ -28,6 +28,17 @@ const Home: React.FC = () => {
 		setClearScene(false);
 	}, []);
 
+	const handleOnLoaded = useCallback(() => {
+		setIsLoading(false);
+	}, []);
+
+	const handleUpdateCounts = useCallback(
+		(pts: number, cams: number) => {
+			if (selectedRec) setCounts([pts, cams, selectedRec[1]]);
+		},
+		[selectedRec]
+	);
+
 	useEffect(() => {
 		if (selectedRec) {
 			setIsLoading(true);
@@ -39,15 +50,7 @@ const Home: React.FC = () => {
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
 					<div className="flex flex-row items-center justify-between mr-3 gap-4">
-						<SearchBar
-							onOptionClick={(
-								scene: SceneType,
-								rec_no: number
-							) => {
-								setSelectedRec([scene, rec_no]);
-								setIsLoading(true);
-							}}
-						/>
+						<SearchBar onOptionClick={handleSelectScene} />
 						<OptionsDropdown />
 					</div>
 				</div>
@@ -63,10 +66,8 @@ const Home: React.FC = () => {
 								key={selectedRec[0].id}
 								id={selectedRec[0].id}
 								no={selectedRec[1]}
-								updateCounts={(pts: number, cams: number) => {
-									setCounts([pts, cams, selectedRec[1]]);
-								}}
-								onLoaded={() => setIsLoading(false)}
+								updateCounts={handleUpdateCounts}
+								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
 							/>
 						) : (

@@ -26,7 +26,6 @@ const SidePanel: React.FC<SidePanelProps> = ({
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [iconState, setIconState] = useState<string>("right");
-	const [recNo, setRecNo] = useState<number>(0);
 	const router = useRouter();
 
 	const togglePanel = () => {
@@ -82,6 +81,19 @@ const SidePanel: React.FC<SidePanelProps> = ({
 		}
 	};
 
+	const handleCardSelect = (
+		scene: SceneType,
+		rec_no: number | undefined,
+		index: number
+	) => {
+		if (index != rec_no) {
+			onSelect(scene, index);
+			router.replace(
+				`/?id=${encodeURIComponent(scene.id)}&rec_no=${index}`
+			);
+		}
+	};
+
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
@@ -91,8 +103,10 @@ const SidePanel: React.FC<SidePanelProps> = ({
 			>
 				<div className="flex flex-col w-11/12 mt-2">
 					{scene ? (
-						<h2 className="text-xl font-bold mb-4 text-offwhite">
-							Viewing Reconstruction {rec_no} for &quot;
+						<h2 className="text-xl font-bold mb-4 text-offwhite break-all">
+							Viewing Reconstruction{" "}
+							<span className="text-lime-400">{rec_no}</span> for
+							&quot;
 							{scene.name}&quot;:
 						</h2>
 					) : (
@@ -119,15 +133,13 @@ const SidePanel: React.FC<SidePanelProps> = ({
 												? numOfCams
 												: undefined
 										}
-										onClick={() => {
-											onSelect(scene, index);
-											setRecNo(index);
-											router.replace(
-												`/?id=${encodeURIComponent(
-													scene.id
-												)}&rec_no=${index}`
-											);
-										}}
+										onClick={() =>
+											handleCardSelect(
+												scene,
+												rec_no,
+												index
+											)
+										}
 									/>
 								)
 							)}
