@@ -40,7 +40,7 @@ const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
 		<group ref={groupRef}>
 			{imageData.map((image, index) => (
 				<Camera
-					key={index}
+					key={image.id}
 					imageData={image}
 					onLoaded={handleImageLoaded}
 				/>

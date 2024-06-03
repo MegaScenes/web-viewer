@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 
 const POINT_SIZE = 0.01;
+const S3_BASE_URL =
+	"https://megascenes.s3.us-west-2.amazonaws.com/reconstruct/";
 
 export type CameraData = {
 	cameraId: number;
@@ -18,6 +20,12 @@ export type ImageData = {
 	tvec: number[];
 	cameraId: number;
 	name: string;
+};
+
+const getId = (id: number): string => {
+	const paddedId = id.toString().padStart(6, "0");
+	const urlSegment = `${paddedId.slice(0, 3)}/${paddedId.slice(3, 6)}`;
+	return urlSegment;
 };
 
 const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
@@ -178,9 +186,9 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	return cameras;
 };
 
-export const useImageData = (url: string): ImageData[] => {
+export const useImageData = (id: number, no: number): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
-
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/images.bin`;
 	useEffect(() => {
 		const fetchImageData = async () => {
 			try {
@@ -199,9 +207,9 @@ export const useImageData = (url: string): ImageData[] => {
 	return images;
 };
 
-export const useCameraData = (url: string): CameraData[] => {
+export const useCameraData = (id: number, no: number): CameraData[] => {
 	const [cameras, setCameras] = useState<CameraData[]>([]);
-
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/cameras.bin`;
 	useEffect(() => {
 		const fetchCameraData = async () => {
 			try {
@@ -220,8 +228,12 @@ export const useCameraData = (url: string): CameraData[] => {
 	return cameras;
 };
 
-export const usePointLoader = (url: string): THREE.Points | undefined => {
+export const usePointLoader = (
+	id: number,
+	no: number
+): THREE.Points | undefined => {
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/points3D.bin`;
 	useEffect(() => {
 		const fetchData = async () => {
 			try {

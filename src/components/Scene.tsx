@@ -6,25 +6,27 @@ import Cameras from "./Cameras";
 import { useProgress } from "@react-three/drei";
 
 interface SceneProps {
-	points: string;
-	images: string;
+	id: number;
+	no: number;
 	onLoaded?: () => void;
+	updateCounts: (pts: number, cams: number) => void;
 	clearScene: boolean;
 	controlsRef: React.RefObject<any>;
 }
 
 const Scene: React.FC<SceneProps> = ({
-	points,
-	images,
-	clearScene,
+	id,
+	no,
 	onLoaded,
+	updateCounts,
+	clearScene,
 	controlsRef,
 }) => {
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
 
-	const pointCloud = usePointLoader(points);
-	const imgs = useImageData(images);
+	const pointCloud = usePointLoader(id, no);
+	const imgs = useImageData(id, no);
 	const circleTexture = useLoader(
 		THREE.TextureLoader,
 		"/web-viewer/images/circle.png"
@@ -64,6 +66,12 @@ const Scene: React.FC<SceneProps> = ({
 
 		if (isPointCloudReady && areImagesReady && loaded === total) {
 			setAxesKey(Date.now());
+			if (pointCloud) {
+				updateCounts(
+					pointCloud.geometry.attributes.position.count,
+					imgs.length
+				);
+			}
 			if (typeof onLoaded === "function") {
 				onLoaded();
 			}
@@ -73,7 +81,6 @@ const Scene: React.FC<SceneProps> = ({
 		pointCloud,
 		circleTexture,
 		imgs,
-		onLoaded,
 		clearScene,
 		isPointCloudReady,
 		areImagesReady,

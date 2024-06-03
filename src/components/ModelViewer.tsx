@@ -1,19 +1,20 @@
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-
 import Scene from "./Scene";
 
 interface ModelViewerProps {
-	points: string;
-	images: string;
-	onLoaded?: () => void;
+	id: number;
+	no: number;
+	updateCounts: (pts: number, cams: number) => void;
+	onLoaded: () => void;
 	clearScene: boolean;
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = ({
-	points,
-	images,
+	id,
+	no,
+	updateCounts,
 	onLoaded,
 	clearScene,
 }) => {
@@ -24,8 +25,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 			<ambientLight />
 			<pointLight />
 			<Scene
-				points={points}
-				images={images}
+				id={id}
+				no={no}
+				updateCounts={updateCounts}
 				clearScene={clearScene}
 				onLoaded={onLoaded}
 				controlsRef={controlsRef}
