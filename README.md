@@ -1,3 +1,6 @@
+## Github Pages Site
+[https://megascenes.github.io/web-viewer/](https://megascenes.github.io/web-viewer/)
+
 ## Setup
 
 Need to add a public folder with data, currently the reconstruction being targeted is: /public/qutb_minar/0
@@ -15,4 +18,4 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000/web-viewer](http://localhost:3000/web-viewer).
