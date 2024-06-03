@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import type { ImageData } from "../hooks/useCOLMAPLoader";
 
@@ -10,6 +10,7 @@ interface CameraProps {
 const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 	const coneRef = useRef<THREE.Mesh>(null);
 	const baseRef = useRef<THREE.Mesh>(null);
+	const [multiplier, setMultiplier] = useState<number>(1);
 
 	useEffect(() => {
 		if (coneRef.current && baseRef.current) {
@@ -69,7 +70,7 @@ const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 			baseRef.current.rotateX(-Math.PI / 2);
 			baseRef.current.rotateZ(Math.PI / 4);
 
-			const baseOffset = new THREE.Vector3(0, -0.15, 0);
+			const baseOffset = new THREE.Vector3(0, -0.15 * multiplier, 0);
 			baseOffset.applyQuaternion(coneRef.current.quaternion);
 			baseRef.current.position.add(baseOffset);
 			onLoaded();
@@ -79,11 +80,11 @@ const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 	return (
 		<>
 			<mesh ref={coneRef}>
-				<coneGeometry args={[0.1, 0.3, 4]} />
+				<coneGeometry args={[0.1 * multiplier, 0.3 * multiplier, 4]} />
 				<meshBasicMaterial color="red" wireframe />
 			</mesh>
 			<mesh ref={baseRef}>
-				<planeGeometry args={[0.14, 0.14]} />
+				<planeGeometry args={[0.14 * multiplier, 0.14 * multiplier]} />
 				<meshBasicMaterial color="red" side={THREE.DoubleSide} />
 			</mesh>
 		</>

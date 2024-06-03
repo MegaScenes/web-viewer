@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { debounce } from "lodash";
 import { VariableSizeList as List } from "react-window";
 import { useRouter } from "next/navigation";
 import { SceneType } from "@/types/scene";
@@ -45,14 +44,6 @@ const ListboxComponent = React.memo(
 										cursor: "pointer",
 										backgroundColor: "white",
 									}}
-									onMouseEnter={(e) =>
-										(e.currentTarget.style.backgroundColor =
-											"#f0f0f0")
-									}
-									onMouseLeave={(e) =>
-										(e.currentTarget.style.backgroundColor =
-											"white")
-									}
 									key={index}
 								>
 									{data[index]}
