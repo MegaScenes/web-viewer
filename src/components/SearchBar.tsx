@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -84,69 +84,50 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	const idToRecCtMap: IdToRecCtMap = idToRecCtData.reduce(
-		(acc, [id, number]) => {
+	const idToRecCtMap = useMemo(() => {
+		return idToRecCtData.reduce((acc, [id, number]) => {
 			acc[id.toString()] = number;
 			return acc;
-		},
-		{} as IdToRecCtMap
-	);
+		}, {} as IdToRecCtMap);
+	}, [idToRecCtData]);
 
 	// load scenes
 	useEffect(() => {
-		const loadScenes = () => {
-			const loadedScenes: SceneType[] = Object.entries(catToIdData).map(
-				([name, id]) => ({
-					id,
-					name,
-					normalized_name: name
-						.replace(/_/g, " ")
-						.normalize("NFD")
-						.replace(/[\u0300-\u036f]/g, ""),
-					no_of_rec: idToRecCtMap[id],
-				})
-			);
-			setScenes(loadedScenes);
+		const loadedScenes = Object.entries(catToIdData).map(([name, id]) => ({
+			id,
+			name,
+			normalized_name: name
+				.replace(/_/g, " ")
+				.normalize("NFD")
+				.replace(/[\u0300-\u036f]/g, ""),
+			no_of_rec: idToRecCtMap[id],
+		}));
+		setScenes(loadedScenes);
 
-			const id = searchParams.get("id");
-			const rec_no = searchParams.get("rec_no");
-			if (id && rec_no) {
-				const sceneId = parseInt(id as string);
-				const foundScene = loadedScenes.find(
-					(scene) => scene.id === sceneId
-				);
-				if (foundScene) {
-					onOptionClick(foundScene, Number(rec_no));
-				}
-			}
-		};
-
-		loadScenes();
-	}, []);
-
-	// setting search bar value from url
-	useEffect(() => {
-		const sceneId = searchParams.get("id");
-		if (sceneId) {
-			const foundScene = scenes.find(
-				(scene) => scene.id === parseInt(sceneId, 10)
+		const id = searchParams.get("id");
+		const rec_no = searchParams.get("rec_no");
+		if (id && rec_no) {
+			const sceneId = parseInt(id, 10);
+			const foundScene = loadedScenes.find(
+				(scene) => scene.id === sceneId
 			);
 			if (foundScene) {
+				onOptionClick(foundScene, Number(rec_no));
 				setValue(foundScene.normalized_name);
 			}
 		}
-	}, [searchParams, scenes]);
+	}, [searchParams, idToRecCtMap, onOptionClick]);
 
 	const handleOptionClick = (option: SceneType) => {
 		onOptionClick(option, 0);
 		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);
 	};
 
-	const getOptionLabel = useCallback((option: string | SceneType) => {
+	const getOptionLabel = (option: string | SceneType) => {
 		return typeof option === "string" ? option : option.normalized_name;
-	}, []);
+	};
 
-	const filterOptions = useCallback((options: any[], { inputValue }: any) => {
+	const filterOptions = (options: any[], { inputValue }: any) => {
 		const filtered = options.filter((option) =>
 			typeof option === "string"
 				? option.toLowerCase().includes(inputValue.toLowerCase())
@@ -158,7 +139,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 			setIsDropdownOpen(false);
 		}
 		return filtered;
-	}, []);
+	};
 
 	const options = useMemo(
 		() =>

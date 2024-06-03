@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import Camera from "./Camera";
 import type { ImageData } from "../hooks/useCOLMAPLoader";
@@ -18,9 +18,9 @@ const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
 		}
 	}, [loadedCount, imageData.length, onAllImagesLoaded]);
 
-	const handleImageLoaded = () => {
+	const handleImageLoaded = useCallback(() => {
 		setLoadedCount((prev) => prev + 1);
-	};
+	}, []);
 
 	useEffect(() => {
 		const currentGroup = groupRef.current;

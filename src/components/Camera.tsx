@@ -74,7 +74,7 @@ const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 			baseRef.current.position.add(baseOffset);
 			onLoaded();
 		}
-	}, [imageData]);
+	}, []);
 
 	return (
 		<>
