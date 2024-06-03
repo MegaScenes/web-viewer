@@ -1,111 +1,179 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import { debounce } from "lodash";
 import { VariableSizeList as List } from "react-window";
-import scenesRaw from "../../public/data/scenes.json";
-import debounce from "lodash/debounce";
 import { useRouter } from "next/navigation";
-
-interface SceneData {
-	cat_name: string;
-}
-
-const scenesData: SceneData[] = scenesRaw as SceneData[];
-
-const processedOptions = scenesData.map((scene) =>
-	scene.cat_name
-		.replace(/_/g, " ")
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-);
+import { SceneType } from "@/types/scene";
 
 const OuterElementContext = React.createContext({});
-const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
-	const outerProps = React.useContext(OuterElementContext);
-	return <div ref={ref} {...props} {...outerProps} />;
-});
+const OuterElementType = React.memo(
+	React.forwardRef<HTMLDivElement>((props, ref) => {
+		const outerProps = React.useContext(OuterElementContext);
+		return <div ref={ref} {...props} {...outerProps} />;
+	})
+);
 OuterElementType.displayName = "OuterElementType";
 
-const ListboxComponent = React.forwardRef<
-	HTMLDivElement,
-	React.HTMLAttributes<HTMLElement>
->((props, ref) => {
-	const { children, ...other } = props;
-	const itemData = React.Children.toArray(children);
-	const itemCount = itemData.length;
+const ListboxComponent = React.memo(
+	React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLElement>>(
+		(props, ref) => {
+			const { children, ...other } = props;
+			const itemData = React.Children.toArray(children);
+			const itemCount = itemData.length;
 
-	return (
-		<div ref={ref}>
-			<OuterElementContext.Provider value={other}>
-				<List
-					height={250}
-					width="100%"
-					itemData={itemData}
-					itemCount={itemCount}
-					itemSize={() => 40}
-					outerElementType={OuterElementType}
-				>
-					{({ data, index, style }) => (
-						<div
-							style={{
-								...style,
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								whiteSpace: "nowrap",
-								paddingRight: 10,
-								cursor: "pointer",
-								backgroundColor: "white",
-							}}
-							onMouseEnter={(e) =>
-								(e.currentTarget.style.backgroundColor =
-									"#f0f0f0")
-							}
-							onMouseLeave={(e) =>
-								(e.currentTarget.style.backgroundColor =
-									"white")
-							}
-							key={index}
+			return (
+				<div ref={ref}>
+					<OuterElementContext.Provider value={other}>
+						<List
+							height={250}
+							width="100%"
+							itemData={itemData}
+							itemCount={itemCount}
+							itemSize={() => 40}
+							outerElementType={OuterElementType}
 						>
-							{data[index]}
-						</div>
-					)}
-				</List>
-			</OuterElementContext.Provider>
-		</div>
-	);
-});
+							{({ data, index, style }) => (
+								<div
+									style={{
+										...style,
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "nowrap",
+										paddingRight: 10,
+										cursor: "pointer",
+										backgroundColor: "white",
+									}}
+									onMouseEnter={(e) =>
+										(e.currentTarget.style.backgroundColor =
+											"#f0f0f0")
+									}
+									onMouseLeave={(e) =>
+										(e.currentTarget.style.backgroundColor =
+											"white")
+									}
+									key={index}
+								>
+									{data[index]}
+								</div>
+							)}
+						</List>
+					</OuterElementContext.Provider>
+				</div>
+			);
+		}
+	)
+);
 ListboxComponent.displayName = "ListboxComponent";
 
-const SearchBar: React.FC = () => {
+import catToIdData from "../../public/data/recon_cat_to_id.json";
+import idToRecCtData from "../../public/data/id_and_recon_ct.json";
+interface SearchBarProps {
+	onOptionClick: (scene: SceneType, rec_no: number) => void;
+}
+interface IdToRecCtMap {
+	[key: string]: number;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 	const [inputValue, setInputValue] = useState("");
-	const [value, setValue] = useState<string | null>(null);
-	const [options, setOptions] = useState(processedOptions);
+	const [value, setValue] = useState<SceneType | string | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [scenes, setScenes] = useState<SceneType[]>([]);
 	const router = useRouter();
+	const searchParams = useSearchParams();
 
+	const idToRecCtMap: IdToRecCtMap = idToRecCtData.reduce(
+		(acc, [id, number]) => {
+			acc[id.toString()] = number;
+			return acc;
+		},
+		{} as IdToRecCtMap
+	);
+
+	// load scenes
 	useEffect(() => {
-		const debouncedFilter = debounce((input) => {
-			if (input) {
-				setOptions(
-					processedOptions.filter((name) =>
-						name.toLowerCase().includes(input.toLowerCase())
-					)
+		const loadScenes = () => {
+			const loadedScenes: SceneType[] = Object.entries(catToIdData).map(
+				([name, id]) => ({
+					id,
+					name,
+					normalized_name: name
+						.replace(/_/g, " ")
+						.normalize("NFD")
+						.replace(/[\u0300-\u036f]/g, ""),
+					no_of_rec: idToRecCtMap[id],
+				})
+			);
+			setScenes(loadedScenes);
+
+			const id = searchParams.get("id");
+			const rec_no = searchParams.get("rec_no");
+			if (id && rec_no) {
+				const sceneId = parseInt(id as string);
+				const foundScene = loadedScenes.find(
+					(scene) => scene.id === sceneId
 				);
-			} else {
-				setOptions(processedOptions);
+				if (foundScene) {
+					onOptionClick(foundScene, Number(rec_no));
+				}
 			}
-		}, 300);
-
-		debouncedFilter(inputValue);
-
-		return () => {
-			debouncedFilter.cancel();
 		};
-	}, [inputValue]);
 
-	const dynamicBorder = isDropdownOpen
-		? "rounded-t-[20px]"
-		: "rounded-[20px]";
+		loadScenes();
+	}, []);
+
+	// setting search bar value from url
+	useEffect(() => {
+		const sceneId = searchParams.get("id");
+		if (sceneId) {
+			const foundScene = scenes.find(
+				(scene) => scene.id === parseInt(sceneId, 10)
+			);
+			if (foundScene) {
+				setValue(foundScene.normalized_name);
+			}
+		}
+	}, [searchParams, scenes]);
+
+	const handleOptionClick = (option: SceneType) => {
+		onOptionClick(option, 0);
+		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);
+	};
+
+	const getOptionLabel = useCallback((option: string | SceneType) => {
+		return typeof option === "string" ? option : option.normalized_name;
+	}, []);
+
+	const filterOptions = useCallback((options: any[], { inputValue }: any) => {
+		const filtered = options.filter((option) =>
+			typeof option === "string"
+				? option.toLowerCase().includes(inputValue.toLowerCase())
+				: option.normalized_name
+						.toLowerCase()
+						.includes(inputValue.toLowerCase())
+		);
+		if (filtered.length === 0 && inputValue) {
+			setIsDropdownOpen(false);
+		}
+		return filtered;
+	}, []);
+
+	const options = useMemo(
+		() =>
+			scenes.map((scene) => ({
+				id: scene.id,
+				name: scene.name,
+				normalized_name: scene.normalized_name,
+				no_of_rec: scene.no_of_rec,
+			})),
+		[scenes]
+	);
+
+	const handleInputChange = debounce((event, newInputValue) => {
+		setInputValue(newInputValue);
+	}, 300);
 
 	return (
 		<Autocomplete
@@ -113,29 +181,39 @@ const SearchBar: React.FC = () => {
 			openOnFocus
 			id="free-solo-scene-search"
 			inputValue={inputValue}
-			value={value}
-			onInputChange={(event, newInputValue) =>
-				setInputValue(newInputValue)
+			value={
+				value
+					? typeof value === "string"
+						? value
+						: value.normalized_name
+					: null
 			}
-			onChange={(event, maybeValue) => {
-				setValue(maybeValue);
-				if (maybeValue) {
-					// Url encoding
-					const revertName = encodeURIComponent(
-						maybeValue.replace(/\s+/g, "_")
-					);
-
-					router.push(`/?scene=${revertName}`);
+			onInputChange={handleInputChange}
+			onChange={(event, newValue: any) => {
+				if (
+					newValue &&
+					typeof newValue === "object" &&
+					"id" in newValue
+				) {
+					setValue(newValue);
+					handleOptionClick(newValue);
+					setIsDropdownOpen(false);
+				} else {
+					setValue(null);
 				}
 			}}
 			options={options}
+			getOptionLabel={getOptionLabel}
+			filterOptions={filterOptions}
 			open={isDropdownOpen}
 			onOpen={() => setIsDropdownOpen(true)}
-			onClose={() => setIsDropdownOpen(false)}
+			onClose={() => {
+				setIsDropdownOpen(false);
+			}}
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					placeholder={`Search ${scenesData.length} scenes`}
+					placeholder={`Search ${scenes.length} scenes`}
 					variant="outlined"
 					InputLabelProps={{
 						...params.InputLabelProps,

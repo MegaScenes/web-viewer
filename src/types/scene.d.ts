@@ -1,8 +1,6 @@
-export type Scene = {
-	//id: number;
+export type SceneType = {
+	id: number;
 	name: string;
 	normalized_name: string;
-	no?: number;
-	points?: string;
-	images?: string;
+	no_of_rec: number;
 };

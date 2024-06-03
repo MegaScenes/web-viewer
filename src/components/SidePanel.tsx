@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	IconChevronCompactRight,
 	IconChevronCompactLeft,
@@ -6,15 +7,27 @@ import {
 } from "@tabler/icons-react";
 
 import Card from "./Card";
-import { Scene } from "@/types/scene";
+import { SceneType } from "@/types/scene";
 
 interface SidePanelProps {
-	onSelect: (data: Scene) => void;
+	scene?: SceneType;
+	rec_no?: number;
+	numOfPts?: number;
+	numOfCams?: number;
+	onSelect: (scene: SceneType, no: number) => void;
 }
 
-const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [iconState, setIconState] = useState("right");
+const SidePanel: React.FC<SidePanelProps> = ({
+	scene,
+	rec_no,
+	numOfPts,
+	numOfCams,
+	onSelect,
+}) => {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [iconState, setIconState] = useState<string>("right");
+	const [recNo, setRecNo] = useState<number>(0);
+	const router = useRouter();
 
 	const togglePanel = () => {
 		if (isOpen) {
@@ -69,52 +82,6 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 		}
 	};
 
-	// random data
-	const reconstructions: Scene[] = [
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 1,
-			points: "/web-viewer/data/qutb_minar/1/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/1/images.bin",
-		},
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 2,
-			points: "/web-viewer/data/qutb_minar/2/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/2/images.bin",
-		},
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 3,
-			points: "/web-viewer/data/qutb_minar/3/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/3/images.bin",
-		},
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 4,
-			points: "/web-viewer/data/qutb_minar/4/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/4/images.bin",
-		},
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 5,
-			points: "/web-viewer/data/qutb_minar/5/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/5/images.bin",
-		},
-		{
-			name: "Qutb Minar",
-			normalized_name: "Qutb Minar",
-			no: 6,
-			points: "/web-viewer/data/qutb_minar/6/points3D.bin",
-			images: "/web-viewer/data/qutb_minar/6/images.bin",
-		},
-	];
-
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
@@ -123,17 +90,47 @@ const SidePanel: React.FC<SidePanelProps> = ({ onSelect }) => {
 				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
 			>
 				<div className="flex flex-col w-11/12 mt-2">
-					<h2 className="text-xl font-bold mb-4 text-offwhite">
-						Reconstructions for &quot;Qutb Minar&quot;:
-					</h2>
+					{scene ? (
+						<h2 className="text-xl font-bold mb-4 text-offwhite">
+							Viewing Reconstruction {rec_no} for &quot;
+							{scene.name}&quot;:
+						</h2>
+					) : (
+						<h2 className="text-xl font-bold mb-4 text-offwhite">
+							Search for a scene in the search bar!
+						</h2>
+					)}
 					<div className="flex flex-col gap-4">
-						{reconstructions.map((scene, index) => (
-							<Card
-								key={index}
-								scene={scene}
-								onClick={() => onSelect(scene)}
-							/>
-						))}
+						{scene &&
+							Array.from(
+								{ length: scene.no_of_rec },
+								(_, index) => (
+									<Card
+										key={index}
+										rec_no={index}
+										scene={scene}
+										numOfPts={
+											index === rec_no
+												? numOfPts
+												: undefined
+										}
+										numOfCams={
+											index === rec_no
+												? numOfCams
+												: undefined
+										}
+										onClick={() => {
+											onSelect(scene, index);
+											setRecNo(index);
+											router.replace(
+												`/?id=${encodeURIComponent(
+													scene.id
+												)}&rec_no=${index}`
+											);
+										}}
+									/>
+								)
+							)}
 					</div>
 				</div>
 			</div>
