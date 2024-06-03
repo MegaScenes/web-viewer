@@ -152,10 +152,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 		[scenes]
 	);
 
-	const handleInputChange = debounce((event, newInputValue) => {
-		setInputValue(newInputValue);
-	}, 300);
-
 	return (
 		<Autocomplete
 			freeSolo
@@ -169,7 +165,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 						: value.normalized_name
 					: null
 			}
-			onInputChange={handleInputChange}
+			onInputChange={(event, newInputValue) =>
+				setInputValue(newInputValue)
+			}
 			onChange={(event, newValue: any) => {
 				if (
 					newValue &&
