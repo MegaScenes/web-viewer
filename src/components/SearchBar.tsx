@@ -89,7 +89,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 			acc[id.toString()] = number;
 			return acc;
 		}, {} as IdToRecCtMap);
-	}, [idToRecCtData]);
+	}, []);
 
 	// load scenes
 	useEffect(() => {
