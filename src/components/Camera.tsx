@@ -1,19 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
-import type { ImageData } from "../hooks/useCOLMAPLoader";
+import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 interface CameraProps {
 	imageData: ImageData;
+	camData?: CameraData;
 	onLoaded: () => void;
 }
 
-const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
+const Camera: React.FC<CameraProps> = ({ imageData, camData, onLoaded }) => {
 	const coneRef = useRef<THREE.Mesh>(null);
 	const baseRef = useRef<THREE.Mesh>(null);
 	const [multiplier, setMultiplier] = useState<number>(1);
 
 	useEffect(() => {
-		if (coneRef.current && baseRef.current) {
+		if (coneRef.current && baseRef.current && camData) {
 			const R = new THREE.Matrix4();
 			// quaternion matrix
 			const Q = new THREE.Quaternion(
@@ -63,6 +64,8 @@ const Camera: React.FC<CameraProps> = ({ imageData, onLoaded }) => {
 			coneRef.current.lookAt(translation.clone().add(forward));
 			// orient bottom of cone in view direction
 			coneRef.current.rotateX(-Math.PI / 2);
+			// temporary adjustment (axis-aligned cams)
+			coneRef.current.rotateY(-Math.PI / 4);
 
 			// base of cone position + rotation
 			baseRef.current.position.copy(translation);

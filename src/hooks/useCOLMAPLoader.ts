@@ -186,9 +186,9 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	return cameras;
 };
 
-export const useImageData = (id: number, no: number): ImageData[] => {
+export const useImageData = (id: number, rec_no: number): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
-	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/images.bin`;
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/images.bin`;
 	useEffect(() => {
 		const fetchImageData = async () => {
 			try {
@@ -207,9 +207,9 @@ export const useImageData = (id: number, no: number): ImageData[] => {
 	return images;
 };
 
-export const useCameraData = (id: number, no: number): CameraData[] => {
+export const useCameraData = (id: number, rec_no: number): CameraData[] => {
 	const [cameras, setCameras] = useState<CameraData[]>([]);
-	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/cameras.bin`;
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/cameras.bin`;
 	useEffect(() => {
 		const fetchCameraData = async () => {
 			try {
@@ -230,10 +230,10 @@ export const useCameraData = (id: number, no: number): CameraData[] => {
 
 export const usePointLoader = (
 	id: number,
-	no: number
+	rec_no: number
 ): THREE.Points | undefined => {
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
-	const url = `${S3_BASE_URL}${getId(id)}/colmap/${no}/points3D.bin`;
+	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/points3D.bin`;
 	useEffect(() => {
 		const fetchData = async () => {
 			try {

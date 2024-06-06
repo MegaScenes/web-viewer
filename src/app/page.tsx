@@ -12,6 +12,7 @@ import SearchBar from "../components/SearchBar";
 import { SceneType } from "@/types/scene";
 
 const Home: React.FC = () => {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [selectedRec, setSelectedRec] = useState<
 		[SceneType, number] | undefined
 	>(undefined);
@@ -20,6 +21,10 @@ const Home: React.FC = () => {
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
+
+	const togglePanel = useCallback((bool: boolean) => {
+		setIsOpen(bool);
+	}, []);
 
 	const handleSelectScene = useCallback((scene: SceneType, no: number) => {
 		setIsLoading(true);
@@ -56,7 +61,10 @@ const Home: React.FC = () => {
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
 					<div className="flex flex-row items-center justify-between mr-3 gap-4">
-						<SearchBar onOptionClick={handleSelectScene} />
+						<SearchBar
+							onOptionClick={handleSelectScene}
+							togglePanel={togglePanel}
+						/>
 						<OptionsDropdown />
 					</div>
 				</div>
@@ -110,6 +118,8 @@ const Home: React.FC = () => {
 				numOfPts={counts ? counts[0] : undefined}
 				numOfCams={counts ? counts[1] : undefined}
 				onSelect={handleSelectScene}
+				isOpen={isOpen}
+				togglePanel={(bool: boolean) => togglePanel(bool)}
 			/>
 		</Suspense>
 	);

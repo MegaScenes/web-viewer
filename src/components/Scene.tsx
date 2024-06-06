@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useThree, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import { usePointLoader, useImageData } from "../hooks/useCOLMAPLoader";
+import {
+	usePointLoader,
+	useImageData,
+	useCameraData,
+} from "../hooks/useCOLMAPLoader";
 import Cameras from "./Cameras";
 import { useProgress } from "@react-three/drei";
 
@@ -27,6 +31,7 @@ const Scene: React.FC<SceneProps> = ({
 
 	const pointCloud = usePointLoader(id, no);
 	const imgs = useImageData(id, no);
+	const cams = useCameraData(id, no);
 	const circleTexture = useLoader(
 		THREE.TextureLoader,
 		"/web-viewer/images/circle.png"
@@ -98,6 +103,7 @@ const Scene: React.FC<SceneProps> = ({
 					{pointCloud && <primitive object={pointCloud} />}
 					<Cameras
 						imageData={imgs}
+						camData={cams}
 						onAllImagesLoaded={() => setAreImagesReady(true)}
 					/>
 					<axesHelper args={[10]} key={axesKey} />

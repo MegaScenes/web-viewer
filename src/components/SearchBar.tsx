@@ -62,12 +62,16 @@ import catToIdData from "../../public/data/recon_cat_to_id.json";
 import idToRecCtData from "../../public/data/id_and_recon_ct.json";
 interface SearchBarProps {
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
+	togglePanel: (bool: boolean) => void;
 }
 interface IdToRecCtMap {
 	[key: string]: number;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+	onOptionClick,
+	togglePanel,
+}) => {
 	const [inputValue, setInputValue] = useState("");
 	const [value, setValue] = useState<SceneType | string | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -105,12 +109,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 			if (foundScene) {
 				onOptionClick(foundScene, Number(rec_no));
 				setValue(foundScene.normalized_name);
+				togglePanel(true);
 			}
 		}
 	}, [searchParams, idToRecCtMap, onOptionClick]);
 
 	const handleOptionClick = (option: SceneType) => {
-		onOptionClick(option, 0);
 		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);
 	};
 
@@ -118,7 +122,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 		return typeof option === "string" ? option : option.normalized_name;
 	};
 
-	const filterOptions = (options: any[], { inputValue }: any) => {
+	const filterOptions = (options: any[], _: any) => {
 		const filtered = options.filter((option) =>
 			typeof option === "string"
 				? option.toLowerCase().includes(inputValue.toLowerCase())
@@ -132,16 +136,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onOptionClick }) => {
 		return filtered;
 	};
 
-	const options = useMemo(
-		() =>
-			scenes.map((scene) => ({
-				id: scene.id,
-				name: scene.name,
-				normalized_name: scene.normalized_name,
-				no_of_rec: scene.no_of_rec,
-			})),
-		[scenes]
-	);
+	const options = useMemo(() => scenes, [scenes]);
 
 	return (
 		<Autocomplete
