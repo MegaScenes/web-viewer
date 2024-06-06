@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
 	IconChevronCompactRight,
@@ -15,6 +15,8 @@ interface SidePanelProps {
 	numOfPts?: number;
 	numOfCams?: number;
 	onSelect: (scene: SceneType, no: number) => void;
+	isOpen: boolean;
+	togglePanel: (bool: boolean) => void;
 }
 
 const SidePanel: React.FC<SidePanelProps> = ({
@@ -22,21 +24,18 @@ const SidePanel: React.FC<SidePanelProps> = ({
 	rec_no,
 	numOfPts,
 	numOfCams,
-	onSelect,
+	isOpen,
+	togglePanel,
 }) => {
-	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [iconState, setIconState] = useState<string>("right");
-	const router = useRouter();
 
-	const togglePanel = () => {
+	useEffect(() => {
 		if (isOpen) {
-			setIsOpen(false);
-			setIconState("right");
-		} else {
-			setIsOpen(true);
 			setIconState("line");
+		} else {
+			setIconState("right");
 		}
-	};
+	}, [isOpen]);
 
 	const handleMouseEnter = () => {
 		if (isOpen && iconState === "line") {
@@ -81,19 +80,6 @@ const SidePanel: React.FC<SidePanelProps> = ({
 		}
 	};
 
-	const handleCardSelect = (
-		scene: SceneType,
-		rec_no: number | undefined,
-		index: number
-	) => {
-		if (index != rec_no) {
-			onSelect(scene, index);
-			router.replace(
-				`/?id=${encodeURIComponent(scene.id)}&rec_no=${index}`
-			);
-		}
-	};
-
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
@@ -105,7 +91,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 					{scene ? (
 						<h2 className="text-xl font-bold mb-4 text-offwhite break-all">
 							Viewing Reconstruction{" "}
-							<span className="text-lime-400">{rec_no}</span> for
+							<span className="text-blue-500">{rec_no}</span> for
 							&quot;
 							{scene.name}&quot;:
 						</h2>
@@ -133,12 +119,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
 												? numOfCams
 												: undefined
 										}
-										onClick={() =>
-											handleCardSelect(
-												scene,
-												rec_no,
-												index
-											)
+										isSelected={
+											rec_no ? index === rec_no : false
 										}
 									/>
 								)
@@ -152,7 +134,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
 				onMouseLeave={handleMouseLeave}
 			>
 				<button
-					onClick={togglePanel}
+					onClick={() => {
+						togglePanel(!isOpen);
+					}}
 					className={`text-white font-bold py-2 px-4 rounded absolute top-1/2 transform -translate-y-1/2 transition-all duration-350 ${
 						isOpen ? "translate-x-64" : "translate-x-0"
 					}`}

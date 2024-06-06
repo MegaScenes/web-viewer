@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import Camera from "./Camera";
-import type { ImageData } from "../hooks/useCOLMAPLoader";
+import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 interface CamerasProps {
 	imageData: ImageData[];
+	camData: CameraData[];
 	onAllImagesLoaded: () => void;
 }
 
-const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
+const Cameras: React.FC<CamerasProps> = ({
+	imageData,
+	camData,
+	onAllImagesLoaded,
+}) => {
 	const groupRef = useRef<THREE.Group>(null);
 	const [loadedCount, setLoadedCount] = useState(0);
 
@@ -42,6 +47,9 @@ const Cameras: React.FC<CamerasProps> = ({ imageData, onAllImagesLoaded }) => {
 				<Camera
 					key={image.id}
 					imageData={image}
+					camData={camData.find(
+						(cam) => cam.cameraId === image.cameraId
+					)}
 					onLoaded={handleImageLoaded}
 				/>
 			))}
