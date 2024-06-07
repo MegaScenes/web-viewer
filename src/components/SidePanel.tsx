@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
 	IconChevronCompactRight,
 	IconChevronCompactLeft,
@@ -91,9 +90,10 @@ const SidePanel: React.FC<SidePanelProps> = ({
 					{scene ? (
 						<h2 className="text-xl font-bold mb-4 text-offwhite break-all">
 							Viewing Reconstruction{" "}
-							<span className="text-blue-500">{rec_no}</span> for
+							<span className="text-blue-500">{rec_no}</span> for{" "}
+							{"\n"}
 							&quot;
-							{scene.name}&quot;:
+							{scene.normalized_name}&quot;:
 						</h2>
 					) : (
 						<h2 className="text-xl font-bold mb-4 text-offwhite">

@@ -50,7 +50,7 @@ const Card: React.FC<CardProps> = ({
 					</div>
 					<div className="flex flex-col justify-center">
 						<span className="max-w-[260px] text-offblack font-semibold overflow-hidden truncate">
-							{scene.name}
+							{scene.normalized_name}
 						</span>
 						<div className="flex flex-row justify-start items-center gap-1.5">
 							<IconCircleDotted
