@@ -8,11 +8,17 @@ const S3_BASE_URL =
 
 export type CameraData = {
 	cameraId: number;
-	modelId: number;
-	width: bigint;
-	height: bigint;
+	model: string;
+	width: number;
+	height: number;
 	params: number[];
 };
+
+interface CameraModel {
+	model_id: number;
+	model_name: string;
+	num_params: number;
+}
 
 export type ImageData = {
 	id: number;
@@ -21,6 +27,24 @@ export type ImageData = {
 	cameraId: number;
 	name: string;
 };
+
+// camera models
+const CAMERA_MODELS: CameraModel[] = [
+	{ model_id: 0, model_name: "SIMPLE_PINHOLE", num_params: 3 },
+	{ model_id: 1, model_name: "PINHOLE", num_params: 4 },
+	{ model_id: 2, model_name: "SIMPLE_RADIAL", num_params: 4 },
+	{ model_id: 3, model_name: "RADIAL", num_params: 5 },
+	{ model_id: 4, model_name: "OPENCV", num_params: 8 },
+	{ model_id: 5, model_name: "OPENCV_FISHEYE", num_params: 8 },
+	{ model_id: 6, model_name: "FULL_OPENCV", num_params: 12 },
+	{ model_id: 7, model_name: "FOV", num_params: 5 },
+	{ model_id: 8, model_name: "SIMPLE_RADIAL_FISHEYE", num_params: 4 },
+	{ model_id: 9, model_name: "RADIAL_FISHEYE", num_params: 5 },
+	{ model_id: 10, model_name: "THIN_PRISM_FISHEYE", num_params: 12 },
+];
+const CAMERA_MODEL_IDS = Object.fromEntries(
+	CAMERA_MODELS.map((model) => [model.model_id, model])
+);
 
 const getId = (id: number): string => {
 	const paddedId = id.toString().padStart(6, "0");
@@ -161,7 +185,7 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	const dataview = new DataView(buffer);
 
 	let offset = 0;
-	const numCameras = dataview.getBigUint64(offset, true);
+	const numCameras = Number(dataview.getBigUint64(offset, true));
 	offset += 8;
 
 	const cameras = [];
@@ -169,10 +193,11 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	for (let i = 0; i < numCameras; i++) {
 		const cameraId = dataview.getInt32(offset, true);
 		const modelId = dataview.getInt32(offset + 4, true);
-		const width = dataview.getBigUint64(offset + 8, true);
-		const height = dataview.getBigUint64(offset + 16, true);
+		const width = Number(dataview.getBigUint64(offset + 8, true));
+		const height = Number(dataview.getBigUint64(offset + 16, true));
 		offset += 24;
 
+		const model = CAMERA_MODEL_IDS[modelId];
 		const params = [];
 		for (let j = 0; j < 4; j++) {
 			const param = dataview.getFloat64(offset, true);
@@ -180,7 +205,13 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 			offset += 8;
 		}
 
-		cameras.push({ cameraId, modelId, width, height, params });
+		cameras.push({
+			cameraId,
+			model: model.model_name,
+			width,
+			height,
+			params,
+		});
 	}
 
 	return cameras;
@@ -190,18 +221,31 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/images.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchImageData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const loadedImages = parseImageData(buffer);
 				setImages(loadedImages);
 			} catch (error) {
-				console.error("Failed to load image data:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchImageData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return images;
@@ -211,18 +255,31 @@ export const useCameraData = (id: number, rec_no: number): CameraData[] => {
 	const [cameras, setCameras] = useState<CameraData[]>([]);
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/cameras.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchCameraData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const loadedCameras = parseCameraData(buffer);
 				setCameras(loadedCameras);
 			} catch (error) {
-				console.error("Failed to load camera data:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchCameraData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return cameras;
@@ -235,18 +292,31 @@ export const usePointLoader = (
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/points3D.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const cloud = parsePointData(buffer);
 				setPointCloud(cloud);
 			} catch (error) {
-				console.error("Failed to load point cloud:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return pointCloud;

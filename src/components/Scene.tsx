@@ -12,18 +12,22 @@ import { useProgress } from "@react-three/drei";
 interface SceneProps {
 	id: number;
 	no: number;
+	scale: number;
 	onLoaded?: () => void;
 	updateCounts: (pts: number, cams: number) => void;
 	clearScene: boolean;
+	setClearScene: (value: boolean | ((prevValue: boolean) => boolean)) => void;
 	controlsRef: React.RefObject<any>;
 }
 
 const Scene: React.FC<SceneProps> = ({
 	id,
 	no,
+	scale,
 	onLoaded,
 	updateCounts,
 	clearScene,
+	setClearScene,
 	controlsRef,
 }) => {
 	const { scene } = useThree();
@@ -49,6 +53,7 @@ const Scene: React.FC<SceneProps> = ({
 				controlsRef.current.reset();
 			}
 			setAxesKey(Date.now());
+			setClearScene(false);
 			return;
 		}
 
@@ -104,6 +109,7 @@ const Scene: React.FC<SceneProps> = ({
 					<Cameras
 						imageData={imgs}
 						camData={cams}
+						scale={scale}
 						onAllImagesLoaded={() => setAreImagesReady(true)}
 					/>
 					<axesHelper args={[10]} key={axesKey} />

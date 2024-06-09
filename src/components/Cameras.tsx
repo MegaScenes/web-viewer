@@ -6,12 +6,14 @@ import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 interface CamerasProps {
 	imageData: ImageData[];
 	camData: CameraData[];
+	scale: number;
 	onAllImagesLoaded: () => void;
 }
 
 const Cameras: React.FC<CamerasProps> = ({
 	imageData,
 	camData,
+	scale,
 	onAllImagesLoaded,
 }) => {
 	const groupRef = useRef<THREE.Group>(null);
@@ -50,6 +52,7 @@ const Cameras: React.FC<CamerasProps> = ({
 					camData={camData.find(
 						(cam) => cam.cameraId === image.cameraId
 					)}
+					scale={scale}
 					onLoaded={handleImageLoaded}
 				/>
 			))}
