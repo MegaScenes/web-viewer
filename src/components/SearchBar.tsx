@@ -108,7 +108,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
 			);
 			if (foundScene) {
 				onOptionClick(foundScene, Number(rec_no));
-				setValue(foundScene.normalized_name);
+				if (value !== foundScene.normalized_name) {
+					setValue(foundScene.normalized_name);
+				}
 				togglePanel(true);
 			}
 		}
