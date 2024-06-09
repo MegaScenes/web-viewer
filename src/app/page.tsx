@@ -30,6 +30,7 @@ const Home: React.FC = () => {
 		setIsLoading(true);
 		setClearScene(true);
 		setSelectedRec([scene, no]);
+		setClearScene(false);
 	}, []);
 
 	const handleOnLoaded = useCallback(() => {
@@ -82,7 +83,6 @@ const Home: React.FC = () => {
 								updateCounts={handleUpdateCounts}
 								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
-								setClearScene={setClearScene}
 							/>
 						) : (
 							<div className="flex items-center justify-center h-full text-white">

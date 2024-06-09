@@ -112,7 +112,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 				togglePanel(true);
 			}
 		}
-	}, [searchParams, idToRecCtMap, onOptionClick]);
+	}, [searchParams, idToRecCtMap, onOptionClick, togglePanel]);
 
 	const handleOptionClick = (option: SceneType) => {
 		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);
