@@ -32,7 +32,7 @@ const Card: React.FC<CardProps> = ({
 		>
 			<div className="bg-offwhite shadow-lg rounded-lg h-[80px] flex flex-col justify-center items-center">
 				<div className="flex flex-row h-[80px] w-full gap-2 justify-start">
-					<div className="flex flex-row justify-center items-center min-w-[50px] rounded-tl-lg rounded-bl-lg border-r-2 gap-1 border-r-black">
+					<div className="flex flex-row justify-center items-center min-w-[50px] rounded-tl-lg rounded-bl-lg border-r-2 gap-0.5 border-r-black">
 						<span
 							className={`text-xl font-medium ${
 								isSelected ? "text-blue-500" : ""
@@ -41,8 +41,10 @@ const Card: React.FC<CardProps> = ({
 							#
 						</span>
 						<span
-							className={`text-2xl font-semibold ${
-								isSelected ? "text-blue-500" : ""
+							className={`text-2xl ${
+								isSelected
+									? "text-blue-500 font-bold"
+									: "font-medium"
 							}`}
 						>
 							{rec_no}
