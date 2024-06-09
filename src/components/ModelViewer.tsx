@@ -9,6 +9,7 @@ interface ModelViewerProps {
 	updateCounts: (pts: number, cams: number) => void;
 	onLoaded: () => void;
 	clearScene: boolean;
+	setClearScene: (value: boolean | ((prevValue: boolean) => boolean)) => void;
 }
 
 const MAX_SCALE = 5;
@@ -20,6 +21,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	updateCounts,
 	onLoaded,
 	clearScene,
+	setClearScene,
 }) => {
 	const controlsRef = useRef<any>(null);
 	const [scale, setScale] = useState<number>(1);
@@ -73,6 +75,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				scale={scale}
 				updateCounts={updateCounts}
 				clearScene={clearScene}
+				setClearScene={setClearScene}
 				onLoaded={onLoaded}
 				controlsRef={controlsRef}
 			/>

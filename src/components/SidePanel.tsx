@@ -120,7 +120,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
 												: undefined
 										}
 										isSelected={
-											rec_no ? index === rec_no : false
+											rec_no !== undefined &&
+											index === rec_no
 										}
 									/>
 								)

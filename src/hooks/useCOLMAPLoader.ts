@@ -221,18 +221,31 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/images.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchImageData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const loadedImages = parseImageData(buffer);
 				setImages(loadedImages);
 			} catch (error) {
-				console.error("Failed to load image data:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchImageData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return images;
@@ -242,18 +255,31 @@ export const useCameraData = (id: number, rec_no: number): CameraData[] => {
 	const [cameras, setCameras] = useState<CameraData[]>([]);
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/cameras.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchCameraData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const loadedCameras = parseCameraData(buffer);
 				setCameras(loadedCameras);
 			} catch (error) {
-				console.error("Failed to load camera data:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchCameraData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return cameras;
@@ -266,18 +292,31 @@ export const usePointLoader = (
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
 	const url = `${S3_BASE_URL}${getId(id)}/colmap/${rec_no}/points3D.bin`;
 	useEffect(() => {
+		const controller = new AbortController();
 		const fetchData = async () => {
 			try {
-				const response = await fetch(url);
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 				const buffer = await response.arrayBuffer();
 				const cloud = parsePointData(buffer);
 				setPointCloud(cloud);
 			} catch (error) {
-				console.error("Failed to load point cloud:", error);
+				if ((error as Error).name === "AbortError") {
+					console.log("Fetch was aborted");
+				} else {
+					console.error(
+						"Unexpected error:",
+						(error as Error).message
+					);
+				}
 			}
 		};
 
 		fetchData();
+		return () => {
+			controller.abort();
+		};
 	}, [url]);
 
 	return pointCloud;
