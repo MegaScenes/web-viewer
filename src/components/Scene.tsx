@@ -12,6 +12,7 @@ import { useProgress } from "@react-three/drei";
 interface SceneProps {
 	id: number;
 	no: number;
+	scale: number;
 	onLoaded?: () => void;
 	updateCounts: (pts: number, cams: number) => void;
 	clearScene: boolean;
@@ -21,6 +22,7 @@ interface SceneProps {
 const Scene: React.FC<SceneProps> = ({
 	id,
 	no,
+	scale,
 	onLoaded,
 	updateCounts,
 	clearScene,
@@ -104,6 +106,7 @@ const Scene: React.FC<SceneProps> = ({
 					<Cameras
 						imageData={imgs}
 						camData={cams}
+						scale={scale}
 						onAllImagesLoaded={() => setAreImagesReady(true)}
 					/>
 					<axesHelper args={[10]} key={axesKey} />
