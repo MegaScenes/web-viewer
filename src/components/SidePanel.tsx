@@ -90,8 +90,11 @@ const SidePanel: React.FC<SidePanelProps> = ({
 					{scene ? (
 						<h2 className="text-xl font-bold mb-4 text-offwhite break-all">
 							Viewing Reconstruction{" "}
-							<span className="text-blue-500">{rec_no}</span> for{" "}
-							{"\n"}
+							<span className="text-blue-500">
+								#<span className="mr-0.5"></span>
+								{rec_no}
+							</span>{" "}
+							for <br />
 							&quot;
 							{scene.normalized_name}&quot;:
 						</h2>
