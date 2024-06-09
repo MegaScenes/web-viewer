@@ -16,7 +16,6 @@ interface SceneProps {
 	onLoaded?: () => void;
 	updateCounts: (pts: number, cams: number) => void;
 	clearScene: boolean;
-	setClearScene: (value: boolean | ((prevValue: boolean) => boolean)) => void;
 	controlsRef: React.RefObject<any>;
 }
 
@@ -27,7 +26,6 @@ const Scene: React.FC<SceneProps> = ({
 	onLoaded,
 	updateCounts,
 	clearScene,
-	setClearScene,
 	controlsRef,
 }) => {
 	const { scene } = useThree();
@@ -53,7 +51,6 @@ const Scene: React.FC<SceneProps> = ({
 				controlsRef.current.reset();
 			}
 			setAxesKey(Date.now());
-			setClearScene(false);
 			return;
 		}
 

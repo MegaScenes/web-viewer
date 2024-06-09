@@ -83,7 +83,7 @@ const Camera: React.FC<CameraProps> = ({
 			baseRef.current.position.add(baseOffset);
 			onLoaded();
 		}
-	}, [imageData.qvec, imageData.tvec, onLoaded, scale]);
+	}, [imageData.qvec, imageData.tvec, onLoaded, scale, camData]);
 
 	return (
 		<>
