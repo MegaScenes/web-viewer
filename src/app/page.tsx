@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	useRef,
+	Suspense,
+} from "react";
 import dynamic from "next/dynamic";
 const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
@@ -11,6 +17,9 @@ import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
 import { SceneType } from "@/types/scene";
 
+const CAM_MAX_SCALE = 5;
+const CAM_MIN_SCALE = 0.2;
+
 const Home: React.FC = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [selectedRec, setSelectedRec] = useState<
@@ -21,6 +30,73 @@ const Home: React.FC = () => {
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
+	const [camScale, setCamScale] = useState(1);
+	const [altKeyDown, setAltKeyDown] = useState(false);
+	const controlsRef = useRef<any>(null);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Alt") {
+				setAltKeyDown(true);
+				if (controlsRef.current) {
+					controlsRef.current.enableZoom = false;
+				}
+			}
+		};
+
+		const handleKeyUp = (event: KeyboardEvent) => {
+			if (event.key === "Alt") {
+				setAltKeyDown(false);
+				if (controlsRef.current) {
+					controlsRef.current.enableZoom = true;
+				}
+			}
+		};
+
+		const handleWheel = (event: WheelEvent) => {
+			if (altKeyDown) {
+				event.preventDefault(); // prevent the page from scrolling
+				const newScale = camScale + (event.deltaY > 0 ? -0.05 : 0.05); // adjust scale based on scroll direction
+				setCamScale(
+					Math.min(Math.max(newScale, CAM_MIN_SCALE), CAM_MAX_SCALE)
+				);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		window.addEventListener("keyup", handleKeyUp);
+		window.addEventListener("wheel", handleWheel, { passive: false });
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+			window.removeEventListener("keyup", handleKeyUp);
+			window.removeEventListener("wheel", handleWheel);
+		};
+	}, []);
+
+	const handleZoomIn = useCallback(() => {
+		if (altKeyDown) {
+			setCamScale((prev) => Math.min(prev + 0.1, CAM_MAX_SCALE));
+		} else {
+			if (controlsRef.current) {
+				const camera = controlsRef.current.object;
+				camera.zoom *= 1.1;
+				camera.updateProjectionMatrix();
+			}
+		}
+	}, [altKeyDown]);
+
+	const handleZoomOut = useCallback(() => {
+		if (altKeyDown) {
+			setCamScale((prev) => Math.max(prev - 0.1, CAM_MIN_SCALE));
+		} else {
+			if (controlsRef.current) {
+				const camera = controlsRef.current.object;
+				camera.zoom *= 0.9;
+				camera.updateProjectionMatrix();
+			}
+		}
+	}, [altKeyDown]);
 
 	const togglePanel = useCallback((bool: boolean) => {
 		setIsOpen(bool);
@@ -80,6 +156,8 @@ const Home: React.FC = () => {
 								key={selectedRec[0].id}
 								id={selectedRec[0].id}
 								no={selectedRec[1]}
+								camScale={camScale}
+								controlsRef={controlsRef}
 								updateCounts={handleUpdateCounts}
 								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
@@ -100,12 +178,14 @@ const Home: React.FC = () => {
 					<button
 						className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
 						aria-label="Zoom In"
+						onClick={handleZoomIn}
 					>
 						<IconZoomIn size={24} stroke={1.5} color="black" />
 					</button>
 					<button
 						className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
 						aria-label="Zoom Out"
+						onClick={handleZoomOut}
 					>
 						<IconZoomOut size={24} stroke={1.5} color="black" />
 					</button>
