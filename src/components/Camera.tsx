@@ -5,14 +5,14 @@ import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 interface CameraProps {
 	imageData: ImageData;
 	camData?: CameraData;
-	scale: number;
+	camScale: number;
 	onLoaded: () => void;
 }
 
 const Camera: React.FC<CameraProps> = ({
 	imageData,
 	camData,
-	scale,
+	camScale,
 	onLoaded,
 }) => {
 	const coneRef = useRef<THREE.Mesh>(null);
@@ -78,21 +78,21 @@ const Camera: React.FC<CameraProps> = ({
 			baseRef.current.rotateX(-Math.PI / 2);
 			baseRef.current.rotateZ(Math.PI / 4);
 
-			const baseOffset = new THREE.Vector3(0, (-0.3 * scale) / 2, 0);
+			const baseOffset = new THREE.Vector3(0, (-0.3 * camScale) / 2, 0);
 			baseOffset.applyQuaternion(coneRef.current.quaternion);
 			baseRef.current.position.add(baseOffset);
 			onLoaded();
 		}
-	}, [imageData.qvec, imageData.tvec, onLoaded, scale, camData]);
+	}, [imageData.qvec, imageData.tvec, onLoaded, camScale, camData]);
 
 	return (
 		<>
 			<mesh ref={coneRef}>
-				<coneGeometry args={[0.1 * scale, 0.3 * scale, 4]} />
+				<coneGeometry args={[0.1 * camScale, 0.3 * camScale, 4]} />
 				<meshBasicMaterial color="red" wireframe />
 			</mesh>
 			<mesh ref={baseRef}>
-				<planeGeometry args={[0.14 * scale, 0.14 * scale]} />
+				<planeGeometry args={[0.14 * camScale, 0.14 * camScale]} />
 				<meshBasicMaterial color="red" side={THREE.DoubleSide} />
 			</mesh>
 		</>
