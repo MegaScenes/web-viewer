@@ -1,9 +1,10 @@
+# 3D Model Viewer
+Web viewer for 3D reconstructions of ~80,000 landmarks!
+
 ## Github Pages Site
 [https://megascenes.github.io/web-viewer/](https://megascenes.github.io/web-viewer/)
 
 ## Setup
-
-Need to add a public folder with data, currently the reconstruction being targeted is: /public/qutb_minar/0
 
 First run
 ```bash
