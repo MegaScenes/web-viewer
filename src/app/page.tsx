@@ -41,6 +41,10 @@ const Home: React.FC = () => {
 				if (controlsRef.current) {
 					controlsRef.current.enableZoom = false;
 				}
+			} else if (event.key === "[") {
+				setCamScale((prev) => Math.max(prev - 0.1, CAM_MIN_SCALE));
+			} else if (event.key === "]") {
+				setCamScale((prev) => Math.min(prev + 0.1, CAM_MAX_SCALE));
 			}
 		};
 
