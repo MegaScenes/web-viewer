@@ -31,76 +31,39 @@ const Home: React.FC = () => {
 		undefined
 	);
 	const [camScale, setCamScale] = useState(1);
-	const [altKeyDown, setAltKeyDown] = useState(false);
 	const controlsRef = useRef<any>(null);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Alt") {
-				setAltKeyDown(true);
-				if (controlsRef.current) {
-					controlsRef.current.enableZoom = false;
-				}
-			} else if (event.key === "[") {
+			if (event.key === "[") {
 				setCamScale((prev) => Math.max(prev - 0.1, CAM_MIN_SCALE));
 			} else if (event.key === "]") {
 				setCamScale((prev) => Math.min(prev + 0.1, CAM_MAX_SCALE));
 			}
 		};
 
-		const handleKeyUp = (event: KeyboardEvent) => {
-			if (event.key === "Alt") {
-				setAltKeyDown(false);
-				if (controlsRef.current) {
-					controlsRef.current.enableZoom = true;
-				}
-			}
-		};
-
-		const handleWheel = (event: WheelEvent) => {
-			if (altKeyDown) {
-				event.preventDefault(); // prevent the page from scrolling
-				const newScale = camScale + (event.deltaY > 0 ? -0.05 : 0.05); // adjust scale based on scroll direction
-				setCamScale(
-					Math.min(Math.max(newScale, CAM_MIN_SCALE), CAM_MAX_SCALE)
-				);
-			}
-		};
-
 		window.addEventListener("keydown", handleKeyDown);
-		window.addEventListener("keyup", handleKeyUp);
-		window.addEventListener("wheel", handleWheel, { passive: false });
 
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
-			window.removeEventListener("keyup", handleKeyUp);
-			window.removeEventListener("wheel", handleWheel);
 		};
 	}, []);
 
 	const handleZoomIn = useCallback(() => {
-		if (altKeyDown) {
-			setCamScale((prev) => Math.min(prev + 0.1, CAM_MAX_SCALE));
-		} else {
-			if (controlsRef.current) {
-				const camera = controlsRef.current.object;
-				camera.zoom *= 1.1;
-				camera.updateProjectionMatrix();
-			}
+		if (controlsRef.current) {
+			const camera = controlsRef.current.object;
+			camera.zoom *= 1.1;
+			camera.updateProjectionMatrix();
 		}
-	}, [altKeyDown]);
+	}, []);
 
 	const handleZoomOut = useCallback(() => {
-		if (altKeyDown) {
-			setCamScale((prev) => Math.max(prev - 0.1, CAM_MIN_SCALE));
-		} else {
-			if (controlsRef.current) {
-				const camera = controlsRef.current.object;
-				camera.zoom *= 0.9;
-				camera.updateProjectionMatrix();
-			}
+		if (controlsRef.current) {
+			const camera = controlsRef.current.object;
+			camera.zoom *= 0.9;
+			camera.updateProjectionMatrix();
 		}
-	}, [altKeyDown]);
+	}, []);
 
 	const togglePanel = useCallback((bool: boolean) => {
 		setIsOpen(bool);
