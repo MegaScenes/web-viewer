@@ -26,7 +26,9 @@ const Card: React.FC<CardProps> = ({
 			className={`h-[80px] rounded-lg hover:shadow-md hover:shadow-blue-500/50 hover:scale-105 transition-transform duration-300 ease-out border border-transparent hover:border-blue-500`}
 			onClick={() => {
 				router.push(
-					`/?id=${encodeURIComponent(scene.id)}&rec_no=${rec_no}`
+					`/?id=${encodeURIComponent(
+						scene.id
+					)}&rec_no=${encodeURIComponent(rec_no.toString())}`
 				);
 			}}
 		>
