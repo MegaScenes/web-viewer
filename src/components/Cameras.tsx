@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import Camera from "./Camera";
+import Camera2 from "./Camera2";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 interface CamerasProps {
@@ -46,7 +47,7 @@ const Cameras: React.FC<CamerasProps> = ({
 	return (
 		<group ref={groupRef}>
 			{imageData.map((image, index) => (
-				<Camera
+				<Camera2
 					key={image.id}
 					imageData={image}
 					camData={camData.find(
