@@ -17,8 +17,8 @@ import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
 import { SceneType } from "@/types/scene";
 
-const CAM_MAX_SCALE = 5;
-const CAM_MIN_SCALE = 0.2;
+const CAM_MAX_SCALE = 1;
+const CAM_MIN_SCALE = 0.05;
 
 const Home: React.FC = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -30,15 +30,15 @@ const Home: React.FC = () => {
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
-	const [camScale, setCamScale] = useState(1);
+	const [camScale, setCamScale] = useState(0.25);
 	const controlsRef = useRef<any>(null);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "[") {
-				setCamScale((prev) => Math.max(prev - 0.1, CAM_MIN_SCALE));
+				setCamScale((prev) => Math.max(prev - 0.025, CAM_MIN_SCALE));
 			} else if (event.key === "]") {
-				setCamScale((prev) => Math.min(prev + 0.1, CAM_MAX_SCALE));
+				setCamScale((prev) => Math.min(prev + 0.025, CAM_MAX_SCALE));
 			}
 		};
 

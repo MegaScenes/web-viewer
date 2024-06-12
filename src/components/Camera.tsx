@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
+import { useThree } from "@react-three/fiber";
 
 interface CameraProps {
 	imageData: ImageData;
@@ -15,88 +16,156 @@ const Camera: React.FC<CameraProps> = ({
 	camScale,
 	onLoaded,
 }) => {
-	const coneRef = useRef<THREE.Mesh>(null);
-	const baseRef = useRef<THREE.Mesh>(null);
+	const { scene } = useThree();
+	const groupRef = useRef<THREE.Group>(new THREE.Group());
 
 	useEffect(() => {
-		if (coneRef.current && baseRef.current && camData) {
-			const R = new THREE.Matrix4();
-			// quaternion matrix
-			const Q = new THREE.Quaternion(
-				imageData.qvec[1],
-				imageData.qvec[2],
-				imageData.qvec[3],
-				imageData.qvec[0]
+		const group = groupRef.current;
+		scene.add(group);
+
+		return () => {
+			scene.remove(group);
+		};
+	}, [scene]);
+
+	const cameraData = useMemo(() => {
+		if (!camData) return null;
+
+		const R = new THREE.Matrix4();
+		const Q = new THREE.Quaternion(
+			imageData.qvec[1],
+			imageData.qvec[2],
+			imageData.qvec[3],
+			imageData.qvec[0]
+		);
+		R.makeRotationFromQuaternion(Q);
+		const R_T = R.clone().transpose();
+		const t = new THREE.Vector3(
+			imageData.tvec[0],
+			imageData.tvec[1],
+			imageData.tvec[2]
+		);
+
+		t.applyMatrix4(R_T).negate();
+
+		const Ry_180deg = new THREE.Matrix4();
+		Ry_180deg.set(-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+		t.applyMatrix4(Ry_180deg);
+		R.premultiply(Ry_180deg);
+		R_T.premultiply(Ry_180deg);
+
+		const fx = camData.params[0];
+		const fy = camData.model === "PINHOLE" ? camData.params[1] : fx;
+		const cx = camData.params[camData.model === "PINHOLE" ? 2 : 1];
+		const cy = camData.params[camData.model === "PINHOLE" ? 3 : 2];
+
+		const K = new THREE.Matrix3().set(fx, 0, cx, 0, fy, cy, 0, 0, 1);
+		for (let i = 0; i < 9; i++) {
+			K.elements[i] /= camScale;
+		}
+		const Kinv = K.clone().invert();
+
+		const T = new THREE.Matrix4().set(
+			R_T.elements[0],
+			R_T.elements[4],
+			R_T.elements[8],
+			t.x,
+			R_T.elements[1],
+			R_T.elements[5],
+			R_T.elements[9],
+			t.y,
+			R_T.elements[2],
+			R_T.elements[6],
+			R_T.elements[10],
+			t.z,
+			0,
+			0,
+			0,
+			1
+		);
+
+		const w = camData.width;
+		const h = camData.height;
+
+		const pointsPixel = [
+			new THREE.Vector3(0, 0, 1),
+			new THREE.Vector3(w, 0, 1),
+			new THREE.Vector3(0, h, 1),
+			new THREE.Vector3(w, h, 1),
+		];
+		const points = pointsPixel.map((p: THREE.Vector3) =>
+			p.applyMatrix3(Kinv)
+		);
+
+		const width = Math.abs(points[1].x) + Math.abs(points[3].x);
+		const height = Math.abs(points[1].y) + Math.abs(points[3].y);
+		const depth = 1e-6;
+
+		const centerX = (points[1].x + points[2].x) / 2;
+		const centerY = (points[1].y + points[2].y) / 2;
+
+		const pointsInWorld = points.map((p: THREE.Vector3) =>
+			p.clone().applyMatrix4(R_T).add(t)
+		);
+
+		return {
+			T,
+			width,
+			height,
+			depth,
+			centerX,
+			centerY,
+			pointsInWorld,
+			lines: [
+				[t, pointsInWorld[1]],
+				[t, pointsInWorld[2]],
+				[t, pointsInWorld[3]],
+				[t, pointsInWorld[0]],
+			],
+		};
+	}, [camData, imageData, camScale]);
+
+	useEffect(() => {
+		if (cameraData) {
+			const group = groupRef.current;
+			while (group.children.length > 0) {
+				group.remove(group.children[0]);
+			}
+
+			// image plane
+			const planeGeometry = new THREE.BoxGeometry(
+				cameraData.width,
+				cameraData.height,
+				cameraData.depth
 			);
-			// rotation matrix
-			R.makeRotationFromQuaternion(Q);
-			// transpose of rotation matrix
-			const R_T = R.clone().transpose();
-			// translation vector
-			const translation = new THREE.Vector3(
-				imageData.tvec[0],
-				imageData.tvec[1],
-				imageData.tvec[2]
+			const planeMaterial = new THREE.MeshStandardMaterial({
+				color: "red",
+			});
+			const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+			plane.position.set(
+				cameraData.centerX,
+				cameraData.centerY,
+				camScale
 			);
+			plane.applyMatrix4(cameraData.T);
+			scene.add(plane);
+			group.add(plane);
 
-			// position = -R^T • tvec
-			translation.applyMatrix4(R_T).negate();
+			cameraData.lines.forEach((line: THREE.Vector3[]) => {
+				const geometry = new THREE.BufferGeometry().setFromPoints(line);
+				const material = new THREE.LineBasicMaterial({
+					color: "red",
+				});
+				const lineMesh = new THREE.Line(geometry, material);
+				scene.add(lineMesh);
+				group.add(lineMesh);
+			});
 
-			// apply 180 deg rotation about z-axis to convert
-			// from colmap's world coord axes to three's axes
-			const Ry_180deg = new THREE.Matrix4();
-			Ry_180deg.set(-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-			translation.applyMatrix4(Ry_180deg);
-			R.premultiply(Ry_180deg);
-			R_T.premultiply(Ry_180deg);
-
-			// view direction = [0 0 1] @ R^T
-			const forward = new THREE.Vector3(0, 0, 1);
-			forward.applyMatrix4(R_T);
-
-			// debugging
-			// const dir = new THREE.ArrowHelper(
-			// 	new THREE.Vector3(forward.x, forward.y, forward.z),
-			// 	new THREE.Vector3(0, 0, 0),
-			// 	0.1,
-			// 	0xffffee
-			// );
-			//coneRef.current.add(dir);
-
-			// position
-			coneRef.current.position.copy(translation);
-			// viewing direction
-			coneRef.current.lookAt(translation.clone().add(forward));
-			// orient bottom of cone in view direction
-			coneRef.current.rotateX(-Math.PI / 2);
-			// temporary adjustment (axis-aligned cams)
-			coneRef.current.rotateY(-Math.PI / 4);
-
-			// base of cone position + rotation
-			baseRef.current.position.copy(translation);
-			baseRef.current.rotation.copy(coneRef.current.rotation);
-			baseRef.current.rotateX(-Math.PI / 2);
-			baseRef.current.rotateZ(Math.PI / 4);
-
-			const baseOffset = new THREE.Vector3(0, (-0.3 * camScale) / 2, 0);
-			baseOffset.applyQuaternion(coneRef.current.quaternion);
-			baseRef.current.position.add(baseOffset);
 			onLoaded();
 		}
-	}, [imageData.qvec, imageData.tvec, onLoaded, camScale, camData]);
+	}, [cameraData, camScale, onLoaded, scene]);
 
-	return (
-		<>
-			<mesh ref={coneRef}>
-				<coneGeometry args={[0.1 * camScale, 0.3 * camScale, 4]} />
-				<meshBasicMaterial color="red" wireframe />
-			</mesh>
-			<mesh ref={baseRef}>
-				<planeGeometry args={[0.14 * camScale, 0.14 * camScale]} />
-				<meshBasicMaterial color="red" side={THREE.DoubleSide} />
-			</mesh>
-		</>
-	);
+	return <group ref={groupRef} />;
 };
 
 export default Camera;
