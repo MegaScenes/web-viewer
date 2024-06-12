@@ -108,13 +108,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
 			);
 			if (foundScene) {
 				onOptionClick(foundScene, Number(rec_no));
-				if (value !== foundScene.normalized_name) {
-					setValue(foundScene.normalized_name);
-				}
+				setValue(foundScene.normalized_name);
 				togglePanel(true);
 			}
 		}
-	}, [searchParams, idToRecCtMap, onOptionClick, togglePanel, value]);
+	}, [searchParams, idToRecCtMap, onOptionClick, togglePanel]);
 
 	const handleOptionClick = (option: SceneType) => {
 		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);
