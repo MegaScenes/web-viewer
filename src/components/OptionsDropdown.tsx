@@ -5,6 +5,7 @@ import {
 	IconBrightnessFilled,
 	IconDownload,
 	IconHospital,
+	IconBrandGithub,
 } from "@tabler/icons-react";
 
 const S3_BASE_URL =
@@ -68,10 +69,19 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 
 	const options: Option[] = [
 		{
+			id: "hud",
+			label: "Hide HUD",
+			icon: <IconHospital size={16} stroke={2} />,
+			onClick: () => onChangeHUD(),
+		},
+		{
 			id: "theme",
 			label: "Swap Theme",
 			icon: <IconBrightnessFilled size={16} />,
-			onClick: () => onChangeTheme(),
+			onClick: () => {
+				//onChangeTheme();
+				console.log("coming soon...");
+			},
 		},
 		{
 			id: "download",
@@ -83,12 +93,16 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 				downloadFile("cameras.bin");
 			},
 		},
-
 		{
-			id: "hud",
-			label: "Hide HUD",
-			icon: <IconHospital size={16} stroke={2} />,
-			onClick: () => onChangeHUD(),
+			id: "github",
+			label: "Github",
+			icon: <IconBrandGithub size={16} stroke={2.5} />,
+			onClick: () => {
+				window.open(
+					"https://github.com/MegaScenes/web-viewer/",
+					"_blank"
+				);
+			},
 		},
 	];
 
