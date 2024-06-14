@@ -71,17 +71,18 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 		{
 			id: "hud",
 			label: "Hide HUD",
-			icon: <IconHospital size={16} stroke={2} />,
+			icon: (
+				<span className="relative font-medium text-sm bottom-0.5">
+					&lt;`&gt;
+				</span>
+			),
 			onClick: () => onChangeHUD(),
 		},
 		{
 			id: "theme",
 			label: "Swap Theme",
 			icon: <IconBrightnessFilled size={16} />,
-			onClick: () => {
-				//onChangeTheme();
-				console.log("coming soon...");
-			},
+			onClick: () => onChangeTheme(),
 		},
 		{
 			id: "download",

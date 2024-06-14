@@ -33,12 +33,12 @@ const Home: React.FC = () => {
 	const [selectedRec, setSelectedRec] = useState<
 		[SceneType, number] | undefined
 	>(undefined);
-	const [isLoading, setIsLoading] = useState(false);
-	const [clearScene, setClearScene] = useState(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [clearScene, setClearScene] = useState<boolean>(false);
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
-	const [camScale, setCamScale] = useState(0.25);
+	const [camScale, setCamScale] = useState<number>(0.25);
 	const controlsRef = useRef<any>(null);
 
 	useEffect(() => {
@@ -54,7 +54,7 @@ const Home: React.FC = () => {
 						Math.min(prev + 0.025, CAM_MAX_SCALE)
 					);
 					break;
-				case "h":
+				case "`":
 					setHud((prev) => !prev);
 					break;
 				case "Escape":
@@ -157,7 +157,6 @@ const Home: React.FC = () => {
 						{hud && (
 							<>
 								<SearchBar
-									isDarkTheme={isDarkTheme}
 									onOptionClick={handleSelectScene}
 									togglePanel={togglePanel}
 								/>
