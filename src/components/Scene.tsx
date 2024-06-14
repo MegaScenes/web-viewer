@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useThree, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -32,96 +32,68 @@ const Scene: React.FC<SceneProps> = ({
 }) => {
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
+	const [pointCloud, setPointCloud] = useState<THREE.Points | null>(null);
 
 	const geometry = usePointLoader(id, no);
-	const pointCloud = new THREE.Points(
-		geometry,
-		new THREE.PointsMaterial({
-			vertexColors: true,
-			size: pointScale,
-			opacity: 1,
-		})
-	);
 	const imgs = useImageData(id, no);
 	const cams = useCameraData(id, no);
 	const circleTexture = useLoader(
 		THREE.TextureLoader,
 		"/web-viewer/images/circle.png"
 	);
-	const [isPointCloudReady, setIsPointCloudReady] = useState(false);
-	const [areImagesReady, setAreImagesReady] = useState(false);
-	const [axesKey, setAxesKey] = useState(Date.now());
+
+	const initializePointCloud = useCallback(() => {
+		const material = new THREE.PointsMaterial({
+			vertexColors: true,
+			size: pointScale,
+			opacity: 1,
+		});
+		const newPointCloud = new THREE.Points(geometry, material);
+		newPointCloud.rotation.z = Math.PI;
+		setPointCloud(newPointCloud);
+	}, [geometry, pointScale]);
 
 	useEffect(() => {
 		if (clearScene) {
 			scene.clear();
-			setIsPointCloudReady(false);
-			setAreImagesReady(false);
-			if (controlsRef && controlsRef.current) {
-				controlsRef.current.reset();
-			}
-			setAxesKey(Date.now());
+			setPointCloud(null);
 			return;
 		}
+		initializePointCloud();
+	}, [clearScene, initializePointCloud, scene]);
 
-		if (pointCloud && circleTexture) {
-			pointCloud.material = new THREE.PointsMaterial({
-				map: circleTexture,
-				size: 0.005,
-				transparent: true,
-				depthWrite: false,
-				alphaTest: 0.5,
-				vertexColors: true,
-			});
-			pointCloud.rotation.z = Math.PI;
-			setIsPointCloudReady(true);
+	useEffect(() => {
+		if (circleTexture && pointCloud) {
+			(pointCloud.material as THREE.PointsMaterial).map = circleTexture;
+			(pointCloud.material as THREE.PointsMaterial).needsUpdate = true;
 		}
+	}, [circleTexture, pointCloud]);
 
-		if (imgs.length > 0) {
-			setAreImagesReady(true);
+	useEffect(() => {
+		if (
+			loaded === total &&
+			pointCloud &&
+			pointCloud.geometry.attributes.position &&
+			imgs.length > 0
+		) {
+			updateCounts(
+				pointCloud.geometry.attributes.position.count,
+				imgs.length
+			);
+			onLoaded?.();
 		}
-
-		if (isPointCloudReady && areImagesReady && loaded === total) {
-			setAxesKey(Date.now());
-			if (pointCloud) {
-				updateCounts(
-					pointCloud.geometry.attributes.position.count,
-					imgs.length
-				);
-			}
-			if (typeof onLoaded === "function") {
-				onLoaded();
-			}
-		}
-	}, [
-		scene,
-		pointCloud,
-		circleTexture,
-		imgs,
-		onLoaded,
-		updateCounts,
-		clearScene,
-		isPointCloudReady,
-		areImagesReady,
-		controlsRef,
-		loaded,
-		total,
-	]);
+	}, [loaded, total, pointCloud, imgs, onLoaded, updateCounts, controlsRef]);
 
 	return (
 		<>
-			{isPointCloudReady && areImagesReady && (
-				<>
-					{pointCloud && <primitive object={pointCloud} />}
-					<Cameras
-						imageData={imgs}
-						camData={cams}
-						camScale={camScale}
-						onAllImagesLoaded={() => setAreImagesReady(true)}
-					/>
-					<axesHelper args={[10]} key={axesKey} />
-				</>
-			)}
+			{pointCloud && <primitive object={pointCloud} />}
+			<Cameras
+				imageData={imgs}
+				camData={cams}
+				camScale={camScale}
+				onAllImagesLoaded={() => {}}
+			/>
+			<axesHelper args={[10]} />
 		</>
 	);
 };
