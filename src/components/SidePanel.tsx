@@ -113,13 +113,25 @@ const SidePanel: React.FC<SidePanelProps> = ({
 							{scene.normalized_name}&quot;:
 						</h2>
 					) : (
-						<h2
-							className={`text-xl font-bold mb-4 ${
-								isDarkTheme ? "text-offwhite" : ""
-							}`}
-						>
-							Search for a scene in the search bar!
-						</h2>
+						<>
+							<h2
+								className={`text-xl font-bold mb-4 ${
+									isDarkTheme ? "text-offwhite" : ""
+								}`}
+							>
+								Search for a scene in the search bar!
+							</h2>
+							<br />
+							<h3
+								className={`text-sm font-bold mb-4 ${
+									isDarkTheme ? "text-offwhite" : ""
+								}`}
+							>
+								Note: some reconstructions take a while to load
+								(~1-2 min) due to fetching uncompressed data
+								from AWS S3.
+							</h3>
+						</>
 					)}
 					<div className="flex flex-col gap-4">
 						{scene &&
