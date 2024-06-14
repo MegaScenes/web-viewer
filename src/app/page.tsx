@@ -19,6 +19,8 @@ import { SceneType } from "@/types/scene";
 
 const CAM_MAX_SCALE = 1;
 const CAM_MIN_SCALE = 0.05;
+const PT_MAX_SCALE = 0.062;
+const PT_MIN_SCALE = 0.002;
 
 const initialCameraSettings = {
 	position: [0, 0, 10],
@@ -38,6 +40,7 @@ const Home: React.FC = () => {
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
+	const [pointScale, setPointScale] = useState<number>(0.01);
 	const [camScale, setCamScale] = useState<number>(0.25);
 	const controlsRef = useRef<any>(null);
 
@@ -52,6 +55,16 @@ const Home: React.FC = () => {
 				case "]":
 					setCamScale((prev) =>
 						Math.min(prev + 0.025, CAM_MAX_SCALE)
+					);
+					break;
+				case "{":
+					setPointScale((prev) =>
+						Math.max(prev - 0.002, PT_MIN_SCALE)
+					);
+					break;
+				case "}":
+					setPointScale((prev) =>
+						Math.min(prev + 0.002, PT_MAX_SCALE)
 					);
 					break;
 				case "`":
@@ -101,6 +114,9 @@ const Home: React.FC = () => {
 		setClearScene(true);
 		setSelectedRec([scene, no]);
 		setClearScene(false);
+		if (controlsRef && controlsRef.current) {
+			controlsRef.current.reset();
+		}
 	}, []);
 
 	const handleOnLoaded = useCallback(() => {
@@ -198,6 +214,7 @@ const Home: React.FC = () => {
 								key={selectedRec[0].id}
 								id={selectedRec[0].id}
 								no={selectedRec[1]}
+								pointScale={pointScale}
 								camScale={camScale}
 								controlsRef={controlsRef}
 								updateCounts={handleUpdateCounts}
