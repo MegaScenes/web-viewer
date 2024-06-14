@@ -9,6 +9,7 @@ import Card from "./Card";
 import { SceneType } from "@/types/scene";
 
 interface SidePanelProps {
+	isDarkTheme: boolean;
 	scene?: SceneType;
 	rec_no?: number;
 	numOfPts?: number;
@@ -19,6 +20,7 @@ interface SidePanelProps {
 }
 
 const SidePanel: React.FC<SidePanelProps> = ({
+	isDarkTheme,
 	scene,
 	rec_no,
 	numOfPts,
@@ -54,17 +56,23 @@ const SidePanel: React.FC<SidePanelProps> = ({
 				return (
 					<IconChevronCompactRight
 						size={24}
-						color="white"
+						color={`${isDarkTheme ? "white" : "black"}`}
 						stroke={3}
 					/>
 				);
 			case "line":
-				return <IconMinusVertical size={24} color="white" stroke={4} />;
+				return (
+					<IconMinusVertical
+						size={24}
+						color={`${isDarkTheme ? "white" : "black"}`}
+						stroke={4}
+					/>
+				);
 			case "left":
 				return (
 					<IconChevronCompactLeft
 						size={24}
-						color="white"
+						color={`${isDarkTheme ? "white" : "black"}`}
 						stroke={3}
 					/>
 				);
@@ -72,7 +80,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 				return (
 					<IconChevronCompactRight
 						size={24}
-						color="white"
+						color={`${isDarkTheme ? "white" : "black"}`}
 						stroke={3}
 					/>
 				);
@@ -84,11 +92,17 @@ const SidePanel: React.FC<SidePanelProps> = ({
 			<div
 				className={`transform transition-all duration-350 overflow-y-auto ${
 					isOpen ? "translate-x-0" : "-translate-x-full"
-				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
+				} ${
+					isDarkTheme ? "bg-greyish" : "bg-lessoffwhite"
+				} h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
 			>
 				<div className="flex flex-col w-11/12 mt-2">
 					{scene ? (
-						<h2 className="text-xl font-bold mb-4 text-offwhite break-all">
+						<h2
+							className={`text-xl font-bold mb-4 ${
+								isDarkTheme ? "text-offwhite" : ""
+							} break-all`}
+						>
 							Viewing Reconstruction{" "}
 							<span className="text-blue-500">
 								#<span className="mr-0.5"></span>
@@ -99,7 +113,11 @@ const SidePanel: React.FC<SidePanelProps> = ({
 							{scene.normalized_name}&quot;:
 						</h2>
 					) : (
-						<h2 className="text-xl font-bold mb-4 text-offwhite">
+						<h2
+							className={`text-xl font-bold mb-4 ${
+								isDarkTheme ? "text-offwhite" : ""
+							}`}
+						>
 							Search for a scene in the search bar!
 						</h2>
 					)}
@@ -141,7 +159,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
 					onClick={() => {
 						togglePanel(!isOpen);
 					}}
-					className={`text-white font-bold py-2 px-4 rounded absolute top-1/2 transform -translate-y-1/2 transition-all duration-350 ${
+					className={`${
+						isDarkTheme ? "text-offwhite" : ""
+					} font-bold py-2 px-4 rounded absolute top-1/2 transform -translate-y-1/2 transition-all duration-350 ${
 						isOpen ? "translate-x-64" : "translate-x-0"
 					}`}
 					style={{
