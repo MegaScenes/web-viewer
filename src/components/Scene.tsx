@@ -12,6 +12,7 @@ import { useProgress } from "@react-three/drei";
 interface SceneProps {
 	id: number;
 	no: number;
+	pointScale: number;
 	camScale: number;
 	onLoaded?: () => void;
 	updateCounts: (pts: number, cams: number) => void;
@@ -22,6 +23,7 @@ interface SceneProps {
 const Scene: React.FC<SceneProps> = ({
 	id,
 	no,
+	pointScale,
 	camScale,
 	onLoaded,
 	updateCounts,
@@ -31,7 +33,15 @@ const Scene: React.FC<SceneProps> = ({
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
 
-	const pointCloud = usePointLoader(id, no);
+	const geometry = usePointLoader(id, no);
+	const pointCloud = new THREE.Points(
+		geometry,
+		new THREE.PointsMaterial({
+			vertexColors: true,
+			size: pointScale,
+			opacity: 1,
+		})
+	);
 	const imgs = useImageData(id, no);
 	const cams = useCameraData(id, no);
 	const circleTexture = useLoader(
