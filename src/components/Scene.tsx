@@ -44,9 +44,12 @@ const Scene: React.FC<SceneProps> = ({
 
 	const initializePointCloud = useCallback(() => {
 		const material = new THREE.PointsMaterial({
-			vertexColors: true,
+			map: circleTexture,
 			size: pointScale,
-			opacity: 1,
+			transparent: true,
+			depthWrite: false,
+			alphaTest: 0.5,
+			vertexColors: true,
 		});
 		const newPointCloud = new THREE.Points(geometry, material);
 		newPointCloud.rotation.z = Math.PI;
