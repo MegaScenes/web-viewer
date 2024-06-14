@@ -61,7 +61,6 @@ ListboxComponent.displayName = "ListboxComponent";
 import catToIdData from "../../public/data/recon_cat_to_id.json";
 import idToRecCtData from "../../public/data/id_and_recon_ct.json";
 interface SearchBarProps {
-	isDarkTheme: boolean;
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
 	togglePanel: (bool: boolean) => void;
 }
@@ -70,13 +69,12 @@ interface IdToRecCtMap {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
-	isDarkTheme,
 	onOptionClick,
 	togglePanel,
 }) => {
 	const [inputValue, setInputValue] = useState("");
 	const [value, setValue] = useState<SceneType | string | null>(null);
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 	const [scenes, setScenes] = useState<SceneType[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();

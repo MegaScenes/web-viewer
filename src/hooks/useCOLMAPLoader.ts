@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 
-const POINT_SIZE = 0.01;
 const S3_BASE_URL =
 	"https://megascenes.s3.us-west-2.amazonaws.com/reconstruct/";
 
@@ -189,7 +188,7 @@ const enhanceColor = (
 	};
 };
 
-const parsePointData = (buffer: ArrayBuffer): THREE.Points => {
+const parsePointData = (buffer: ArrayBuffer): THREE.BufferGeometry => {
 	const points: number[] = [];
 	const colors: number[] = [];
 	const dataview = new DataView(buffer);
@@ -228,17 +227,10 @@ const parsePointData = (buffer: ArrayBuffer): THREE.Points => {
 	);
 	geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
-	return new THREE.Points(
-		geometry,
-		new THREE.PointsMaterial({
-			vertexColors: true,
-			size: POINT_SIZE,
-			opacity: 100,
-		})
-	);
+	return geometry;
 };
 
-const parseMiniPointData = (buffer: ArrayBuffer): THREE.Points => {
+const parseMiniPointData = (buffer: ArrayBuffer): THREE.BufferGeometry => {
 	const points: number[] = [];
 	const colors: number[] = [];
 	const dataview = new DataView(buffer);
@@ -270,14 +262,7 @@ const parseMiniPointData = (buffer: ArrayBuffer): THREE.Points => {
 	);
 	geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
-	return new THREE.Points(
-		geometry,
-		new THREE.PointsMaterial({
-			vertexColors: true,
-			size: POINT_SIZE,
-			opacity: 100,
-		})
-	);
+	return geometry;
 };
 
 const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
@@ -344,7 +329,7 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 			getId(id)
 		)}/colmap/${encodeURIComponent(rec_no.toString())}/images.minibin`;
 		handleNewUrlState(newUrl);
-	}, [id, rec_no]);
+	}, [id, rec_no, handleNewUrlState]);
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -389,7 +374,7 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 		return () => {
 			controller.abort();
 		};
-	}, [urlState]);
+	}, [urlState, id, rec_no]);
 
 	return images;
 };
@@ -433,8 +418,8 @@ export const useCameraData = (id: number, rec_no: number): CameraData[] => {
 export const usePointLoader = (
 	id: number,
 	rec_no: number
-): THREE.Points | undefined => {
-	const [pointCloud, setPointCloud] = useState<THREE.Points>();
+): THREE.BufferGeometry | undefined => {
+	const [pointCloud, setPointCloud] = useState<THREE.BufferGeometry>();
 	const [urlState, setUrlState] = useState<UrlState>({
 		url: `${S3_AUX_URL}${encodeURIComponent(
 			getId(id)
@@ -456,7 +441,7 @@ export const usePointLoader = (
 			getId(id)
 		)}/colmap/${encodeURIComponent(rec_no.toString())}/points3D.minibin`;
 		handleNewUrlState(newUrl);
-	}, [id, rec_no]);
+	}, [id, rec_no, handleNewUrlState]);
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -502,7 +487,7 @@ export const usePointLoader = (
 		return () => {
 			controller.abort();
 		};
-	}, [urlState]);
+	}, [urlState, id, rec_no]);
 
 	return pointCloud;
 };

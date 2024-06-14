@@ -3,9 +3,12 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Scene from "./Scene";
 
+// temp
+const pointScale = 0.01;
 interface ModelViewerProps {
 	id: number;
 	no: number;
+	//pointScale: number;
 	camScale: number;
 	controlsRef: React.MutableRefObject<any>;
 	updateCounts: (pts: number, cams: number) => void;
@@ -16,6 +19,7 @@ interface ModelViewerProps {
 const ModelViewer: React.FC<ModelViewerProps> = ({
 	id,
 	no,
+	//pointScale,
 	camScale,
 	controlsRef,
 	updateCounts,
@@ -29,6 +33,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 			<Scene
 				id={id}
 				no={no}
+				pointScale={pointScale}
 				camScale={camScale}
 				updateCounts={updateCounts}
 				clearScene={clearScene}
