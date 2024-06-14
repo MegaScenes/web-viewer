@@ -19,8 +19,8 @@ import { SceneType } from "@/types/scene";
 
 const CAM_MAX_SCALE = 1;
 const CAM_MIN_SCALE = 0.05;
-const PT_MAX_SCALE = 0.062;
-const PT_MIN_SCALE = 0.002;
+const PT_MAX_SCALE = 0.1;
+const PT_MIN_SCALE = 0.01;
 
 const initialCameraSettings = {
 	position: [0, 0, 10],
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
 	const [counts, setCounts] = useState<[number, number, number] | undefined>(
 		undefined
 	);
-	const [pointScale, setPointScale] = useState<number>(0.01);
+	const [pointScale, setPointScale] = useState<number>(0.05);
 	const [camScale, setCamScale] = useState<number>(0.25);
 	const controlsRef = useRef<any>(null);
 
@@ -59,12 +59,12 @@ const Home: React.FC = () => {
 					break;
 				case "{":
 					setPointScale((prev) =>
-						Math.max(prev - 0.002, PT_MIN_SCALE)
+						Math.max(prev - 0.005, PT_MIN_SCALE)
 					);
 					break;
 				case "}":
 					setPointScale((prev) =>
-						Math.min(prev + 0.002, PT_MAX_SCALE)
+						Math.min(prev + 0.005, PT_MAX_SCALE)
 					);
 					break;
 				case "`":
