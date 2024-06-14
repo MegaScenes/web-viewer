@@ -19,6 +19,7 @@ const config: Config = {
 				greyish: "#252525",
 				darkgrey: "#090909",
 				offwhite: "#D0D0D0",
+				lessoffwhite: "#E0E0E0",
 				offblack: "#202020",
 			},
 		},

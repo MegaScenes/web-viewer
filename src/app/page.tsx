@@ -20,7 +20,15 @@ import { SceneType } from "@/types/scene";
 const CAM_MAX_SCALE = 1;
 const CAM_MIN_SCALE = 0.05;
 
+const initialCameraSettings = {
+	position: [0, 0, 10],
+	fov: 75,
+	zoom: 1,
+};
+
 const Home: React.FC = () => {
+	const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+	const [hud, setHud] = useState<boolean>(true);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [selectedRec, setSelectedRec] = useState<
 		[SceneType, number] | undefined
@@ -35,10 +43,25 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "[") {
-				setCamScale((prev) => Math.max(prev - 0.025, CAM_MIN_SCALE));
-			} else if (event.key === "]") {
-				setCamScale((prev) => Math.min(prev + 0.025, CAM_MAX_SCALE));
+			switch (event.key) {
+				case "[":
+					setCamScale((prev) =>
+						Math.max(prev - 0.025, CAM_MIN_SCALE)
+					);
+					break;
+				case "]":
+					setCamScale((prev) =>
+						Math.min(prev + 0.025, CAM_MAX_SCALE)
+					);
+					break;
+				case "h":
+					setHud((prev) => !prev);
+					break;
+				case "Escape":
+					setHud(true);
+					break;
+				default:
+					break;
 			}
 		};
 
@@ -47,6 +70,10 @@ const Home: React.FC = () => {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
+	}, []);
+
+	const handleOnChangeTheme = useCallback(() => {
+		setIsDarkTheme((prev) => !prev);
 	}, []);
 
 	const handleZoomIn = useCallback(() => {
@@ -87,6 +114,21 @@ const Home: React.FC = () => {
 		[selectedRec]
 	);
 
+	const handleResetCamera = useCallback(() => {
+		if (controlsRef.current) {
+			const controls = controlsRef.current;
+			const camera = controls.object;
+
+			camera.position.set(...initialCameraSettings.position);
+			camera.fov = initialCameraSettings.fov;
+			camera.zoom = initialCameraSettings.zoom;
+			camera.updateProjectionMatrix();
+
+			controls.target.set(0, 0, 0);
+			controls.update();
+		}
+	}, []);
+
 	useEffect(() => {
 		if (selectedRec) {
 			setIsLoading(true);
@@ -96,26 +138,60 @@ const Home: React.FC = () => {
 	return (
 		<Suspense
 			fallback={
-				<div className="fixed inset-0 bg-darkgrey flex items-center justify-center">
-					<div className="animate-spin rounded-full border-t-4 border-white h-12 w-12"></div>
+				<div
+					className={`fixed inset-0 ${
+						isDarkTheme ? "bg-darkgrey" : ""
+					} flex items-center justify-center`}
+				>
+					<div
+						className={`animate-spin rounded-full border-t-4 ${
+							isDarkTheme ? "border-white" : "border-black"
+						} h-12 w-12`}
+					></div>
 				</div>
 			}
 		>
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
 					<div className="flex flex-row items-center justify-between mr-3 gap-4">
-						<SearchBar
-							onOptionClick={handleSelectScene}
-							togglePanel={togglePanel}
-						/>
-						<OptionsDropdown />
+						{hud && (
+							<>
+								<SearchBar
+									isDarkTheme={isDarkTheme}
+									onOptionClick={handleSelectScene}
+									togglePanel={togglePanel}
+								/>
+								<OptionsDropdown
+									id={
+										selectedRec
+											? selectedRec[0].id
+											: undefined
+									}
+									rec_no={
+										selectedRec ? selectedRec[1] : undefined
+									}
+									onChangeTheme={handleOnChangeTheme}
+									onChangeHUD={() => setHud(false)}
+								/>
+							</>
+						)}
 					</div>
 				</div>
-				<div className="flex-grow relative bg-gray-100">
-					<div className="absolute w-full h-full bg-darkgrey flex items-center justify-center">
+				<div className="flex-grow relative">
+					<div
+						className={`absolute w-full h-full ${
+							isDarkTheme ? "bg-darkgrey" : "bg-offwhite"
+						} flex items-center justify-center`}
+					>
 						{isLoading && (
 							<div className="flex items-center justify-center absolute inset-0">
-								<div className="border-t-transparent border-solid animate-spin rounded-full border-white border-4 h-8 w-8"></div>
+								<div
+									className={`border-t-transparent border-solid animate-spin rounded-full ${
+										isDarkTheme
+											? "border-white"
+											: "border-black"
+									} border-4 h-8 w-8`}
+								></div>
 							</div>
 						)}
 						{selectedRec ? (
@@ -130,44 +206,66 @@ const Home: React.FC = () => {
 								clearScene={clearScene}
 							/>
 						) : (
-							<div className="flex items-center justify-center h-full text-white">
+							<div
+								className={`flex items-center justify-center h-full ${
+									isDarkTheme ? "text-white" : "text-black"
+								}`}
+							>
 								<span>No scene selected</span>
 							</div>
 						)}
 					</div>
-
-					<button
-						className="absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full text-white shadow-lg"
-						aria-label="Reset Button"
-					>
-						<IconRefresh size={24} stroke={1.5} color="white" />
-					</button>
-					<button
-						className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
-						aria-label="Zoom In"
-						onClick={handleZoomIn}
-					>
-						<IconZoomIn size={24} stroke={1.5} color="black" />
-					</button>
-					<button
-						className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
-						aria-label="Zoom Out"
-						onClick={handleZoomOut}
-					>
-						<IconZoomOut size={24} stroke={1.5} color="black" />
-					</button>
+					{hud && (
+						<>
+							<button
+								className="absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full text-white shadow-lg"
+								aria-label="Reset Button"
+								onClick={handleResetCamera}
+							>
+								<IconRefresh
+									size={24}
+									stroke={1.5}
+									color="white"
+								/>
+							</button>
+							<button
+								className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								aria-label="Zoom In"
+								onClick={handleZoomIn}
+							>
+								<IconZoomIn
+									size={24}
+									stroke={1.5}
+									color="black"
+								/>
+							</button>
+							<button
+								className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								aria-label="Zoom Out"
+								onClick={handleZoomOut}
+							>
+								<IconZoomOut
+									size={24}
+									stroke={1.5}
+									color="black"
+								/>
+							</button>
+						</>
+					)}
 				</div>
 			</div>
-
-			<SidePanel
-				scene={selectedRec ? selectedRec[0] : undefined}
-				rec_no={selectedRec ? selectedRec[1] : undefined}
-				numOfPts={counts ? counts[0] : undefined}
-				numOfCams={counts ? counts[1] : undefined}
-				onSelect={handleSelectScene}
-				isOpen={isOpen}
-				togglePanel={(bool: boolean) => togglePanel(bool)}
-			/>
+			{hud && (
+				<SidePanel
+					isDarkTheme={isDarkTheme}
+					scene={selectedRec ? selectedRec[0] : undefined}
+					rec_no={selectedRec ? selectedRec[1] : undefined}
+					numOfPts={counts ? counts[0] : undefined}
+					numOfCams={counts ? counts[1] : undefined}
+					onSelect={handleSelectScene}
+					isOpen={isOpen}
+					togglePanel={(bool: boolean) => togglePanel(bool)}
+				/>
+			)}
 		</Suspense>
 	);
 };

@@ -61,6 +61,7 @@ ListboxComponent.displayName = "ListboxComponent";
 import catToIdData from "../../public/data/recon_cat_to_id.json";
 import idToRecCtData from "../../public/data/id_and_recon_ct.json";
 interface SearchBarProps {
+	isDarkTheme: boolean;
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
 	togglePanel: (bool: boolean) => void;
 }
@@ -69,6 +70,7 @@ interface IdToRecCtMap {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
+	isDarkTheme,
 	onOptionClick,
 	togglePanel,
 }) => {
@@ -201,7 +203,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 				/>
 			)}
 			ListboxComponent={ListboxComponent}
-			className="w-full min-w-96 text-black shadow-xl"
+			className="w-full min-w-96 shadow-xl rounded-[20px]"
 		/>
 	);
 };

@@ -22,8 +22,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	onLoaded,
 	clearScene,
 }) => {
-	const holdingAlt = useRef(false);
-
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
