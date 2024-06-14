@@ -73,6 +73,11 @@ const Home: React.FC = () => {
 				case "Escape":
 					setHud(true);
 					break;
+				case " ":
+					if (controlsRef && controlsRef.current) {
+						controlsRef.current.reset();
+					}
+					break;
 				default:
 					break;
 			}
