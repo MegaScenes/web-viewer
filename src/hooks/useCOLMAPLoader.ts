@@ -6,6 +6,9 @@ const POINT_SIZE = 0.01;
 const S3_BASE_URL =
 	"https://megascenes.s3.us-west-2.amazonaws.com/reconstruct/";
 
+const S3_AUX_URL =
+	"https://megascenes.s3.us-west-2.amazonaws.com/reconstruct_aux/";
+
 export type CameraData = {
 	cameraId: number;
 	model: string;
@@ -110,6 +113,60 @@ const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
 	return images;
 };
 
+const parseMiniImageData = (buffer: ArrayBuffer): ImageData[] => {
+	const dataview = new DataView(buffer);
+	let offset = 0;
+
+	const numRegImages = dataview.getBigUint64(offset, true);
+	offset += 8;
+
+	const images = [];
+
+	for (let i = 0; i < numRegImages; i++) {
+		const imageId = dataview.getUint32(offset, true);
+		offset += 4;
+
+		const qvec = [
+			dataview.getFloat64(offset, true),
+			dataview.getFloat64(offset + 8, true),
+			dataview.getFloat64(offset + 16, true),
+			dataview.getFloat64(offset + 24, true),
+		];
+		const tvec = [
+			dataview.getFloat64(offset + 32, true),
+			dataview.getFloat64(offset + 40, true),
+			dataview.getFloat64(offset + 48, true),
+		];
+		offset += 56;
+
+		const cameraId = dataview.getUint32(offset, true);
+		offset += 4;
+
+		let imageName = "";
+		while (offset < buffer.byteLength) {
+			const charCode = dataview.getUint8(offset++);
+			if (charCode === 0) break;
+			imageName += String.fromCharCode(charCode);
+		}
+
+		images.push({
+			id: imageId,
+			qvec,
+			tvec,
+			cameraId,
+			name: imageName,
+		});
+	}
+
+	if (images.length !== Number(numRegImages)) {
+		throw new Error(
+			`Expected ${numRegImages} images, but parsed ${images.length}`
+		);
+	}
+
+	return images;
+};
+
 const enhanceColor = (
 	r: number,
 	g: number,
@@ -181,6 +238,48 @@ const parsePointData = (buffer: ArrayBuffer): THREE.Points => {
 	);
 };
 
+const parseMiniPointData = (buffer: ArrayBuffer): THREE.Points => {
+	const points: number[] = [];
+	const colors: number[] = [];
+	const dataview = new DataView(buffer);
+
+	const numPoints = dataview.getBigUint64(0, true);
+	let offset = 8;
+
+	for (let i = 0; i < numPoints; i++) {
+		const point3D_id = dataview.getBigUint64(offset, true);
+		const x = dataview.getFloat64(offset + 8, true);
+		const y = dataview.getFloat64(offset + 16, true);
+		const z = dataview.getFloat64(offset + 24, true);
+		offset += 32;
+
+		const r = dataview.getUint8(offset);
+		const g = dataview.getUint8(offset + 1);
+		const b = dataview.getUint8(offset + 2);
+		offset += 3;
+
+		const c = enhanceColor(r, g, b, 1.5, 1.5);
+		points.push(x, y, z);
+		colors.push(c.r / 255, c.g / 255, c.b / 255);
+	}
+
+	const geometry = new THREE.BufferGeometry();
+	geometry.setAttribute(
+		"position",
+		new THREE.Float32BufferAttribute(points, 3)
+	);
+	geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
+	return new THREE.Points(
+		geometry,
+		new THREE.PointsMaterial({
+			vertexColors: true,
+			size: POINT_SIZE,
+			opacity: 100,
+		})
+	);
+};
+
 const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	const dataview = new DataView(buffer);
 
@@ -217,20 +316,62 @@ const parseCameraData = (buffer: ArrayBuffer): CameraData[] => {
 	return cameras;
 };
 
+interface UrlState {
+	url: string;
+	usingMiniUrl: boolean;
+}
+
 export const useImageData = (id: number, rec_no: number): ImageData[] => {
 	const [images, setImages] = useState<ImageData[]>([]);
-	const url = `${S3_BASE_URL}${encodeURIComponent(
-		getId(id)
-	)}/colmap/${encodeURIComponent(rec_no.toString())}/images.bin`;
+	const [urlState, setUrlState] = useState<UrlState>(() => ({
+		url: `${S3_AUX_URL}${encodeURIComponent(
+			getId(id)
+		)}/colmap/${encodeURIComponent(rec_no.toString())}/images.minibin`,
+		usingMiniUrl: true,
+	}));
+
+	const handleNewUrlState = (newUrl: string) => {
+		if (newUrl !== urlState.url) {
+			setUrlState({
+				url: newUrl,
+				usingMiniUrl: true,
+			});
+		}
+	};
+
+	useEffect(() => {
+		const newUrl = `${S3_AUX_URL}${encodeURIComponent(
+			getId(id)
+		)}/colmap/${encodeURIComponent(rec_no.toString())}/images.minibin`;
+		handleNewUrlState(newUrl);
+	}, [id, rec_no]);
+
 	useEffect(() => {
 		const controller = new AbortController();
 		const fetchImageData = async () => {
 			try {
-				const response = await fetch(url, {
+				const response = await fetch(urlState.url, {
 					signal: controller.signal,
 				});
+				if (!response.ok) {
+					if (urlState.usingMiniUrl) {
+						const fallbackUrl = `${S3_BASE_URL}${encodeURIComponent(
+							getId(id)
+						)}/colmap/${encodeURIComponent(
+							rec_no.toString()
+						)}/images.bin`;
+						setUrlState({ url: fallbackUrl, usingMiniUrl: false });
+						return;
+					} else {
+						throw new Error(
+							`Failed to fetch from both URLs: ${response.status}`
+						);
+					}
+				}
 				const buffer = await response.arrayBuffer();
-				const loadedImages = parseImageData(buffer);
+				const loadedImages = urlState.usingMiniUrl
+					? parseMiniImageData(buffer)
+					: parseImageData(buffer);
 				setImages(loadedImages);
 			} catch (error) {
 				if ((error as Error).name === "AbortError") {
@@ -248,7 +389,7 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 		return () => {
 			controller.abort();
 		};
-	}, [url]);
+	}, [urlState]);
 
 	return images;
 };
@@ -294,18 +435,56 @@ export const usePointLoader = (
 	rec_no: number
 ): THREE.Points | undefined => {
 	const [pointCloud, setPointCloud] = useState<THREE.Points>();
-	const url = `${S3_BASE_URL}${encodeURIComponent(
-		getId(id)
-	)}/colmap/${encodeURIComponent(rec_no.toString())}/points3D.bin`;
+	const [urlState, setUrlState] = useState<UrlState>({
+		url: `${S3_AUX_URL}${encodeURIComponent(
+			getId(id)
+		)}/colmap/${encodeURIComponent(rec_no.toString())}/points3D.minibin`,
+		usingMiniUrl: true,
+	});
+
+	const handleNewUrlState = (newUrl: string) => {
+		if (newUrl !== urlState.url) {
+			setUrlState({
+				url: newUrl,
+				usingMiniUrl: true,
+			});
+		}
+	};
+
+	useEffect(() => {
+		const newUrl = `${S3_AUX_URL}${encodeURIComponent(
+			getId(id)
+		)}/colmap/${encodeURIComponent(rec_no.toString())}/points3D.minibin`;
+		handleNewUrlState(newUrl);
+	}, [id, rec_no]);
+
 	useEffect(() => {
 		const controller = new AbortController();
 		const fetchData = async () => {
 			try {
-				const response = await fetch(url, {
+				const response = await fetch(urlState.url, {
 					signal: controller.signal,
 				});
+				if (!response.ok) {
+					if (urlState.usingMiniUrl) {
+						const fallbackUrl = `${S3_BASE_URL}${encodeURIComponent(
+							getId(id)
+						)}/colmap/${encodeURIComponent(
+							rec_no.toString()
+						)}/points3D.bin`;
+						setUrlState({ url: fallbackUrl, usingMiniUrl: false });
+						return;
+					} else {
+						throw new Error(
+							`Failed to fetch from both URLs: ${response.status}`
+						);
+					}
+				}
 				const buffer = await response.arrayBuffer();
-				const cloud = parsePointData(buffer);
+				console.log(urlState.url, urlState.usingMiniUrl);
+				const cloud = urlState.usingMiniUrl
+					? parseMiniPointData(buffer)
+					: parsePointData(buffer);
 				setPointCloud(cloud);
 			} catch (error) {
 				if ((error as Error).name === "AbortError") {
@@ -323,7 +502,7 @@ export const usePointLoader = (
 		return () => {
 			controller.abort();
 		};
-	}, [url]);
+	}, [urlState]);
 
 	return pointCloud;
 };
