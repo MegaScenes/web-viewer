@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import { VariableSizeList as List } from "react-window";
 import { useRouter } from "next/navigation";
 import { SceneType } from "@/types/scene";
+import { IconStar } from "@tabler/icons-react";
 
 const OuterElementContext = React.createContext({});
 const OuterElementType = React.memo(
@@ -86,6 +87,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
 		}, {} as IdToRecCtMap);
 	}, []);
 
+	const favoriteScenes = useMemo(() => {
+		return [
+			"Pantheon de Paris",
+			"Giralda",
+			"Dome des Invalides",
+			"Great Sphynx - Louvre A23",
+			"Qutb Minar",
+			"Wooden church in Calinesti Caeni",
+			"Kapellbrucke",
+			"Puits de Moise",
+			"Puerta de Europa, Madrid",
+			"Karmravor",
+			"Teide",
+		];
+	}, []);
+
 	// load scenes
 	useEffect(() => {
 		const loadedScenes = Object.entries(catToIdData).map(([name, id]) => ({
@@ -130,8 +147,23 @@ const SearchBar: React.FC<SearchBarProps> = ({
 						.toLowerCase()
 						.includes(inputValue.toLowerCase())
 		);
+		// round bottom corners with no options available
 		if (filtered.length === 0 && inputValue) {
 			setIsDropdownOpen(false);
+		}
+
+		const favoriteFiltered = filtered.filter((option) =>
+			favoriteScenes.includes(option.normalized_name)
+		);
+		const nonFavoriteFiltered = filtered.filter(
+			(option) => !favoriteScenes.includes(option.normalized_name)
+		);
+
+		if (!inputValue) {
+			nonFavoriteFiltered.sort((a, b) =>
+				a.normalized_name.localeCompare(b.normalized_name)
+			);
+			return [...favoriteFiltered, ...nonFavoriteFiltered];
 		}
 		return filtered;
 	};
