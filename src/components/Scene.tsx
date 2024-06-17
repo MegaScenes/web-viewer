@@ -15,7 +15,6 @@ interface SceneProps {
 	pointScale: number;
 	camScale: number;
 	onLoaded?: () => void;
-	updateCounts: (pts: number, cams: number) => void;
 	clearScene: boolean;
 	controlsRef: React.RefObject<any>;
 }
@@ -26,7 +25,6 @@ const Scene: React.FC<SceneProps> = ({
 	pointScale,
 	camScale,
 	onLoaded,
-	updateCounts,
 	clearScene,
 	controlsRef,
 }) => {
@@ -79,13 +77,9 @@ const Scene: React.FC<SceneProps> = ({
 			pointCloud.geometry.attributes.position &&
 			imgs.length > 0
 		) {
-			updateCounts(
-				pointCloud.geometry.attributes.position.count,
-				imgs.length
-			);
 			onLoaded?.();
 		}
-	}, [loaded, total, pointCloud, imgs, onLoaded, updateCounts, controlsRef]);
+	}, [loaded, total, pointCloud, imgs, onLoaded, controlsRef]);
 
 	return (
 		<>

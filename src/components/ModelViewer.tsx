@@ -9,7 +9,6 @@ interface ModelViewerProps {
 	pointScale: number;
 	camScale: number;
 	controlsRef: React.MutableRefObject<any>;
-	updateCounts: (pts: number, cams: number) => void;
 	onLoaded: () => void;
 	clearScene: boolean;
 }
@@ -20,7 +19,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	pointScale,
 	camScale,
 	controlsRef,
-	updateCounts,
 	onLoaded,
 	clearScene,
 }) => {
@@ -33,7 +31,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				no={no}
 				pointScale={pointScale}
 				camScale={camScale}
-				updateCounts={updateCounts}
 				clearScene={clearScene}
 				onLoaded={onLoaded}
 				controlsRef={controlsRef}

@@ -64,14 +64,18 @@ const Card: React.FC<CardProps> = ({
 							/>
 							<span className="text-[15px] font-medium">
 								Points:{" "}
-								{numOfPts ? numOfPts : "? (click to view)"}
+								{numOfPts !== undefined
+									? numOfPts
+									: "? (click to view)"}
 							</span>
 						</div>
 						<div className="flex flex-row justify-start items-center gap-1.5">
 							<IconCamera size={16} stroke={2} color="black" />
 							<span className="text-[15px] font-medium">
 								Cameras:{" "}
-								{numOfCams ? numOfCams : "? (click to view)"}
+								{numOfCams !== undefined
+									? numOfCams
+									: "? (click to view)"}
 							</span>
 						</div>
 					</div>
