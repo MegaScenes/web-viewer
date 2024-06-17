@@ -71,15 +71,10 @@ const Scene: React.FC<SceneProps> = ({
 	}, [circleTexture, pointCloud]);
 
 	useEffect(() => {
-		if (
-			loaded === total &&
-			pointCloud &&
-			pointCloud.geometry.attributes.position &&
-			imgs.length > 0
-		) {
+		if (loaded === total) {
 			onLoaded?.();
 		}
-	}, [loaded, total, pointCloud, imgs, onLoaded, controlsRef]);
+	}, [loaded, total, onLoaded]);
 
 	return (
 		<>
