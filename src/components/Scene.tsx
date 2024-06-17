@@ -52,7 +52,7 @@ const Scene: React.FC<SceneProps> = ({
 		const newPointCloud = new THREE.Points(geometry, material);
 		newPointCloud.rotation.z = Math.PI;
 		setPointCloud(newPointCloud);
-	}, [geometry, pointScale]);
+	}, [geometry, pointScale, circleTexture]);
 
 	useEffect(() => {
 		if (clearScene) {
