@@ -54,16 +54,49 @@ const Camera: React.FC<CameraProps> = ({
 		R.premultiply(Ry_180deg);
 		R_T.premultiply(Ry_180deg);
 
-		const fx = camData.params[0];
-		const fy = camData.model === "PINHOLE" ? camData.params[1] : fx;
-		const cx = camData.params[camData.model === "PINHOLE" ? 2 : 1];
-		const cy = camData.params[camData.model === "PINHOLE" ? 3 : 2];
+		let fx = 0,
+			fy = 0,
+			cx = 0,
+			cy = 0;
+
+		if (
+			["SIMPLE_PINHOLE", "SIMPLE_RADIAL", "RADIAL"].includes(
+				camData.model
+			)
+		) {
+			fx = camData.params[0];
+			fy = camData.params[0];
+			cx = camData.params[1];
+			cy = camData.params[2];
+		} else if (
+			["PINHOLE", "OPENCV", "OPENCV_FISHEYE", "FULL_OPENCV"].includes(
+				camData.model
+			)
+		) {
+			fx = camData.params[0];
+			fy = camData.params[1];
+			cx = camData.params[2];
+			cy = camData.params[3];
+		}
+
+		// const fx = camData.params[0];
+		// const fy = camData.model === "PINHOLE" ? camData.params[1] : fx;
+		// const cx = camData.params[camData.model === "PINHOLE" ? 2 : 1];
+		// const cy = camData.params[camData.model === "PINHOLE" ? 3 : 2];
 
 		const K = new THREE.Matrix3().set(fx, 0, cx, 0, fy, cy, 0, 0, 1);
-		for (let i = 0; i < 9; i++) {
-			K.elements[i] /= camScale;
-		}
+		K.multiplyScalar(1 / camScale);
 		const Kinv = K.clone().invert();
+
+		// additional scaling from hloc implementation
+		const W = cx * 2;
+		const H = cy * 2;
+		const imageExtent = Math.max(
+			(camScale * W) / 1024.0,
+			(camScale * H) / 1024.0
+		);
+		const worldExtent = Math.max(W, H) / (fx + fy) / 0.5;
+		const scale = (0.5 * imageExtent) / worldExtent;
 
 		const T = new THREE.Matrix4().set(
 			R_T.elements[0],
@@ -88,6 +121,7 @@ const Camera: React.FC<CameraProps> = ({
 		const h = camData.height;
 
 		const pointsPixel = [
+			new THREE.Vector3(0, 0, 0),
 			new THREE.Vector3(0, 0, 1),
 			new THREE.Vector3(w, 0, 1),
 			new THREE.Vector3(0, h, 1),
@@ -97,12 +131,16 @@ const Camera: React.FC<CameraProps> = ({
 			p.applyMatrix3(Kinv)
 		);
 
+		points.forEach((p) => {
+			p.multiplyScalar(scale);
+		});
+
 		const width = Math.abs(points[1].x) + Math.abs(points[3].x);
 		const height = Math.abs(points[1].y) + Math.abs(points[3].y);
 		const depth = 1e-6;
 
 		const centerX = (points[1].x + points[2].x) / 2;
-		const centerY = (points[1].y + points[2].y) / 2;
+		const centerY = 0;
 
 		const pointsInWorld = points.map((p: THREE.Vector3) =>
 			p.clone().applyMatrix4(R_T).add(t)
@@ -115,6 +153,7 @@ const Camera: React.FC<CameraProps> = ({
 			depth,
 			centerX,
 			centerY,
+			scale,
 			pointsInWorld,
 			lines: [
 				[t, pointsInWorld[1]],
@@ -145,7 +184,7 @@ const Camera: React.FC<CameraProps> = ({
 			plane.position.set(
 				cameraData.centerX,
 				cameraData.centerY,
-				camScale
+				camScale * cameraData.scale
 			);
 			plane.applyMatrix4(cameraData.T);
 			scene.add(plane);

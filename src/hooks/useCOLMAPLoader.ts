@@ -466,7 +466,6 @@ export const usePointLoader = (
 					}
 				}
 				const buffer = await response.arrayBuffer();
-				console.log(urlState.url, urlState.usingMiniUrl);
 				const cloud = urlState.usingMiniUrl
 					? parseMiniPointData(buffer)
 					: parsePointData(buffer);

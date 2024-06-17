@@ -5,7 +5,6 @@ import TextField from "@mui/material/TextField";
 import { VariableSizeList as List } from "react-window";
 import { useRouter } from "next/navigation";
 import { SceneType } from "@/types/scene";
-import { IconStar } from "@tabler/icons-react";
 
 const OuterElementContext = React.createContext({});
 const OuterElementType = React.memo(

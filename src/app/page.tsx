@@ -41,7 +41,7 @@ const Home: React.FC = () => {
 		undefined
 	);
 	const [pointScale, setPointScale] = useState<number>(0.011);
-	const [camScale, setCamScale] = useState<number>(0.25);
+	const [camScale, setCamScale] = useState<number>(0.5);
 	const controlsRef = useRef<any>(null);
 
 	useEffect(() => {
@@ -119,9 +119,6 @@ const Home: React.FC = () => {
 		setClearScene(true);
 		setSelectedRec([scene, no]);
 		setClearScene(false);
-		if (controlsRef && controlsRef.current) {
-			controlsRef.current.reset();
-		}
 	}, []);
 
 	const handleOnLoaded = useCallback(() => {
@@ -282,7 +279,9 @@ const Home: React.FC = () => {
 					rec_no={selectedRec ? selectedRec[1] : undefined}
 					numOfPts={counts ? counts[0] : undefined}
 					numOfCams={counts ? counts[1] : undefined}
-					onSelect={handleSelectScene}
+					onSelect={(scene: SceneType, no: number) => {
+						handleSelectScene(scene, no);
+					}}
 					isOpen={isOpen}
 					togglePanel={(bool: boolean) => togglePanel(bool)}
 				/>
