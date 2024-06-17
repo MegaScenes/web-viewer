@@ -91,7 +91,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 			dataMap.set(parseInt(key, 10), value.slice(2));
 		});
 		return dataMap;
-	}, [reconMetadata]);
+	}, []);
 
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">

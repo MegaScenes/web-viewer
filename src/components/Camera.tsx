@@ -159,7 +159,7 @@ const Camera: React.FC<CameraProps> = ({
 				[t, pointsInWorld[1]],
 				[t, pointsInWorld[2]],
 				[t, pointsInWorld[3]],
-				[t, pointsInWorld[0]],
+				[t, pointsInWorld[4]],
 			],
 		};
 	}, [camData, imageData, camScale]);

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
 
 const S3_BASE_URL =
@@ -315,14 +315,17 @@ export const useImageData = (id: number, rec_no: number): ImageData[] => {
 		usingMiniUrl: true,
 	}));
 
-	const handleNewUrlState = (newUrl: string) => {
-		if (newUrl !== urlState.url) {
-			setUrlState({
-				url: newUrl,
-				usingMiniUrl: true,
-			});
-		}
-	};
+	const handleNewUrlState = useCallback(
+		(newUrl: string) => {
+			if (newUrl !== urlState.url) {
+				setUrlState({
+					url: newUrl,
+					usingMiniUrl: true,
+				});
+			}
+		},
+		[urlState]
+	);
 
 	useEffect(() => {
 		const newUrl = `${S3_AUX_URL}${encodeURIComponent(
@@ -427,14 +430,17 @@ export const usePointLoader = (
 		usingMiniUrl: true,
 	});
 
-	const handleNewUrlState = (newUrl: string) => {
-		if (newUrl !== urlState.url) {
-			setUrlState({
-				url: newUrl,
-				usingMiniUrl: true,
-			});
-		}
-	};
+	const handleNewUrlState = useCallback(
+		(newUrl: string) => {
+			if (newUrl !== urlState.url) {
+				setUrlState({
+					url: newUrl,
+					usingMiniUrl: true,
+				});
+			}
+		},
+		[urlState]
+	);
 
 	useEffect(() => {
 		const newUrl = `${S3_AUX_URL}${encodeURIComponent(
