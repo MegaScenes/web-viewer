@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
 	IconChevronCompactRight,
 	IconChevronCompactLeft,
@@ -6,14 +6,13 @@ import {
 } from "@tabler/icons-react";
 
 import Card from "./Card";
+import reconMetadata from "../../public/data/recon_metadata.json";
 import { SceneType } from "@/types/scene";
 
 interface SidePanelProps {
 	isDarkTheme: boolean;
 	scene?: SceneType;
 	rec_no?: number;
-	numOfPts?: number;
-	numOfCams?: number;
 	onSelect: (scene: SceneType, no: number) => void;
 	isOpen: boolean;
 	togglePanel: (bool: boolean) => void;
@@ -23,8 +22,6 @@ const SidePanel: React.FC<SidePanelProps> = ({
 	isDarkTheme,
 	scene,
 	rec_no,
-	numOfPts,
-	numOfCams,
 	isOpen,
 	togglePanel,
 }) => {
@@ -87,6 +84,15 @@ const SidePanel: React.FC<SidePanelProps> = ({
 		}
 	};
 
+	// process point + camera metadata
+	const reconData = useMemo(() => {
+		const dataMap = new Map();
+		Object.entries(reconMetadata).forEach(([key, value]) => {
+			dataMap.set(parseInt(key, 10), value.slice(2));
+		});
+		return dataMap;
+	}, [reconMetadata]);
+
 	return (
 		<div className="fixed inset-y-0 left-0 z-20 flex">
 			<div
@@ -143,14 +149,12 @@ const SidePanel: React.FC<SidePanelProps> = ({
 										rec_no={index}
 										scene={scene}
 										numOfPts={
-											index === rec_no
-												? numOfPts
-												: undefined
+											reconData.get(scene.id)[
+												index * 2 + 1
+											]
 										}
 										numOfCams={
-											index === rec_no
-												? numOfCams
-												: undefined
+											reconData.get(scene.id)[index * 2]
 										}
 										isSelected={
 											rec_no !== undefined &&

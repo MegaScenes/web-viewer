@@ -37,9 +37,6 @@ const Home: React.FC = () => {
 	>(undefined);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [clearScene, setClearScene] = useState<boolean>(false);
-	const [counts, setCounts] = useState<[number, number, number] | undefined>(
-		undefined
-	);
 	const [pointScale, setPointScale] = useState<number>(0.011);
 	const [camScale, setCamScale] = useState<number>(0.5);
 	const controlsRef = useRef<any>(null);
@@ -124,13 +121,6 @@ const Home: React.FC = () => {
 	const handleOnLoaded = useCallback(() => {
 		setIsLoading(false);
 	}, []);
-
-	const handleUpdateCounts = useCallback(
-		(pts: number, cams: number) => {
-			if (selectedRec) setCounts([pts, cams, selectedRec[1]]);
-		},
-		[selectedRec]
-	);
 
 	const handleResetCamera = useCallback(() => {
 		if (controlsRef.current) {
@@ -219,7 +209,6 @@ const Home: React.FC = () => {
 								pointScale={pointScale}
 								camScale={camScale}
 								controlsRef={controlsRef}
-								updateCounts={handleUpdateCounts}
 								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
 							/>
@@ -277,8 +266,6 @@ const Home: React.FC = () => {
 					isDarkTheme={isDarkTheme}
 					scene={selectedRec ? selectedRec[0] : undefined}
 					rec_no={selectedRec ? selectedRec[1] : undefined}
-					numOfPts={counts ? counts[0] : undefined}
-					numOfCams={counts ? counts[1] : undefined}
 					onSelect={(scene: SceneType, no: number) => {
 						handleSelectScene(scene, no);
 					}}
