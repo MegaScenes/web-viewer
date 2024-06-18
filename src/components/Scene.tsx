@@ -16,7 +16,6 @@ interface SceneProps {
 	camScale: number;
 	onLoaded?: () => void;
 	clearScene: boolean;
-	controlsRef: React.RefObject<any>;
 }
 
 const Scene: React.FC<SceneProps> = ({
@@ -26,7 +25,6 @@ const Scene: React.FC<SceneProps> = ({
 	camScale,
 	onLoaded,
 	clearScene,
-	controlsRef,
 }) => {
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
@@ -71,10 +69,14 @@ const Scene: React.FC<SceneProps> = ({
 	}, [circleTexture, pointCloud]);
 
 	useEffect(() => {
-		if (loaded === total) {
+		if (
+			loaded === total &&
+			pointCloud &&
+			pointCloud.geometry.attributes.position
+		) {
 			onLoaded?.();
 		}
-	}, [loaded, total, onLoaded]);
+	}, [loaded, total, onLoaded, pointCloud]);
 
 	return (
 		<>

@@ -33,7 +33,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				camScale={camScale}
 				clearScene={clearScene}
 				onLoaded={onLoaded}
-				controlsRef={controlsRef}
 			/>
 			<OrbitControls
 				ref={controlsRef}

@@ -119,8 +119,9 @@ const Home: React.FC = () => {
 	}, []);
 
 	const handleOnLoaded = useCallback(() => {
-		setIsLoading(false);
-	}, []);
+		console.log("Scene loaded, setting isLoading to false");
+		if (hud) setIsLoading(false);
+	}, [hud]);
 
 	const handleResetCamera = useCallback(() => {
 		if (controlsRef.current) {
