@@ -119,7 +119,6 @@ const Home: React.FC = () => {
 	}, []);
 
 	const handleOnLoaded = useCallback(() => {
-		console.log("Scene loaded, setting isLoading to false");
 		if (hud) setIsLoading(false);
 	}, [hud]);
 
