@@ -6,6 +6,7 @@ import React, {
 	useRef,
 	Suspense,
 } from "react";
+import * as THREE from "three";
 import dynamic from "next/dynamic";
 const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
@@ -21,11 +22,98 @@ const CAM_MAX_SCALE = 1;
 const CAM_MIN_SCALE = 0.05;
 const PT_MAX_SCALE = 0.1;
 const PT_MIN_SCALE = 0.005;
+const PAN_DISTANCE = 0.5;
+const ROTATE_DISTANCE = 0.01;
 
 const initialCameraSettings = {
 	position: [0, 0, 10],
 	fov: 75,
 	zoom: 1,
+};
+
+const panCamera = (
+	controls: any,
+	direction: "forward" | "backward" | "left" | "right" | "up" | "down",
+	distance: number
+) => {
+	const panOffset = new THREE.Vector3();
+	const targetDistance = controls.target.distanceTo(controls.object.position);
+
+	switch (direction) {
+		case "forward":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 0);
+			panOffset.crossVectors(controls.object.up, panOffset);
+			panOffset.multiplyScalar((distance * targetDistance) / 100);
+			break;
+		case "backward":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 0);
+			panOffset.crossVectors(controls.object.up, panOffset);
+			panOffset.multiplyScalar((-distance * targetDistance) / 100);
+			break;
+		case "left":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 0);
+			panOffset.multiplyScalar((-distance * targetDistance) / 100);
+			break;
+		case "right":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 0);
+			panOffset.multiplyScalar((distance * targetDistance) / 100);
+			break;
+		case "up":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 1);
+			panOffset.multiplyScalar((distance * targetDistance) / 100);
+			break;
+		case "down":
+			panOffset.setFromMatrixColumn(controls.object.matrix, 1);
+			panOffset.multiplyScalar((-distance * targetDistance) / 100);
+			break;
+		default:
+			break;
+	}
+
+	controls.target.add(panOffset);
+	controls.object.position.add(panOffset);
+	controls.update();
+};
+
+const rotateCamera = (
+	controls: any,
+	direction: "up" | "down" | "left" | "right",
+	angle: number
+) => {
+	const spherical = new THREE.Spherical();
+	const targetPosition = new THREE.Vector3().copy(controls.target);
+
+	const cameraPosition = new THREE.Vector3()
+		.copy(controls.object.position)
+		.sub(targetPosition);
+	spherical.setFromVector3(cameraPosition);
+
+	switch (direction) {
+		case "up":
+			spherical.phi = Math.max(
+				0,
+				Math.min(Math.PI, spherical.phi - angle)
+			);
+			break;
+		case "down":
+			spherical.phi = Math.max(
+				0,
+				Math.min(Math.PI, spherical.phi + angle)
+			);
+			break;
+		case "left":
+			spherical.theta -= angle;
+			break;
+		case "right":
+			spherical.theta += angle;
+			break;
+		default:
+			break;
+	}
+
+	cameraPosition.setFromSpherical(spherical).add(targetPosition);
+	controls.object.position.copy(cameraPosition);
+	controls.update();
 };
 
 const Home: React.FC = () => {
@@ -41,45 +129,77 @@ const Home: React.FC = () => {
 	const [camScale, setCamScale] = useState<number>(0.5);
 	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
 	const controlsRef = useRef<any>(null);
+	const movementRef = useRef<{ [key: string]: boolean }>({});
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (shortcutsDisabled) return;
 
 			switch (event.key) {
-				case "[":
+				case "[": // decrease camera scale
 					setCamScale((prev) =>
 						Math.max(prev - 0.025, CAM_MIN_SCALE)
 					);
 					break;
-				case "]":
+				case "]": // increase camera scale
 					setCamScale((prev) =>
 						Math.min(prev + 0.025, CAM_MAX_SCALE)
 					);
 					break;
-				case "{":
+				case "{": // decrease point scale
 					setPointScale((prev) =>
 						Math.max(prev - 0.005, PT_MIN_SCALE)
 					);
 					break;
-				case "}":
+				case "}": // increase point scale
 					setPointScale((prev) =>
 						Math.min(prev + 0.005, PT_MAX_SCALE)
 					);
 					break;
-				case "H":
+				case "H": // toggle hud
 					setHud((prev) => !prev);
 					break;
-				case "h":
+				case "h": // toggle hud
 					setHud((prev) => !prev);
 					break;
-				case "Escape":
+				case "Escape": // escape invisible hud
 					setHud(true);
 					break;
-				case " ":
+				case " ": // reset camera
 					if (controlsRef && controlsRef.current) {
 						controlsRef.current.reset();
 					}
+					break;
+				case "w": // translate forward
+				case "a": // translate left
+				case "s": // translate right
+				case "d": // translate right
+				case "q": // translate down
+				case "e": // translate up
+				case "ArrowUp": // rotate up
+				case "ArrowDown": // rotate down
+				case "ArrowLeft": // rotate left
+				case "ArrowRight": // rotate right
+					movementRef.current[event.key] = true;
+					break;
+				default:
+					break;
+			}
+		};
+
+		const handleKeyUp = (event: KeyboardEvent) => {
+			switch (event.key) {
+				case "w":
+				case "a":
+				case "s":
+				case "d":
+				case "q":
+				case "e":
+				case "ArrowUp":
+				case "ArrowDown":
+				case "ArrowLeft":
+				case "ArrowRight":
+					movementRef.current[event.key] = false;
 					break;
 				default:
 					break;
@@ -87,11 +207,54 @@ const Home: React.FC = () => {
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
+		window.addEventListener("keyup", handleKeyUp);
 
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
+			window.removeEventListener("keyup", handleKeyUp);
 		};
 	}, [shortcutsDisabled]);
+
+	useEffect(() => {
+		const animate = () => {
+			if (controlsRef.current) {
+				if (movementRef.current["w"]) {
+					panCamera(controlsRef.current, "forward", PAN_DISTANCE);
+				}
+				if (movementRef.current["a"]) {
+					panCamera(controlsRef.current, "left", PAN_DISTANCE);
+				}
+				if (movementRef.current["s"]) {
+					panCamera(controlsRef.current, "backward", PAN_DISTANCE);
+				}
+				if (movementRef.current["d"]) {
+					panCamera(controlsRef.current, "right", PAN_DISTANCE);
+				}
+				if (movementRef.current["q"]) {
+					panCamera(controlsRef.current, "down", PAN_DISTANCE);
+				}
+				if (movementRef.current["e"]) {
+					panCamera(controlsRef.current, "up", PAN_DISTANCE);
+				}
+				if (movementRef.current["ArrowUp"]) {
+					rotateCamera(controlsRef.current, "up", ROTATE_DISTANCE);
+				}
+				if (movementRef.current["ArrowDown"]) {
+					rotateCamera(controlsRef.current, "down", ROTATE_DISTANCE);
+				}
+				if (movementRef.current["ArrowLeft"]) {
+					rotateCamera(controlsRef.current, "left", ROTATE_DISTANCE);
+				}
+				if (movementRef.current["ArrowRight"]) {
+					rotateCamera(controlsRef.current, "right", ROTATE_DISTANCE);
+				}
+			}
+
+			requestAnimationFrame(animate);
+		};
+
+		animate();
+	}, []);
 
 	const handleOnChangeTheme = useCallback(() => {
 		setIsDarkTheme((prev) => !prev);
