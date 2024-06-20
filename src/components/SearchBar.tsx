@@ -63,6 +63,7 @@ import idToRecCtData from "../../public/data/id_and_recon_ct.json";
 interface SearchBarProps {
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
 	togglePanel: (bool: boolean) => void;
+	disableShortcuts: (bool: boolean) => void;
 }
 interface IdToRecCtMap {
 	[key: string]: number;
@@ -71,6 +72,7 @@ interface IdToRecCtMap {
 const SearchBar: React.FC<SearchBarProps> = ({
 	onOptionClick,
 	togglePanel,
+	disableShortcuts,
 }) => {
 	const [inputValue, setInputValue] = useState("");
 	const [value, setValue] = useState<SceneType | string | null>(null);
@@ -202,7 +204,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
 			getOptionLabel={getOptionLabel}
 			filterOptions={filterOptions}
 			open={isDropdownOpen}
-			onOpen={() => setIsDropdownOpen(true)}
+			onOpen={() => {
+				setIsDropdownOpen(true);
+				togglePanel(false);
+			}}
 			onClose={() => {
 				setIsDropdownOpen(false);
 			}}
@@ -211,6 +216,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
 					{...params}
 					placeholder={`Search ${scenes.length} scenes`}
 					variant="outlined"
+					onFocus={() => disableShortcuts(true)}
+					onBlur={() => disableShortcuts(false)}
 					InputLabelProps={{
 						...params.InputLabelProps,
 						shrink: false,
