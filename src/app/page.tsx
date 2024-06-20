@@ -39,10 +39,13 @@ const Home: React.FC = () => {
 	const [clearScene, setClearScene] = useState<boolean>(false);
 	const [pointScale, setPointScale] = useState<number>(0.011);
 	const [camScale, setCamScale] = useState<number>(0.5);
+	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
 	const controlsRef = useRef<any>(null);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if (shortcutsDisabled) return;
+
 			switch (event.key) {
 				case "[":
 					setCamScale((prev) =>
@@ -64,7 +67,10 @@ const Home: React.FC = () => {
 						Math.min(prev + 0.005, PT_MAX_SCALE)
 					);
 					break;
-				case "`":
+				case "H":
+					setHud((prev) => !prev);
+					break;
+				case "h":
 					setHud((prev) => !prev);
 					break;
 				case "Escape":
@@ -85,7 +91,7 @@ const Home: React.FC = () => {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, []);
+	}, [shortcutsDisabled]);
 
 	const handleOnChangeTheme = useCallback(() => {
 		setIsDarkTheme((prev) => !prev);
@@ -137,6 +143,10 @@ const Home: React.FC = () => {
 		}
 	}, []);
 
+	const handleDisableShortcuts = useCallback((value: boolean) => {
+		setShortcutsDisabled(value);
+	}, []);
+
 	useEffect(() => {
 		if (selectedRec) {
 			setIsLoading(true);
@@ -167,6 +177,7 @@ const Home: React.FC = () => {
 								<SearchBar
 									onOptionClick={handleSelectScene}
 									togglePanel={togglePanel}
+									disableShortcuts={handleDisableShortcuts}
 								/>
 								<OptionsDropdown
 									id={

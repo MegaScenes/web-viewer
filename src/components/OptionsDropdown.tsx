@@ -6,7 +6,10 @@ import {
 	IconDownload,
 	IconHospital,
 	IconBrandGithub,
+	IconAppWindow,
+	IconKeyboard,
 } from "@tabler/icons-react";
+import ControlsModal from "./ControlsModal";
 
 const S3_BASE_URL =
 	"https://megascenes.s3.us-west-2.amazonaws.com/reconstruct/";
@@ -38,6 +41,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	onChangeHUD,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
 
 	const toggleDropdown = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -71,11 +75,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 		{
 			id: "hud",
 			label: "Hide HUD",
-			icon: (
-				<span className="relative font-medium text-sm bottom-0.5">
-					&lt;`&gt;
-				</span>
-			),
+			icon: <IconHospital size={16} stroke={2.5} />,
 			onClick: () => onChangeHUD(),
 		},
 		{
@@ -83,6 +83,12 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 			label: "Swap Theme",
 			icon: <IconBrightnessFilled size={16} />,
 			onClick: () => onChangeTheme(),
+		},
+		{
+			id: "controls",
+			label: "Controls",
+			icon: <IconKeyboard size={16} stroke={2.5} />,
+			onClick: () => setIsModalOpen(true),
 		},
 		{
 			id: "download",
@@ -103,6 +109,14 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					"https://github.com/MegaScenes/web-viewer/",
 					"_blank"
 				);
+			},
+		},
+		{
+			id: "website",
+			label: "Website",
+			icon: <IconAppWindow size={16} stroke={2.5} />,
+			onClick: () => {
+				window.open("https://megascenes.github.io/", "_blank");
 			},
 		},
 	];
@@ -167,6 +181,9 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 						</li>
 					))}
 				</ul>
+			)}
+			{isModalOpen && (
+				<ControlsModal onClose={() => setIsModalOpen(false)} />
 			)}
 		</div>
 	);
