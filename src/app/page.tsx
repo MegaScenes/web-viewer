@@ -128,6 +128,7 @@ const Home: React.FC = () => {
 	const [pointScale, setPointScale] = useState<number>(0.011);
 	const [camScale, setCamScale] = useState<number>(0.5);
 	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
+	const [isAxisEnabled, setIsAxisEnabled] = useState<boolean>(true);
 	const controlsRef = useRef<any>(null);
 	const movementRef = useRef<{ [key: string]: boolean }>({});
 
@@ -170,6 +171,10 @@ const Home: React.FC = () => {
 						controlsRef.current.reset();
 					}
 					break;
+				case "p": // toggle side panel
+					setIsOpen((prev) => !prev);
+				case "x": // toggle axis
+					setIsAxisEnabled((prev) => !prev);
 				case "w": // translate forward
 				case "a": // translate left
 				case "s": // translate right
@@ -276,8 +281,8 @@ const Home: React.FC = () => {
 		}
 	}, []);
 
-	const togglePanel = useCallback((bool: boolean) => {
-		setIsOpen(bool);
+	const togglePanel = useCallback((value: boolean) => {
+		setIsOpen(value);
 	}, []);
 
 	const handleSelectScene = useCallback((scene: SceneType, no: number) => {
@@ -351,8 +356,13 @@ const Home: React.FC = () => {
 									rec_no={
 										selectedRec ? selectedRec[1] : undefined
 									}
+									isAxisEnabled={isAxisEnabled}
 									onChangeTheme={handleOnChangeTheme}
 									onChangeHUD={() => setHud(false)}
+									onControlsModal={() => togglePanel(false)}
+									onAxisToggle={() =>
+										setIsAxisEnabled((prev) => !prev)
+									}
 								/>
 							</>
 						)}
@@ -383,6 +393,7 @@ const Home: React.FC = () => {
 								pointScale={pointScale}
 								camScale={camScale}
 								controlsRef={controlsRef}
+								isAxisEnabled={isAxisEnabled}
 								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
 							/>

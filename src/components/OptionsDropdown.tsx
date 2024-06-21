@@ -8,6 +8,7 @@ import {
 	IconBrandGithub,
 	IconAppWindow,
 	IconKeyboard,
+	IconAxisX,
 } from "@tabler/icons-react";
 import ControlsModal from "./ControlsModal";
 
@@ -24,8 +25,11 @@ interface Option {
 interface OptionsDropdownProps {
 	id?: number;
 	rec_no?: number;
+	isAxisEnabled: boolean;
 	onChangeTheme: () => void;
 	onChangeHUD: () => void;
+	onControlsModal: () => void;
+	onAxisToggle: () => void;
 }
 
 const getId = (id: number): string => {
@@ -37,11 +41,14 @@ const getId = (id: number): string => {
 const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	id,
 	rec_no,
+	isAxisEnabled,
 	onChangeTheme,
 	onChangeHUD,
+	onControlsModal,
+	onAxisToggle,
 }) => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const ref = useRef<HTMLDivElement>(null);
 
 	const toggleDropdown = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -73,22 +80,31 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 
 	const options: Option[] = [
 		{
+			id: "controls",
+			label: "Controls",
+			icon: <IconKeyboard size={16} stroke={2.5} />,
+			onClick: () => {
+				setIsModalOpen(true);
+				onControlsModal();
+			},
+		},
+		{
 			id: "hud",
 			label: "Hide HUD",
 			icon: <IconHospital size={16} stroke={2.5} />,
 			onClick: () => onChangeHUD(),
 		},
 		{
+			id: "axis",
+			label: isAxisEnabled ? "Hide Axis" : "Show Axis",
+			icon: <IconAxisX size={16} stroke={2.5} />,
+			onClick: () => onAxisToggle(),
+		},
+		{
 			id: "theme",
 			label: "Swap Theme",
 			icon: <IconBrightnessFilled size={16} />,
 			onClick: () => onChangeTheme(),
-		},
-		{
-			id: "controls",
-			label: "Controls",
-			icon: <IconKeyboard size={16} stroke={2.5} />,
-			onClick: () => setIsModalOpen(true),
 		},
 		{
 			id: "download",

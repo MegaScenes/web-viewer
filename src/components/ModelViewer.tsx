@@ -9,6 +9,7 @@ interface ModelViewerProps {
 	pointScale: number;
 	camScale: number;
 	controlsRef: React.MutableRefObject<any>;
+	isAxisEnabled: boolean;
 	onLoaded: () => void;
 	clearScene: boolean;
 }
@@ -19,6 +20,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	pointScale,
 	camScale,
 	controlsRef,
+	isAxisEnabled,
 	onLoaded,
 	clearScene,
 }) => {
@@ -32,6 +34,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 				pointScale={pointScale}
 				camScale={camScale}
 				clearScene={clearScene}
+				isAxisEnabled={isAxisEnabled}
 				onLoaded={onLoaded}
 			/>
 			<OrbitControls

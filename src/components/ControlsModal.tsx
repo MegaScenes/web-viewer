@@ -1,6 +1,7 @@
 import React from "react";
 
 import { IconX } from "@tabler/icons-react";
+import Key from "./Key";
 
 const ControlsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
 	<div className="fixed inset-0 flex items-center justify-center z-50">

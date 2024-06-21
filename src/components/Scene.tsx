@@ -14,8 +14,9 @@ interface SceneProps {
 	no: number;
 	pointScale: number;
 	camScale: number;
-	onLoaded?: () => void;
 	clearScene: boolean;
+	isAxisEnabled: boolean;
+	onLoaded?: () => void;
 }
 
 const Scene: React.FC<SceneProps> = ({
@@ -23,8 +24,9 @@ const Scene: React.FC<SceneProps> = ({
 	no,
 	pointScale,
 	camScale,
-	onLoaded,
 	clearScene,
+	isAxisEnabled,
+	onLoaded,
 }) => {
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
@@ -87,7 +89,7 @@ const Scene: React.FC<SceneProps> = ({
 				camScale={camScale}
 				onAllImagesLoaded={() => {}}
 			/>
-			<axesHelper args={[10]} />
+			{isAxisEnabled && <axesHelper args={[10]} />}
 		</>
 	);
 };
