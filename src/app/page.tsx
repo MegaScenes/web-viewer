@@ -129,6 +129,7 @@ const Home: React.FC = () => {
 	const [camScale, setCamScale] = useState<number>(0.5);
 	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
 	const [isAxisEnabled, setIsAxisEnabled] = useState<boolean>(true);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const controlsRef = useRef<any>(null);
 	const movementRef = useRef<{ [key: string]: boolean }>({});
 
@@ -165,16 +166,21 @@ const Home: React.FC = () => {
 					break;
 				case "Escape": // escape invisible hud
 					setHud(true);
+					setIsModalOpen(false);
 					break;
 				case " ": // reset camera
 					if (controlsRef && controlsRef.current) {
 						controlsRef.current.reset();
 					}
+					setIsAxisEnabled(true);
 					break;
 				case "p": // toggle side panel
 					setIsOpen((prev) => !prev);
+					setIsModalOpen(false);
+					break;
 				case "x": // toggle axis
 					setIsAxisEnabled((prev) => !prev);
+					break;
 				case "w": // translate forward
 				case "a": // translate left
 				case "s": // translate right
@@ -283,6 +289,9 @@ const Home: React.FC = () => {
 
 	const togglePanel = useCallback((value: boolean) => {
 		setIsOpen(value);
+		if (value) {
+			setIsModalOpen(false);
+		}
 	}, []);
 
 	const handleSelectScene = useCallback((scene: SceneType, no: number) => {
@@ -313,6 +322,15 @@ const Home: React.FC = () => {
 
 	const handleDisableShortcuts = useCallback((value: boolean) => {
 		setShortcutsDisabled(value);
+	}, []);
+
+	const handleOnOpenModal = useCallback(() => {
+		setIsModalOpen(true);
+		togglePanel(false);
+	}, []);
+
+	const handleOnCloseModle = useCallback(() => {
+		setIsModalOpen(false);
 	}, []);
 
 	useEffect(() => {
@@ -357,9 +375,11 @@ const Home: React.FC = () => {
 										selectedRec ? selectedRec[1] : undefined
 									}
 									isAxisEnabled={isAxisEnabled}
+									isModalOpen={isModalOpen}
 									onChangeTheme={handleOnChangeTheme}
 									onChangeHUD={() => setHud(false)}
-									onControlsModal={() => togglePanel(false)}
+									onOpenModal={handleOnOpenModal}
+									onCloseModal={handleOnCloseModle}
 									onAxisToggle={() =>
 										setIsAxisEnabled((prev) => !prev)
 									}
