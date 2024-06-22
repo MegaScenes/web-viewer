@@ -95,7 +95,7 @@ const ControlsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
 									</div>
 								</div>
 							</div>
-							<div className="flex flex-col justify-evenly items-center">
+							<div className="flex flex-col justify-evenly items-center gap-3">
 								<div className="flex flex-row justify-evenly items-center gap-8">
 									<div className="flex flex-col justify-start items-center gap-2">
 										<div className="flex flex-row justify-center items-center gap-2">
