@@ -322,9 +322,9 @@ const Home: React.FC = () => {
 	const handleOnOpenModal = useCallback(() => {
 		setIsModalOpen(true);
 		togglePanel(false);
-	}, []);
+	}, [togglePanel]);
 
-	const handleOnCloseModle = useCallback(() => {
+	const handleOnCloseModal = useCallback(() => {
 		setIsModalOpen(false);
 	}, []);
 
@@ -367,7 +367,7 @@ const Home: React.FC = () => {
 									isModalOpen={isModalOpen}
 									onChangeHUD={() => setHud(false)}
 									onOpenModal={handleOnOpenModal}
-									onCloseModal={handleOnCloseModle}
+									onCloseModal={handleOnCloseModal}
 									onAxisToggle={() =>
 										setIsAxisEnabled((prev) => !prev)
 									}
