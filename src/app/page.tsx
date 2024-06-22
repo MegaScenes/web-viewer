@@ -117,7 +117,6 @@ const rotateCamera = (
 };
 
 const Home: React.FC = () => {
-	const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
 	const [hud, setHud] = useState<boolean>(true);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [selectedRec, setSelectedRec] = useState<
@@ -267,10 +266,6 @@ const Home: React.FC = () => {
 		animate();
 	}, []);
 
-	const handleOnChangeTheme = useCallback(() => {
-		setIsDarkTheme((prev) => !prev);
-	}, []);
-
 	const handleZoomIn = useCallback(() => {
 		if (controlsRef.current) {
 			const camera = controlsRef.current.object;
@@ -342,15 +337,9 @@ const Home: React.FC = () => {
 	return (
 		<Suspense
 			fallback={
-				<div
-					className={`fixed inset-0 ${
-						isDarkTheme ? "bg-darkgrey" : ""
-					} flex items-center justify-center`}
-				>
+				<div className={`bg-darkgrey flex items-center justify-center`}>
 					<div
-						className={`animate-spin rounded-full border-t-4 ${
-							isDarkTheme ? "border-white" : "border-black"
-						} h-12 w-12`}
+						className={`animate-spin rounded-full border-t-4 border-white h-12 w-12`}
 					></div>
 				</div>
 			}
@@ -376,7 +365,6 @@ const Home: React.FC = () => {
 									}
 									isAxisEnabled={isAxisEnabled}
 									isModalOpen={isModalOpen}
-									onChangeTheme={handleOnChangeTheme}
 									onChangeHUD={() => setHud(false)}
 									onOpenModal={handleOnOpenModal}
 									onCloseModal={handleOnCloseModle}
@@ -390,18 +378,12 @@ const Home: React.FC = () => {
 				</div>
 				<div className="flex-grow relative">
 					<div
-						className={`absolute w-full h-full ${
-							isDarkTheme ? "bg-darkgrey" : "bg-offwhite"
-						} flex items-center justify-center`}
+						className={`absolute w-full h-full bg-darkgrey flex items-center justify-center`}
 					>
 						{isLoading && (
 							<div className="flex items-center justify-center absolute inset-0">
 								<div
-									className={`border-t-transparent border-solid animate-spin rounded-full ${
-										isDarkTheme
-											? "border-white"
-											: "border-black"
-									} border-4 h-8 w-8`}
+									className={`border-t-transparent border-solid animate-spin rounded-full border-white border-4 h-8 w-8`}
 								></div>
 							</div>
 						)}
@@ -419,9 +401,7 @@ const Home: React.FC = () => {
 							/>
 						) : (
 							<div
-								className={`flex items-center justify-center h-full ${
-									isDarkTheme ? "text-white" : "text-black"
-								}`}
+								className={`flex items-center justify-center h-full text-white`}
 							>
 								<span>No scene selected</span>
 							</div>
@@ -468,7 +448,6 @@ const Home: React.FC = () => {
 			</div>
 			{hud && (
 				<SidePanel
-					isDarkTheme={isDarkTheme}
 					scene={selectedRec ? selectedRec[0] : undefined}
 					rec_no={selectedRec ? selectedRec[1] : undefined}
 					onSelect={(scene: SceneType, no: number) => {

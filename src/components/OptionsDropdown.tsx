@@ -27,7 +27,6 @@ interface OptionsDropdownProps {
 	rec_no?: number;
 	isAxisEnabled: boolean;
 	isModalOpen: boolean;
-	onChangeTheme: () => void;
 	onChangeHUD: () => void;
 	onOpenModal: () => void;
 	onCloseModal: () => void;
@@ -45,7 +44,6 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	rec_no,
 	isAxisEnabled,
 	isModalOpen,
-	onChangeTheme,
 	onChangeHUD,
 	onOpenModal,
 	onCloseModal,
@@ -87,8 +85,8 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 
 	const options: Option[] = [
 		{
-			id: "controls",
-			label: "Controls",
+			id: "shortcuts",
+			label: "Shortcuts",
 			icon: <IconKeyboard size={16} stroke={2.5} />,
 			onClick: () => {
 				onOpenModal();
@@ -106,12 +104,6 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 			label: isAxisEnabled ? "Hide Axis" : "Show Axis",
 			icon: <IconAxisX size={16} stroke={2.5} />,
 			onClick: () => onAxisToggle(),
-		},
-		{
-			id: "theme",
-			label: "Swap Theme",
-			icon: <IconBrightnessFilled size={16} />,
-			onClick: () => onChangeTheme(),
 		},
 		{
 			id: "download",
