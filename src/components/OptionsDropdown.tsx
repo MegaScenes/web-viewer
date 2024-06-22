@@ -8,6 +8,7 @@ import {
 	IconBrandGithub,
 	IconAppWindow,
 	IconKeyboard,
+	IconAxisX,
 } from "@tabler/icons-react";
 import ControlsModal from "./ControlsModal";
 
@@ -24,8 +25,13 @@ interface Option {
 interface OptionsDropdownProps {
 	id?: number;
 	rec_no?: number;
+	isAxisEnabled: boolean;
+	isModalOpen: boolean;
 	onChangeTheme: () => void;
 	onChangeHUD: () => void;
+	onOpenModal: () => void;
+	onCloseModal: () => void;
+	onAxisToggle: () => void;
 }
 
 const getId = (id: number): string => {
@@ -37,11 +43,16 @@ const getId = (id: number): string => {
 const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	id,
 	rec_no,
+	isAxisEnabled,
+	isModalOpen,
 	onChangeTheme,
 	onChangeHUD,
+	onOpenModal,
+	onCloseModal,
+	onAxisToggle,
 }) => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+
 	const ref = useRef<HTMLDivElement>(null);
 
 	const toggleDropdown = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -50,13 +61,16 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	};
 
 	const downloadFile = async (fileType: string) => {
-		if (id && rec_no) {
+		if (id !== undefined && rec_no != undefined) {
 			const fileUrl = `${S3_BASE_URL}${encodeURIComponent(
 				getId(id)
 			)}/colmap/${encodeURIComponent(rec_no.toString())}/${fileType}`;
 			try {
 				const response = await fetch(fileUrl);
-				const blob = await response.blob(); // Directly handle as blob
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				const blob = await response.blob(); // directly handle as blob
 				const href = window.URL.createObjectURL(blob);
 				const link = document.createElement("a");
 				link.href = href;
@@ -73,22 +87,31 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 
 	const options: Option[] = [
 		{
+			id: "controls",
+			label: "Controls",
+			icon: <IconKeyboard size={16} stroke={2.5} />,
+			onClick: () => {
+				onOpenModal();
+				setIsOpen(false);
+			},
+		},
+		{
 			id: "hud",
 			label: "Hide HUD",
 			icon: <IconHospital size={16} stroke={2.5} />,
 			onClick: () => onChangeHUD(),
 		},
 		{
+			id: "axis",
+			label: isAxisEnabled ? "Hide Axis" : "Show Axis",
+			icon: <IconAxisX size={16} stroke={2.5} />,
+			onClick: () => onAxisToggle(),
+		},
+		{
 			id: "theme",
 			label: "Swap Theme",
 			icon: <IconBrightnessFilled size={16} />,
 			onClick: () => onChangeTheme(),
-		},
-		{
-			id: "controls",
-			label: "Controls",
-			icon: <IconKeyboard size={16} stroke={2.5} />,
-			onClick: () => setIsModalOpen(true),
 		},
 		{
 			id: "download",
@@ -98,6 +121,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 				downloadFile("images.bin");
 				downloadFile("points3D.bin");
 				downloadFile("cameras.bin");
+				setIsOpen(false);
 			},
 		},
 		{
@@ -109,6 +133,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					"https://github.com/MegaScenes/web-viewer/",
 					"_blank"
 				);
+				setIsOpen(false);
 			},
 		},
 		{
@@ -117,6 +142,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 			icon: <IconAppWindow size={16} stroke={2.5} />,
 			onClick: () => {
 				window.open("https://megascenes.github.io/", "_blank");
+				setIsOpen(false);
 			},
 		},
 	];
@@ -182,9 +208,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					))}
 				</ul>
 			)}
-			{isModalOpen && (
-				<ControlsModal onClose={() => setIsModalOpen(false)} />
-			)}
+			{isModalOpen && <ControlsModal onClose={onCloseModal} />}
 		</div>
 	);
 };
