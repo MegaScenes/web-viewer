@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import {
 	IconCaretDownFilled,
 	IconCaretUpFilled,
@@ -24,12 +24,14 @@ interface Option {
 interface OptionsDropdownProps {
 	id?: number;
 	rec_no?: number;
+	isMenuOpen: boolean;
 	isAxisEnabled: boolean;
 	isModalOpen: boolean;
 	onChangeHUD: () => void;
 	onOpenModal: () => void;
 	onCloseModal: () => void;
 	onAxisToggle: () => void;
+	toggleMenu: (value: boolean) => void;
 }
 
 const getId = (id: number): string => {
@@ -41,20 +43,20 @@ const getId = (id: number): string => {
 const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	id,
 	rec_no,
+	isMenuOpen,
 	isAxisEnabled,
 	isModalOpen,
 	onChangeHUD,
 	onOpenModal,
 	onCloseModal,
 	onAxisToggle,
+	toggleMenu,
 }) => {
-	const [isOpen, setIsOpen] = useState<boolean>(false);
-
 	const ref = useRef<HTMLDivElement>(null);
 
 	const toggleDropdown = (event: React.MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
-		setIsOpen(!isOpen);
+		toggleMenu(!isMenuOpen);
 	};
 
 	const downloadFile = async (fileType: string) => {
@@ -89,20 +91,26 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 			icon: <IconKeyboard size={16} stroke={2.5} />,
 			onClick: () => {
 				onOpenModal();
-				setIsOpen(false);
+				toggleMenu(false);
 			},
 		},
 		{
 			id: "hud",
 			label: "Hide HUD",
 			icon: <IconHospital size={16} stroke={2.5} />,
-			onClick: () => onChangeHUD(),
+			onClick: () => {
+				onChangeHUD();
+				toggleMenu(false);
+			},
 		},
 		{
 			id: "axis",
 			label: isAxisEnabled ? "Hide Axis" : "Show Axis",
 			icon: <IconAxisX size={16} stroke={2.5} />,
-			onClick: () => onAxisToggle(),
+			onClick: () => {
+				onAxisToggle();
+				toggleMenu(false);
+			},
 		},
 		{
 			id: "download",
@@ -112,7 +120,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 				downloadFile("images.bin");
 				downloadFile("points3D.bin");
 				downloadFile("cameras.bin");
-				setIsOpen(false);
+				toggleMenu(false);
 			},
 		},
 		{
@@ -124,7 +132,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					"https://github.com/MegaScenes/web-viewer/",
 					"_blank"
 				);
-				setIsOpen(false);
+				toggleMenu(false);
 			},
 		},
 		{
@@ -133,7 +141,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 			icon: <IconAppWindow size={16} stroke={2.5} />,
 			onClick: () => {
 				window.open("https://megascenes.github.io/", "_blank");
-				setIsOpen(false);
+				toggleMenu(false);
 			},
 		},
 	];
@@ -141,7 +149,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (ref.current && !ref.current.contains(event.target as Node)) {
-				setIsOpen(false);
+				toggleMenu(false);
 			}
 		};
 
@@ -160,7 +168,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					<span className="text-white font-medium font-sans">
 						Options
 					</span>
-					{isOpen ? (
+					{isMenuOpen ? (
 						<IconCaretUpFilled
 							size={16}
 							stroke={1.5}
@@ -175,7 +183,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 					)}
 				</div>
 			</button>
-			{isOpen && (
+			{isMenuOpen && (
 				<ul className="absolute bg-white shadow-md mt-2 rounded-md w-full z-10">
 					{options.map((option, index) => (
 						<li
