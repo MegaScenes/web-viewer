@@ -73,7 +73,6 @@ const Cameras: React.FC<CamerasProps> = ({
 			raycaster.setFromCamera(mouse, camera);
 
 			const intersects = raycaster.intersectObjects(planeMeshes, true);
-			console.log("Intersections found:", intersects.length, intersects);
 
 			if (selectedCamera) {
 				(

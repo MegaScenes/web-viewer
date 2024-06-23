@@ -164,10 +164,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 				</div>
 				<button
 					className="absolute top-5 right-5 text-white"
-					onClick={() => {
-						onClose();
-						console.log("clicked");
-					}}
+					onClick={onClose}
 				>
 					<IconX size={24} stroke={2.5} />
 				</button>

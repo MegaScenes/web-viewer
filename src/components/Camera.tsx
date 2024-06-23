@@ -40,9 +40,6 @@ const Camera: React.FC<CameraProps> = ({
 			}
 			scene.remove(group);
 		};
-		// return () => {
-		// 	scene.remove(group);
-		// };
 	}, [scene]);
 
 	const cameraData = useMemo(() => {
