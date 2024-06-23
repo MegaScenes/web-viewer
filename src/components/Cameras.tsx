@@ -89,7 +89,7 @@ const Cameras: React.FC<CamerasProps> = ({
 				onOpenImageModal(cam.userData.imageData, cam.userData.camData);
 			}
 		},
-		[planeMeshes, lineMeshes, camera, selectedCamera]
+		[planeMeshes, lineMeshes, camera, selectedCamera, onOpenImageModal]
 	);
 
 	useEffect(() => {
