@@ -21,12 +21,10 @@ interface ImageModalProps {
 
 const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 	const [imgSrc, setImgSrc] = useState<string | null>(null);
-	if (data === undefined) return null;
-	const imageData = data[0];
-	const camData = data[1];
 
 	useEffect(() => {
 		if (id === undefined || data === undefined) return;
+		const imageData = data[0];
 		const fetchImage = async (name: string) => {
 			const response = await fetch(
 				`${S3_IMAGES_URL}${getId(id)}/${name}`
@@ -37,7 +35,11 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 		};
 
 		fetchImage(imageData.name);
-	}, [imageData]);
+	}, [id, data]);
+
+	if (data === undefined) return null;
+	const imageData = data[0];
+	const camData = data[1];
 
 	const [, cat, , , file] = imageData.name.split("/");
 

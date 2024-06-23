@@ -213,7 +213,16 @@ const Camera: React.FC<CameraProps> = ({
 
 			onLoaded();
 		}
-	}, [cameraData, camScale, onLoaded, scene, onPlaneRef, onLineRef]);
+	}, [
+		cameraData,
+		camScale,
+		onLoaded,
+		scene,
+		onPlaneRef,
+		onLineRef,
+		camData,
+		imageData,
+	]);
 
 	return <group ref={groupRef} />;
 };
