@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 import { useThree } from "@react-three/fiber";
