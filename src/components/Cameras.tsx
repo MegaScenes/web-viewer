@@ -38,12 +38,29 @@ const Cameras: React.FC<CamerasProps> = ({
 		setLoadedCount((prev) => prev + 1);
 	}, []);
 
-	const handlePlaneRef = useCallback((mesh: THREE.Mesh) => {
-		setPlaneMeshes((prev) => [...prev, mesh]);
-	}, []);
+	const handlePlaneRef = useCallback(
+		(mesh: THREE.Mesh | null | undefined) => {
+			if (!mesh) {
+				setPlaneMeshes([]);
+				return;
+			}
+			setPlaneMeshes((prev) => [
+				...prev.filter((m) => m.uuid !== mesh.uuid),
+				mesh,
+			]);
+		},
+		[]
+	);
 
-	const handleLineRef = useCallback((line: THREE.Line) => {
-		setLineMeshes((prev) => [...prev, line]);
+	const handleLineRef = useCallback((line: THREE.Line | null | undefined) => {
+		if (!line) {
+			setLineMeshes([]);
+			return;
+		}
+		setLineMeshes((prev) => [
+			...prev.filter((l) => l.uuid !== line.uuid),
+			line,
+		]);
 	}, []);
 
 	const handleDoubleClick = useCallback(
@@ -56,6 +73,7 @@ const Cameras: React.FC<CamerasProps> = ({
 			raycaster.setFromCamera(mouse, camera);
 
 			const intersects = raycaster.intersectObjects(planeMeshes, true);
+			console.log("Intersections found:", intersects.length, intersects);
 
 			if (selectedCamera) {
 				(
