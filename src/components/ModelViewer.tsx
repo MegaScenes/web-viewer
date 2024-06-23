@@ -2,27 +2,30 @@ import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Scene from "./Scene";
+import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 interface ModelViewerProps {
 	id: number;
-	no: number;
+	rec_no: number;
 	pointScale: number;
 	camScale: number;
 	controlsRef: React.MutableRefObject<any>;
 	isAxisEnabled: boolean;
-	onLoaded: () => void;
 	clearScene: boolean;
+	onLoaded: () => void;
+	onOpenImageModal: (imageData: ImageData, camData: CameraData) => void;
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = ({
 	id,
-	no,
+	rec_no,
 	pointScale,
 	camScale,
 	controlsRef,
 	isAxisEnabled,
-	onLoaded,
 	clearScene,
+	onLoaded,
+	onOpenImageModal,
 }) => {
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
@@ -30,12 +33,13 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 			<pointLight />
 			<Scene
 				id={id}
-				no={no}
+				rec_no={rec_no}
 				pointScale={pointScale}
 				camScale={camScale}
 				clearScene={clearScene}
 				isAxisEnabled={isAxisEnabled}
 				onLoaded={onLoaded}
+				onOpenImageModal={onOpenImageModal}
 			/>
 			<OrbitControls
 				ref={controlsRef}

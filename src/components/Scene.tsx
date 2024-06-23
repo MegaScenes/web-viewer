@@ -8,33 +8,35 @@ import {
 } from "../hooks/useCOLMAPLoader";
 import Cameras from "./Cameras";
 import { useProgress } from "@react-three/drei";
-
+import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 interface SceneProps {
 	id: number;
-	no: number;
+	rec_no: number;
 	pointScale: number;
 	camScale: number;
 	clearScene: boolean;
 	isAxisEnabled: boolean;
 	onLoaded?: () => void;
+	onOpenImageModal: (imageData: ImageData, camData: CameraData) => void;
 }
 
 const Scene: React.FC<SceneProps> = ({
 	id,
-	no,
+	rec_no,
 	pointScale,
 	camScale,
 	clearScene,
 	isAxisEnabled,
 	onLoaded,
+	onOpenImageModal,
 }) => {
 	const { scene } = useThree();
 	const { loaded, total } = useProgress();
 	const [pointCloud, setPointCloud] = useState<THREE.Points | null>(null);
 
-	const geometry = usePointLoader(id, no);
-	const imgs = useImageData(id, no);
-	const cams = useCameraData(id, no);
+	const geometry = usePointLoader(id, rec_no);
+	const imgs = useImageData(id, rec_no);
+	const cams = useCameraData(id, rec_no);
 	const circleTexture = useLoader(
 		THREE.TextureLoader,
 		"/web-viewer/images/circle.png"
@@ -88,6 +90,7 @@ const Scene: React.FC<SceneProps> = ({
 				camData={cams}
 				camScale={camScale}
 				onAllImagesLoaded={() => {}}
+				onOpenImageModal={onOpenImageModal}
 			/>
 			{isAxisEnabled && <axesHelper args={[10]} />}
 		</>
