@@ -131,6 +131,7 @@ const Home: React.FC = () => {
 	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
 	const [isAxisEnabled, setIsAxisEnabled] = useState<boolean>(true);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
 	const [data, setData] = useState<[ImageData, CameraData] | undefined>(
 		undefined
@@ -183,6 +184,8 @@ const Home: React.FC = () => {
 				case "p": // toggle side panel
 					setIsOpen((prev) => !prev);
 					setIsModalOpen(false);
+					setIsImageModalOpen(false);
+					setIsMenuOpen(false);
 					break;
 				case "x": // toggle axis
 					setIsAxisEnabled((prev) => !prev);
@@ -332,6 +335,10 @@ const Home: React.FC = () => {
 		togglePanel(false);
 	}, [togglePanel]);
 
+	const handleToggleMenu = useCallback((value: boolean) => {
+		setIsMenuOpen(value);
+	}, []);
+
 	const handleOnOpenImageModal = useCallback(
 		(imageData: ImageData, camData: CameraData) => {
 			setIsImageModalOpen(true);
@@ -343,6 +350,10 @@ const Home: React.FC = () => {
 
 	const handleOnCloseModal = useCallback(() => {
 		setIsModalOpen(false);
+	}, []);
+
+	const handleOnAxisToggle = useCallback(() => {
+		setIsAxisEnabled((prev) => !prev);
 	}, []);
 
 	const handleOnCloseImageModal = useCallback(() => {
@@ -384,14 +395,14 @@ const Home: React.FC = () => {
 									rec_no={
 										selectedRec ? selectedRec[1] : undefined
 									}
+									isMenuOpen={isMenuOpen}
 									isAxisEnabled={isAxisEnabled}
 									isModalOpen={isModalOpen}
 									onChangeHUD={() => setHud(false)}
 									onOpenModal={handleOnOpenModal}
 									onCloseModal={handleOnCloseModal}
-									onAxisToggle={() =>
-										setIsAxisEnabled((prev) => !prev)
-									}
+									onAxisToggle={handleOnAxisToggle}
+									toggleMenu={handleToggleMenu}
 								/>
 							</>
 						)}
