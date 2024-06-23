@@ -33,6 +33,9 @@ const Mouse: React.FC = () => (
 			<span className="absolute top-[236px] left-[70px] text-medium text-white opacity-80 font-light">
 				Zoom
 			</span>
+			<span className="absolute top-[280px] left-[54px] text-xs font-semibold text-white leading-relaxed tracking-wider opacity-90">
+				Double Click <br /> Cameras for <br /> Image Meta!
+			</span>
 		</div>
 	</>
 );

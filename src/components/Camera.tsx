@@ -8,8 +8,8 @@ interface CameraProps {
 	camData?: CameraData;
 	camScale: number;
 	onLoaded: () => void;
-	onPlaneRef: (mesh: THREE.Mesh) => void;
-	onLineRef: (line: THREE.Line) => void;
+	onPlaneRef: (mesh: THREE.Mesh | null | undefined) => void;
+	onLineRef: (line: THREE.Line | null | undefined) => void;
 }
 
 const Camera: React.FC<CameraProps> = ({
@@ -29,8 +29,20 @@ const Camera: React.FC<CameraProps> = ({
 		scene.add(group);
 
 		return () => {
+			while (group.children.length) {
+				const child = group.children[0];
+				if (child instanceof THREE.Mesh) {
+					onPlaneRef(null);
+				} else if (child instanceof THREE.Line) {
+					onLineRef(null);
+				}
+				group.remove(child);
+			}
 			scene.remove(group);
 		};
+		// return () => {
+		// 	scene.remove(group);
+		// };
 	}, [scene]);
 
 	const cameraData = useMemo(() => {
@@ -213,6 +225,10 @@ const Camera: React.FC<CameraProps> = ({
 
 			onLoaded();
 		}
+
+		return () => {
+			onPlaneRef(null);
+		};
 	}, [
 		cameraData,
 		camScale,
@@ -223,6 +239,15 @@ const Camera: React.FC<CameraProps> = ({
 		camData,
 		imageData,
 	]);
+
+	useEffect(() => {
+		const plane = planeRef.current;
+		onPlaneRef(plane); // Register the plane
+
+		return () => {
+			onPlaneRef(null); // Signal that the plane should be removed
+		};
+	}, [cameraData]); // Depend on cameraData or other identifiers if necessary
 
 	return <group ref={groupRef} />;
 };
