@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 import { useThree } from "@react-three/fiber";
@@ -8,6 +8,8 @@ interface CameraProps {
 	camData?: CameraData;
 	camScale: number;
 	onLoaded: () => void;
+	onPlaneRef: (mesh: THREE.Mesh) => void;
+	onLineRef: (line: THREE.Line) => void;
 }
 
 const Camera: React.FC<CameraProps> = ({
@@ -15,9 +17,12 @@ const Camera: React.FC<CameraProps> = ({
 	camData,
 	camScale,
 	onLoaded,
+	onPlaneRef,
+	onLineRef,
 }) => {
 	const { scene } = useThree();
 	const groupRef = useRef<THREE.Group>(new THREE.Group());
+	const planeRef = useRef<THREE.Mesh>();
 
 	useEffect(() => {
 		const group = groupRef.current;
@@ -189,6 +194,10 @@ const Camera: React.FC<CameraProps> = ({
 			plane.applyMatrix4(cameraData.T);
 			scene.add(plane);
 			group.add(plane);
+			plane.userData.imageData = imageData;
+			plane.userData.camData = camData;
+			planeRef.current = plane;
+			onPlaneRef(plane);
 
 			cameraData.lines.forEach((line: THREE.Vector3[]) => {
 				const geometry = new THREE.BufferGeometry().setFromPoints(line);
@@ -196,13 +205,15 @@ const Camera: React.FC<CameraProps> = ({
 					color: "red",
 				});
 				const lineMesh = new THREE.Line(geometry, material);
+				lineMesh.userData.planeId = plane.uuid;
 				scene.add(lineMesh);
 				group.add(lineMesh);
+				onLineRef(lineMesh);
 			});
 
 			onLoaded();
 		}
-	}, [cameraData, camScale, onLoaded, scene]);
+	}, [cameraData, camScale, onLoaded, scene, onPlaneRef, onLineRef]);
 
 	return <group ref={groupRef} />;
 };

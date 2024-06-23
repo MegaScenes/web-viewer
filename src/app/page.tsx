@@ -16,7 +16,9 @@ import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
+import ImageModal from "../components/ImageModal";
 import { SceneType } from "@/types/scene";
+import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 const CAM_MAX_SCALE = 1;
 const CAM_MIN_SCALE = 0.05;
@@ -129,6 +131,10 @@ const Home: React.FC = () => {
 	const [shortcutsDisabled, setShortcutsDisabled] = useState<boolean>(false);
 	const [isAxisEnabled, setIsAxisEnabled] = useState<boolean>(true);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
+	const [data, setData] = useState<[ImageData, CameraData] | undefined>(
+		undefined
+	);
 	const controlsRef = useRef<any>(null);
 	const movementRef = useRef<{ [key: string]: boolean }>({});
 
@@ -166,6 +172,7 @@ const Home: React.FC = () => {
 				case "Escape": // escape invisible hud
 					setHud(true);
 					setIsModalOpen(false);
+					setIsImageModalOpen(false);
 					break;
 				case " ": // reset camera
 					if (controlsRef && controlsRef.current) {
@@ -286,6 +293,7 @@ const Home: React.FC = () => {
 		setIsOpen(value);
 		if (value) {
 			setIsModalOpen(false);
+			setIsImageModalOpen(false);
 		}
 	}, []);
 
@@ -324,8 +332,21 @@ const Home: React.FC = () => {
 		togglePanel(false);
 	}, [togglePanel]);
 
+	const handleOnOpenImageModal = useCallback(
+		(imageData: ImageData, camData: CameraData) => {
+			setIsImageModalOpen(true);
+			setData([imageData, camData]);
+			togglePanel(false);
+		},
+		[togglePanel]
+	);
+
 	const handleOnCloseModal = useCallback(() => {
 		setIsModalOpen(false);
+	}, []);
+
+	const handleOnCloseImageModal = useCallback(() => {
+		setIsImageModalOpen(false);
 	}, []);
 
 	useEffect(() => {
@@ -391,13 +412,14 @@ const Home: React.FC = () => {
 							<ModelViewer
 								key={selectedRec[0].id}
 								id={selectedRec[0].id}
-								no={selectedRec[1]}
+								rec_no={selectedRec[1]}
 								pointScale={pointScale}
 								camScale={camScale}
 								controlsRef={controlsRef}
 								isAxisEnabled={isAxisEnabled}
-								onLoaded={handleOnLoaded}
 								clearScene={clearScene}
+								onLoaded={handleOnLoaded}
+								onOpenImageModal={handleOnOpenImageModal}
 							/>
 						) : (
 							<div
@@ -455,6 +477,13 @@ const Home: React.FC = () => {
 					}}
 					isOpen={isOpen}
 					togglePanel={(bool: boolean) => togglePanel(bool)}
+				/>
+			)}
+			{isImageModalOpen && (
+				<ImageModal
+					id={selectedRec ? selectedRec[0].id : undefined}
+					data={data}
+					onClose={handleOnCloseImageModal}
 				/>
 			)}
 		</Suspense>

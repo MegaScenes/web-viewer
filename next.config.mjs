@@ -2,7 +2,7 @@
 const nextConfig = {
 	basePath: "/web-viewer",
 	assetPrefix: "/web-viewer",
-	images: { unoptimized: true },
+	images: { loader: "custom", loaderFile: "./loader.ts" },
 	output: "export",
 };
 

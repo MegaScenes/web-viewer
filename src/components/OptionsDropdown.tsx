@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import {
 	IconCaretDownFilled,
 	IconCaretUpFilled,
-	IconBrightnessFilled,
 	IconDownload,
 	IconHospital,
 	IconBrandGithub,

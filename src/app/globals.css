@@ -7,3 +7,7 @@
 button:focus {
 	outline: none;
 }
+
+.icon-style {
+	pointer-events: none;
+}

@@ -62,6 +62,7 @@ const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
 	offset += 8;
 
 	const images = [];
+	const decoder = new TextDecoder("utf-8");
 
 	for (let i = 0; i < numRegImages; i++) {
 		const imageId = dataview.getUint32(offset, true);
@@ -83,12 +84,14 @@ const parseImageData = (buffer: ArrayBuffer): ImageData[] => {
 		const cameraId = dataview.getUint32(offset, true);
 		offset += 4;
 
-		let imageName = "";
+		let imageNameBytes = [];
 		while (offset < buffer.byteLength) {
 			const charCode = dataview.getUint8(offset++);
 			if (charCode === 0) break;
-			imageName += String.fromCharCode(charCode);
+			imageNameBytes.push(charCode);
 		}
+
+		const imageName = decoder.decode(new Uint8Array(imageNameBytes));
 
 		let numPoints2D = dataview.getBigUint64(offset, true);
 		offset += 8;
@@ -120,6 +123,7 @@ const parseMiniImageData = (buffer: ArrayBuffer): ImageData[] => {
 	offset += 8;
 
 	const images = [];
+	const decoder = new TextDecoder("utf-8");
 
 	for (let i = 0; i < numRegImages; i++) {
 		const imageId = dataview.getUint32(offset, true);
@@ -141,12 +145,14 @@ const parseMiniImageData = (buffer: ArrayBuffer): ImageData[] => {
 		const cameraId = dataview.getUint32(offset, true);
 		offset += 4;
 
-		let imageName = "";
+		let imageNameBytes = [];
 		while (offset < buffer.byteLength) {
 			const charCode = dataview.getUint8(offset++);
 			if (charCode === 0) break;
-			imageName += String.fromCharCode(charCode);
+			imageNameBytes.push(charCode);
 		}
+
+		const imageName = decoder.decode(new Uint8Array(imageNameBytes));
 
 		images.push({
 			id: imageId,
