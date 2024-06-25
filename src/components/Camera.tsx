@@ -40,7 +40,7 @@ const Camera: React.FC<CameraProps> = ({
 			}
 			scene.remove(group);
 		};
-	}, [scene]);
+	}, [scene, onPlaneRef, onLineRef]);
 
 	const cameraData = useMemo(() => {
 		if (!camData) return null;
@@ -239,12 +239,12 @@ const Camera: React.FC<CameraProps> = ({
 
 	useEffect(() => {
 		const plane = planeRef.current;
-		onPlaneRef(plane); // Register the plane
+		onPlaneRef(plane);
 
 		return () => {
-			onPlaneRef(null); // Signal that the plane should be removed
+			onPlaneRef(null);
 		};
-	}, [cameraData]); // Depend on cameraData or other identifiers if necessary
+	}, [cameraData, onPlaneRef]);
 
 	return <group ref={groupRef} />;
 };
