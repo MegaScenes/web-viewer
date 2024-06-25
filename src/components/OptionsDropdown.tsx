@@ -157,7 +157,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
-	}, [ref]);
+	}, [ref, toggleMenu]);
 	return (
 		<div className="relative" ref={ref}>
 			<button
