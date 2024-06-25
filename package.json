@@ -12,6 +12,7 @@
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
 		"@mui/material": "^5.15.18",
+		"@next/third-parties": "^14.2.4",
 		"@react-three/drei": "^9.105.4",
 		"@react-three/fiber": "^8.16.2",
 		"@tabler/icons-react": "^3.2.0",
