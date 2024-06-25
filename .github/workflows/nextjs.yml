@@ -76,7 +76,7 @@ jobs:
             - name: Build with Next.js
               run: ${{ steps.detect-package-manager.outputs.runner }} next build
               env:
-                  NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID }}
+                  NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID}}
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
