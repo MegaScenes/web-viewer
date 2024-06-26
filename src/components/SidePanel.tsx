@@ -95,7 +95,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 				<div className="flex flex-col w-11/12 mt-2">
 					{scene ? (
 						<h2
-							className={`text-xl font-bold mb-4 text-offwhite break-all`}
+							className={`text-xl font-bold mb-4 text-offwhite break-all select-none`}
 						>
 							Viewing Reconstruction{" "}
 							<span className="text-blue-500">
@@ -123,7 +123,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 							</h3>
 						</>
 					)}
-					<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-4 select-none">
 						{scene &&
 							Array.from(
 								{ length: scene.no_of_rec },
