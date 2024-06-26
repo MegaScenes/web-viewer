@@ -70,7 +70,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 								<IconX size={24} stroke={2.5} />
 							</button>
 							<button
-								className="absolute top-[22px] right-6 text-white z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+								className="absolute top-[21.5px] right-[21.5px] text-white z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
 								onClick={() => setIsMinimized(false)}
 							>
 								<IconWindowMaximize size={20} stroke={2.5} />
@@ -213,7 +213,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 							<IconX size={24} stroke={2.5} />
 						</button>
 						<button
-							className="absolute top-[22px] left-6 text-white"
+							className="absolute top-[22px] left-[21.5px] text-white"
 							onClick={() => setIsMinimized(true)}
 						>
 							<IconWindowMinimize size={20} stroke={2.5} />
