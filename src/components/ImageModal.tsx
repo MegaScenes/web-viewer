@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { IconX, IconPhoto, IconFolder } from "@tabler/icons-react";
+import {
+	IconX,
+	IconPhoto,
+	IconFolder,
+	IconWindowMinimize,
+	IconWindowMaximize,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
@@ -21,6 +27,7 @@ interface ImageModalProps {
 
 const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 	const [imgSrc, setImgSrc] = useState<string | null>(null);
+	const [isMinimized, setIsMinimized] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (id === undefined || data === undefined) return;
@@ -44,132 +51,177 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 	const [, cat, , , file] = imageData.name.split("/");
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-			<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4  w-3/4 h-auto">
-				<div className="flex flex-col justify-center items-center">
-					<div className="relative w-full h-96">
-						{imgSrc && (
-							<div className="relative w-full h-full">
-								<Image
-									src={imgSrc}
-									alt={file}
-									fill={true}
-									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-									style={{ objectFit: "contain" }}
-									className="p-4"
-								/>
+		<>
+			{isMinimized ? (
+				<div className="absolute flex flex-col justify-center items-start left-[30px] bottom-[30px] w-[300px] h-[300px] bg-green-500">
+					{imgSrc && (
+						<div className="absolute bottom-0 left-0 z-50 transition-opacity duration-300 group">
+							<Image
+								className="max-h-[300px] w-auto border-2 group-hover:opacity-50 rounded-lg shadow-lg"
+								src={imgSrc}
+								alt={file}
+								width={300}
+								height={300}
+							/>
+							<button
+								className="absolute top-5 left-5 text-white z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+								onClick={onClose}
+							>
+								<IconX size={24} stroke={2.5} />
+							</button>
+							<button
+								className="absolute top-[21.5px] right-[21.5px] text-white z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+								onClick={() => setIsMinimized(false)}
+							>
+								<IconWindowMaximize size={20} stroke={2.5} />
+							</button>
+						</div>
+					)}
+				</div>
+			) : (
+				<div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
+					<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4 w-3/4 h-auto border-2">
+						<div className="flex flex-col justify-center items-center">
+							<div className="relative w-full h-96">
+								{imgSrc && (
+									<div className="relative w-full h-full">
+										<Image
+											src={imgSrc}
+											alt={file}
+											fill
+											sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+											style={{ objectFit: "contain" }}
+											className="p-4"
+										/>
+									</div>
+								)}
 							</div>
-						)}
-					</div>
-					<div className="flex flex-row justify-center items-center gap-4 w-full">
-						<a
-							href={`${WIKI_IMAGE_URL}${file}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white rounded-full hover:bg-slate-500 transition duration-300"
+							<div className="flex flex-row justify-center items-center gap-4 w-full">
+								<a
+									href={`${WIKI_IMAGE_URL}${file}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white rounded-full hover:bg-slate-500 transition duration-300"
+								>
+									<IconPhoto size={14} stroke={2} /> View on
+									Wikimedia
+								</a>
+								<a
+									href={`${WIKI_CAT_URL}${cat}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white  rounded-full hover:bg-slate-500 transition duration-300"
+								>
+									<IconFolder size={14} stroke={2} /> View
+									Category
+								</a>
+							</div>
+							<div className="w-full overflow-auto">
+								<table className="w-full text-left border-collapse">
+									<tbody>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												image_id:
+											</td>
+											<td className="py-2 px-4">
+												{imageData.id}
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												camera_id:
+											</td>
+											<td className="py-2 px-4">
+												{camData.cameraId}
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												camera_model:
+											</td>
+											<td className="py-2 px-4">
+												{camData.model}
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												camera_params:
+											</td>
+											<td className="py-2 px-4">
+												[
+												{camData.params
+													.map((num) =>
+														num.toFixed(3)
+													)
+													.join(", ")}
+												]
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												qw, qx, qy, qz:
+											</td>
+											<td className="py-2 px-4">
+												[
+												{imageData.qvec
+													.map((num) =>
+														num.toFixed(3)
+													)
+													.join(", ")}
+												]
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												tx, ty, tz:
+											</td>
+											<td className="py-2 px-4">
+												[
+												{imageData.tvec
+													.map((num) =>
+														num.toFixed(3)
+													)
+													.join(", ")}
+												]
+											</td>
+										</tr>
+										<tr className="border-b">
+											<td className="py-2 px-4 font-semibold">
+												dims:
+											</td>
+											<td className="py-2 px-4">
+												{camData.width} x{" "}
+												{camData.height}
+											</td>
+										</tr>
+										<tr>
+											<td className="py-2 px-4 font-semibold">
+												name:
+											</td>
+											<td className="py-2 px-4">
+												{imageData.name}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<button
+							className="absolute top-5 right-5 text-white"
+							onClick={onClose}
 						>
-							<IconPhoto size={14} stroke={2} /> View on Wikimedia
-						</a>
-						<a
-							href={`${WIKI_CAT_URL}${cat}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white  rounded-full hover:bg-slate-500 transition duration-300"
+							<IconX size={24} stroke={2.5} />
+						</button>
+						<button
+							className="absolute top-[22px] left-[21.5px] text-white"
+							onClick={() => setIsMinimized(true)}
 						>
-							<IconFolder size={14} stroke={2} /> View Category
-						</a>
-					</div>
-					<div className="w-full overflow-auto">
-						<table className="w-full text-left border-collapse">
-							<tbody>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										image_id:
-									</td>
-									<td className="py-2 px-4">
-										{imageData.id}
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										camera_id:
-									</td>
-									<td className="py-2 px-4">
-										{camData.cameraId}
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										camera_model:
-									</td>
-									<td className="py-2 px-4">
-										{camData.model}
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										camera_params:
-									</td>
-									<td className="py-2 px-4">
-										[
-										{camData.params
-											.map((num) => num.toFixed(3))
-											.join(", ")}
-										]
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										qw, qx, qy, qz:
-									</td>
-									<td className="py-2 px-4">
-										[
-										{imageData.qvec
-											.map((num) => num.toFixed(3))
-											.join(", ")}
-										]
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										tx, ty, tz:
-									</td>
-									<td className="py-2 px-4">
-										[
-										{imageData.tvec
-											.map((num) => num.toFixed(3))
-											.join(", ")}
-										]
-									</td>
-								</tr>
-								<tr className="border-b">
-									<td className="py-2 px-4 font-semibold">
-										dims:
-									</td>
-									<td className="py-2 px-4">
-										{camData.width} x {camData.height}
-									</td>
-								</tr>
-								<tr>
-									<td className="py-2 px-4 font-semibold">
-										name:
-									</td>
-									<td className="py-2 px-4">
-										{imageData.name}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+							<IconWindowMinimize size={20} stroke={2.5} />
+						</button>
 					</div>
 				</div>
-				<button
-					className="absolute top-5 right-5 text-white"
-					onClick={onClose}
-				>
-					<IconX size={24} stroke={2.5} />
-				</button>
-			</div>
-		</div>
+			)}
+		</>
 	);
 };
 
