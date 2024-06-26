@@ -376,6 +376,13 @@ const Home: React.FC = () => {
 				</div>
 			}
 		>
+			{hud && isImageModalOpen && (
+				<ImageModal
+					id={selectedRec ? selectedRec[0].id : undefined}
+					data={data}
+					onClose={handleOnCloseImageModal}
+				/>
+			)}
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
 					<div className="flex flex-row items-center justify-between mr-3 gap-4">
@@ -488,13 +495,6 @@ const Home: React.FC = () => {
 					}}
 					isOpen={isOpen}
 					togglePanel={(bool: boolean) => togglePanel(bool)}
-				/>
-			)}
-			{isImageModalOpen && (
-				<ImageModal
-					id={selectedRec ? selectedRec[0].id : undefined}
-					data={data}
-					onClose={handleOnCloseImageModal}
 				/>
 			)}
 		</Suspense>
