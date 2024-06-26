@@ -12,7 +12,13 @@ const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
 });
 
-import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
+import {
+	IconZoomIn,
+	IconMinus,
+	IconZoomOut,
+	IconPlus,
+	IconRefresh,
+} from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
@@ -136,6 +142,8 @@ const Home: React.FC = () => {
 	const [data, setData] = useState<[ImageData, CameraData] | undefined>(
 		undefined
 	);
+	const [isPlusHovered, setIsPlusHovered] = useState<boolean>(false);
+	const [isMinusHovered, setIsMinusHovered] = useState<boolean>(false);
 	const controlsRef = useRef<any>(null);
 	const movementRef = useRef<{ [key: string]: boolean }>({});
 
@@ -450,37 +458,58 @@ const Home: React.FC = () => {
 					{hud && (
 						<>
 							<button
-								className="absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full text-white shadow-lg"
+								className="absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full text-white shadow-lg hover:bg-red-400 transition-bg duration-300 group active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 								aria-label="Reset Button"
 								onClick={handleResetCamera}
 							>
 								<IconRefresh
+									className="transform group-hover:rotate-180 duration-300"
 									size={24}
 									stroke={1.5}
 									color="white"
 								/>
 							</button>
 							<button
-								className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 								aria-label="Zoom In"
 								onClick={handleZoomIn}
+								onMouseEnter={() => setIsPlusHovered(true)}
+								onMouseLeave={() => setIsPlusHovered(false)}
 							>
-								<IconZoomIn
-									size={24}
-									stroke={1.5}
-									color="black"
-								/>
+								{isPlusHovered ? (
+									<IconPlus
+										size={24}
+										stroke={2}
+										color="black"
+									/>
+								) : (
+									<IconZoomIn
+										size={24}
+										stroke={1.5}
+										color="black"
+									/>
+								)}
 							</button>
 							<button
-								className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 								aria-label="Zoom Out"
 								onClick={handleZoomOut}
+								onMouseEnter={() => setIsMinusHovered(true)}
+								onMouseLeave={() => setIsMinusHovered(false)}
 							>
-								<IconZoomOut
-									size={24}
-									stroke={1.5}
-									color="black"
-								/>
+								{isMinusHovered ? (
+									<IconMinus
+										size={24}
+										stroke={2}
+										color="black"
+									/>
+								) : (
+									<IconZoomOut
+										size={24}
+										stroke={1.5}
+										color="black"
+									/>
+								)}
 							</button>
 						</>
 					)}

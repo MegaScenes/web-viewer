@@ -117,9 +117,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
 							<h3
 								className={`text-sm font-bold mb-4 text-offwhite`}
 							>
-								Note: some reconstructions take a while to load
-								(~1-2 min) due to fetching uncompressed data
-								from AWS S3.
+								Note: some reconstructions can take longer to
+								load due to fetching uncompressed data from AWS
+								S3
 							</h3>
 						</>
 					)}

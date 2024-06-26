@@ -25,6 +25,14 @@ const config: Config = {
 				lessoffwhite: "#E0E0E0",
 				offblack: "#202020",
 			},
+			rotate: {
+				"180": "180deg",
+			},
+		},
+	},
+	variants: {
+		extend: {
+			rotate: ["hover"],
 		},
 	},
 	plugins: [],

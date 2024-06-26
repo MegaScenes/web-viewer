@@ -161,7 +161,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 	return (
 		<div className="relative" ref={ref}>
 			<button
-				className="bg-gray-600 pl-5 pr-5 pt-2 pb-2 rounded-full shadow-lg"
+				className="bg-gray-600 hover:bg-gray-500 transition-bg duration-300 pl-5 pr-5 pt-2 pb-2 rounded-full shadow-lg active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 				onClick={toggleDropdown}
 			>
 				<div className="flex flex-row items-center justify-center gap-3">
