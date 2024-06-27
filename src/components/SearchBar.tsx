@@ -66,12 +66,6 @@ interface SearchBarProps {
 	disableShortcuts: (bool: boolean) => void;
 }
 
-interface SceneDetails {
-	[id: string]: [string, number, ...number[]];
-}
-
-const reconMetadataTyped = reconMetadata as SceneDetails;
-
 const SearchBar: React.FC<SearchBarProps> = ({
 	onOptionClick,
 	togglePanel,
@@ -102,17 +96,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 	// load scenes
 	useEffect(() => {
-		const loadedScenes: SceneType[] = Object.entries(
-			reconMetadataTyped
-		).map(([id, details]) => ({
-			id: Number(id),
-			name: details[0] as string,
-			normalized_name: details[0]
-				.replace(/_/g, " ")
-				.normalize("NFD")
-				.replace(/[\u0300-\u036f]/g, "") as string,
-			no_of_rec: details[1] as number,
-		}));
+		const loadedScenes: SceneType[] = Object.entries(reconMetadata).map(
+			([id, details]) => ({
+				id: Number(id),
+				name: String(details[0]),
+				normalized_name: String(
+					details[0]
+						.replace(/_/g, " ")
+						.normalize("NFD")
+						.replace(/[\u0300-\u036f]/g, "")
+				),
+				no_of_rec: Number(details[1]),
+			})
+		);
 		setScenes(loadedScenes);
 
 		const id = searchParams.get("id");
