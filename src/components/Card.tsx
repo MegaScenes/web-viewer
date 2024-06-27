@@ -1,7 +1,7 @@
 import React from "react";
 
 import { IconCircleDotted, IconCamera } from "@tabler/icons-react";
-import { SceneType } from "@/types/scene";
+import { SceneType } from "../../types";
 import { useRouter } from "next/navigation";
 
 interface CardProps {
