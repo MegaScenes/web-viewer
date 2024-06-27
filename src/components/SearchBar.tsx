@@ -59,16 +59,11 @@ const ListboxComponent = React.memo(
 );
 ListboxComponent.displayName = "ListboxComponent";
 
-import catToIdData from "../../public/data/recon_cat_to_id.json";
-import idToRecCtData from "../../public/data/id_and_recon_ct.json";
-
+import reconMetadata from "../../public/data/recon_metadata.json";
 interface SearchBarProps {
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
 	togglePanel: (bool: boolean) => void;
 	disableShortcuts: (bool: boolean) => void;
-}
-interface IdToRecCtMap {
-	[key: string]: number;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -82,13 +77,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 	const [scenes, setScenes] = useState<SceneType[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
-
-	const idToRecCtMap = useMemo(() => {
-		return idToRecCtData.reduce((acc, [id, number]) => {
-			acc[id.toString()] = number;
-			return acc;
-		}, {} as IdToRecCtMap);
-	}, []);
 
 	const favoriteScenes = useMemo(() => {
 		return [
@@ -108,15 +96,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 	// load scenes
 	useEffect(() => {
-		const loadedScenes = Object.entries(catToIdData).map(([name, id]) => ({
-			id,
-			name,
-			normalized_name: name
-				.replace(/_/g, " ")
-				.normalize("NFD")
-				.replace(/[\u0300-\u036f]/g, ""),
-			no_of_rec: idToRecCtMap[id],
-		}));
+		const loadedScenes = Object.entries(reconMetadata).map(
+			([id, details]) => ({
+				id: Number(id),
+				name: details[0],
+				normalized_name: details[0]
+					.replace(/_/g, " ")
+					.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, ""),
+				no_of_rec: details[1],
+			})
+		);
 		setScenes(loadedScenes);
 
 		const id = searchParams.get("id");
@@ -132,7 +122,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 				togglePanel(true);
 			}
 		}
-	}, [searchParams, idToRecCtMap, onOptionClick, togglePanel]);
+	}, [searchParams, onOptionClick, togglePanel]);
 
 	const handleOptionClick = (option: SceneType) => {
 		router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);

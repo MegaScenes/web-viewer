@@ -139,7 +139,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
 						<div className="flex flex-col gap-4 select-none">
 							{scene &&
 								Array.from(
-									{ length: scene.no_of_rec },
+									{
+										length: scene.no_of_rec,
+									},
 									(_, index) => (
 										<Card
 											key={index}
