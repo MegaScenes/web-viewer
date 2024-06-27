@@ -18,13 +18,12 @@ import {
 	IconZoomOut,
 	IconPlus,
 	IconRefresh,
-	IconMenu2,
 } from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
 import ImageModal from "../components/ImageModal";
-import { SceneType } from "@/types/scene";
+import { SceneType } from "../../types";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 
 const CAM_MAX_SCALE = 1;
@@ -378,9 +377,11 @@ const Home: React.FC = () => {
 	return (
 		<Suspense
 			fallback={
-				<div className={`bg-darkgrey flex items-center justify-center`}>
+				<div
+					className={`bg-darkgrey flex items-center justify-center w-full h-screen`}
+				>
 					<div
-						className={`animate-spin rounded-full border-t-4 border-white h-12 w-12`}
+						className={`animate-spin rounded-full border-t-4 border-white h-8 w-8`}
 					></div>
 				</div>
 			}

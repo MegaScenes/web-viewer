@@ -4,7 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { VariableSizeList as List } from "react-window";
 import { useRouter } from "next/navigation";
-import { SceneType } from "@/types/scene";
+import { SceneType } from "../../types";
 import { IconMenu2 } from "@tabler/icons-react";
 
 const OuterElementContext = React.createContext({});

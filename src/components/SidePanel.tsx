@@ -8,7 +8,7 @@ import {
 
 import Card from "./Card";
 import reconMetadata from "../../public/data/recon_metadata.json";
-import { SceneType } from "@/types/scene";
+import { SceneType } from "../../types";
 
 interface SidePanelProps {
 	scene?: SceneType;
