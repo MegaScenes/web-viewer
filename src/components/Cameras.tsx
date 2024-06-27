@@ -21,7 +21,6 @@ const Cameras: React.FC<CamerasProps> = ({
 }) => {
 	const { camera, gl } = useThree();
 	const groupRef = useRef<THREE.Group>(null);
-	const lastTapRef = useRef(0);
 	const [loadedCount, setLoadedCount] = useState(0);
 	const [planeMeshes, setPlaneMeshes] = useState<THREE.Mesh[]>([]);
 	const [lineMeshes, setLineMeshes] = useState<THREE.Line[]>([]);
