@@ -12,7 +12,14 @@ const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
 	ssr: false,
 });
 
-import { IconZoomIn, IconZoomOut, IconRefresh } from "@tabler/icons-react";
+import {
+	IconZoomIn,
+	IconMinus,
+	IconZoomOut,
+	IconPlus,
+	IconRefresh,
+	IconMenu2,
+} from "@tabler/icons-react";
 import OptionsDropdown from "../components/OptionsDropdown";
 import SidePanel from "../components/SidePanel";
 import SearchBar from "../components/SearchBar";
@@ -136,6 +143,8 @@ const Home: React.FC = () => {
 	const [data, setData] = useState<[ImageData, CameraData] | undefined>(
 		undefined
 	);
+	const [isPlusHovered, setIsPlusHovered] = useState<boolean>(false);
+	const [isMinusHovered, setIsMinusHovered] = useState<boolean>(false);
 	const controlsRef = useRef<any>(null);
 	const movementRef = useRef<{ [key: string]: boolean }>({});
 
@@ -385,7 +394,7 @@ const Home: React.FC = () => {
 			)}
 			<div className="flex flex-col h-screen">
 				<div className="absolute top-3 left-0 w-full flex flex-row items-center justify-end px-4 py-2 z-10">
-					<div className="flex flex-row items-center justify-between mr-3 gap-4">
+					<div className="flex flex-row items-center justify-between w-full md:w-auto md:mr-3 gap-2 md:gap-4">
 						{hud && (
 							<>
 								<SearchBar
@@ -393,24 +402,28 @@ const Home: React.FC = () => {
 									togglePanel={togglePanel}
 									disableShortcuts={handleDisableShortcuts}
 								/>
-								<OptionsDropdown
-									id={
-										selectedRec
-											? selectedRec[0].id
-											: undefined
-									}
-									rec_no={
-										selectedRec ? selectedRec[1] : undefined
-									}
-									isMenuOpen={isMenuOpen}
-									isAxisEnabled={isAxisEnabled}
-									isModalOpen={isModalOpen}
-									onChangeHUD={() => setHud(false)}
-									onOpenModal={handleOnOpenModal}
-									onCloseModal={handleOnCloseModal}
-									onAxisToggle={handleOnAxisToggle}
-									toggleMenu={handleToggleMenu}
-								/>
+								<div className="hidden md:block">
+									<OptionsDropdown
+										id={
+											selectedRec
+												? selectedRec[0].id
+												: undefined
+										}
+										rec_no={
+											selectedRec
+												? selectedRec[1]
+												: undefined
+										}
+										isMenuOpen={isMenuOpen}
+										isAxisEnabled={isAxisEnabled}
+										isModalOpen={isModalOpen}
+										onChangeHUD={() => setHud(false)}
+										onOpenModal={handleOnOpenModal}
+										onCloseModal={handleOnCloseModal}
+										onAxisToggle={handleOnAxisToggle}
+										toggleMenu={handleToggleMenu}
+									/>
+								</div>
 							</>
 						)}
 					</div>
@@ -450,37 +463,57 @@ const Home: React.FC = () => {
 					{hud && (
 						<>
 							<button
-								className="absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full text-white shadow-lg"
+								className="absolute right-6 mt-[26px] md:right-[30px] md:bottom-[147px] p-1 md:p-3 bg-red-500 rounded-full shadow-lg hover:bg-red-400 transition-bg duration-300 group active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)] z-10"
 								aria-label="Reset Button"
 								onClick={handleResetCamera}
 							>
 								<IconRefresh
-									size={24}
+									className="transform group-hover:rotate-180 duration-300 size-5 md:size-[24px]"
 									stroke={1.5}
 									color="white"
 								/>
 							</button>
 							<button
-								className="absolute right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								className="absolute hidden md:block right-[30px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 								aria-label="Zoom In"
 								onClick={handleZoomIn}
+								onMouseEnter={() => setIsPlusHovered(true)}
+								onMouseLeave={() => setIsPlusHovered(false)}
 							>
-								<IconZoomIn
-									size={24}
-									stroke={1.5}
-									color="black"
-								/>
+								{isPlusHovered ? (
+									<IconPlus
+										size={24}
+										stroke={2}
+										color="black"
+									/>
+								) : (
+									<IconZoomIn
+										size={24}
+										stroke={1.5}
+										color="black"
+									/>
+								)}
 							</button>
 							<button
-								className="absolute right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg"
+								className="absolute hidden md:block right-[91px] bottom-[30px] p-3 bg-white rounded-full text-white shadow-lg active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)]"
 								aria-label="Zoom Out"
 								onClick={handleZoomOut}
+								onMouseEnter={() => setIsMinusHovered(true)}
+								onMouseLeave={() => setIsMinusHovered(false)}
 							>
-								<IconZoomOut
-									size={24}
-									stroke={1.5}
-									color="black"
-								/>
+								{isMinusHovered ? (
+									<IconMinus
+										size={24}
+										stroke={2}
+										color="black"
+									/>
+								) : (
+									<IconZoomOut
+										size={24}
+										stroke={1.5}
+										color="black"
+									/>
+								)}
 							</button>
 						</>
 					)}
