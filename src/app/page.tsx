@@ -378,9 +378,11 @@ const Home: React.FC = () => {
 	return (
 		<Suspense
 			fallback={
-				<div className={`bg-darkgrey flex items-center justify-center`}>
+				<div
+					className={`bg-darkgrey flex items-center justify-center w-full h-screen`}
+				>
 					<div
-						className={`animate-spin rounded-full border-t-4 border-white h-12 w-12`}
+						className={`animate-spin rounded-full border-t-4 border-white h-8 w-8`}
 					></div>
 				</div>
 			}
