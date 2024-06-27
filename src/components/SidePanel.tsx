@@ -136,7 +136,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 								</h3>
 							</>
 						)}
-						<div className="flex flex-col gap-4 select-none">
+						<div className="flex flex-col gap-4 select-none pb-8">
 							{scene &&
 								Array.from(
 									{
