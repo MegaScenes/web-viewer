@@ -140,8 +140,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 							{scene &&
 								Array.from(
 									{
-										length:
-											reconData.get(scene.id).length / 2,
+										length: scene.no_of_rec,
 									},
 									(_, index) => (
 										<Card
