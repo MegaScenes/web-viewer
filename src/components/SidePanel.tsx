@@ -3,6 +3,7 @@ import {
 	IconChevronCompactRight,
 	IconChevronCompactLeft,
 	IconMinusVertical,
+	IconX,
 } from "@tabler/icons-react";
 
 import Card from "./Card";
@@ -24,6 +25,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 	togglePanel,
 }) => {
 	const [iconState, setIconState] = useState<string>("right");
+	const [showButton, setShowButton] = useState(false);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -31,6 +33,16 @@ const SidePanel: React.FC<SidePanelProps> = ({
 		} else {
 			setIconState("right");
 		}
+		let timer: NodeJS.Timeout;
+		if (isOpen) {
+			timer = setTimeout(() => {
+				setShowButton(true);
+			}, 300);
+		} else {
+			setShowButton(false);
+		}
+
+		return () => clearTimeout(timer);
 	}, [isOpen]);
 
 	const handleMouseEnter = () => {
@@ -86,93 +98,107 @@ const SidePanel: React.FC<SidePanelProps> = ({
 	}, []);
 
 	return (
-		<div className="fixed inset-y-0 left-0 z-20 flex">
-			<div
-				className={`transform transition-all duration-350 overflow-y-auto ${
-					isOpen ? "translate-x-0" : "-translate-x-full"
-				} bg-greyish h-full fixed inset-y-0 left-0 w-96 p-4 shadow-lg flex flex-row justify-center`}
-			>
-				<div className="flex flex-col w-11/12 mt-2">
-					{scene ? (
-						<h2
-							className={`text-xl font-bold mb-4 text-offwhite break-all select-none`}
-						>
-							Viewing Reconstruction{" "}
-							<span className="text-blue-500">
-								#<span className="mr-0.5"></span>
-								{rec_no}
-							</span>{" "}
-							for <br />
-							&quot;
-							{scene.normalized_name}&quot;:
-						</h2>
-					) : (
-						<>
+		<>
+			<div className="fixed inset-y-0 left-0 z-20 flex">
+				<div
+					className={`transform transition-all duration-350 overflow-y-auto ${
+						isOpen ? "translate-x-0" : "-translate-x-full"
+					} bg-greyish h-full fixed inset-y-0 left-0 w-full md:w-96 p-4 shadow-lg flex flex-row justify-center`}
+				>
+					<div className="flex flex-col w-10/12 md:w-11/12 mt-4 md:mt-2">
+						{scene ? (
 							<h2
-								className={`text-xl font-bold mb-4 text-offwhite`}
+								className={`text-lg md:text-xl font-bold mb-4 text-offwhite break-all select-none`}
 							>
-								Search for a scene in the search bar!
+								Viewing Reconstruction{" "}
+								<span className="text-blue-500">
+									#<span className="mr-0.5"></span>
+									{rec_no}
+								</span>{" "}
+								for <br />
+								&quot;
+								{scene.normalized_name}&quot;:
 							</h2>
-							<br />
-							<h3
-								className={`text-sm font-bold mb-4 text-offwhite`}
-							>
-								Note: some reconstructions can take longer to
-								load due to fetching uncompressed data from AWS
-								S3
-							</h3>
-						</>
-					)}
-					<div className="flex flex-col gap-4 select-none">
-						{scene &&
-							Array.from(
-								{ length: scene.no_of_rec },
-								(_, index) => (
-									<Card
-										key={index}
-										rec_no={index}
-										scene={scene}
-										numOfPts={
-											reconData.get(scene.id)[
-												index * 2 + 1
-											]
-										}
-										numOfCams={
-											reconData.get(scene.id)[index * 2]
-										}
-										isSelected={
-											rec_no !== undefined &&
-											index === rec_no
-										}
-									/>
-								)
-							)}
+						) : (
+							<>
+								<h2
+									className={`text-xl font-bold mb-4 text-offwhite`}
+								>
+									Search for a scene in the search bar!
+								</h2>
+								<br />
+								<h3
+									className={`text-sm font-bold mb-4 text-offwhite`}
+								>
+									Note: some reconstructions can take longer
+									to load due to fetching uncompressed data
+									from AWS S3
+								</h3>
+							</>
+						)}
+						<div className="flex flex-col gap-4 select-none">
+							{scene &&
+								Array.from(
+									{ length: scene.no_of_rec },
+									(_, index) => (
+										<Card
+											key={index}
+											rec_no={index}
+											scene={scene}
+											numOfPts={
+												reconData.get(scene.id)[
+													index * 2 + 1
+												]
+											}
+											numOfCams={
+												reconData.get(scene.id)[
+													index * 2
+												]
+											}
+											isSelected={
+												rec_no !== undefined &&
+												index === rec_no
+											}
+										/>
+									)
+								)}
+						</div>
 					</div>
 				</div>
+				<div
+					className="relative flex items-center"
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+				>
+					<button
+						onClick={() => {
+							togglePanel(!isOpen);
+						}}
+						className={`hidden md:block text-offwhite font-bold py-2 px-4 rounded absolute top-1/2 transform -translate-y-1/2 transition-all duration-350 ${
+							isOpen ? "translate-x-64" : "translate-x-0"
+						}`}
+						style={{
+							zIndex: 21,
+							transform: `translate(${
+								isOpen ? "calc(24rem - 10px)" : "-10px"
+							}, -50%)`,
+						}}
+					>
+						{getIcon()}
+					</button>
+				</div>
 			</div>
-			<div
-				className="relative flex items-center"
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-			>
+			{showButton && (
 				<button
+					className="md:hidden absolute top-5 right-5 z-40"
 					onClick={() => {
-						togglePanel(!isOpen);
-					}}
-					className={`text-offwhite font-bold py-2 px-4 rounded absolute top-1/2 transform -translate-y-1/2 transition-all duration-350 ${
-						isOpen ? "translate-x-64" : "translate-x-0"
-					}`}
-					style={{
-						zIndex: 21,
-						transform: `translate(${
-							isOpen ? "calc(24rem - 10px)" : "-10px"
-						}, -50%)`,
+						togglePanel(false);
 					}}
 				>
-					{getIcon()}
+					<IconX size={24} stroke={2.5} color="white" />
 				</button>
-			</div>
-		</div>
+			)}
+		</>
 	);
 };
 

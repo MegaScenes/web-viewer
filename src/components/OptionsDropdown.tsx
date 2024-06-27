@@ -184,7 +184,7 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
 				</div>
 			</button>
 			{isMenuOpen && (
-				<ul className="absolute bg-white shadow-md mt-2 rounded-md w-full z-10">
+				<ul className="absolute top-12 bg-white shadow-md rounded-md w-full z-10">
 					{options.map((option, index) => (
 						<li
 							key={option.id}

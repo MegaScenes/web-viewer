@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
+import useDelayedLinkActivation from "../hooks/useDelayedLinkActivation";
 
 const S3_IMAGES_URL = "https://megascenes.s3.us-west-2.amazonaws.com/images/";
 const WIKI_IMAGE_URL = "https://commons.wikimedia.org/wiki/File:";
@@ -28,6 +29,17 @@ interface ImageModalProps {
 const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 	const [imgSrc, setImgSrc] = useState<string | null>(null);
 	const [isMinimized, setIsMinimized] = useState<boolean>(false);
+	const isActive = useDelayedLinkActivation();
+
+	const handleLinkClick = (
+		event: React.MouseEvent<HTMLAnchorElement>,
+		url: string
+	) => {
+		event.preventDefault();
+		if (isActive) {
+			window.open(url, "_blank", "noopener noreferrer");
+		}
+	};
 
 	useEffect(() => {
 		if (id === undefined || data === undefined) return;
@@ -80,7 +92,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 				</div>
 			) : (
 				<div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-					<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4 w-3/4 h-auto border-2">
+					<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4 w-5/6 h-5/6 md:w-3/4 md:h-3/4 border-2 overflow-y-auto">
 						<div className="flex flex-col justify-center items-center">
 							<div className="relative w-full h-96">
 								{imgSrc && (
@@ -96,21 +108,26 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 									</div>
 								)}
 							</div>
-							<div className="flex flex-row justify-center items-center gap-4 w-full">
+							<div className="flex flex-col mb-2 md:mb-0 md:flex-row justify-center items-center gap-4 w-full">
 								<a
-									href={`${WIKI_IMAGE_URL}${file}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white rounded-full hover:bg-slate-500 transition duration-300"
+									href={WIKI_IMAGE_URL + file}
+									onClick={(e) =>
+										handleLinkClick(
+											e,
+											WIKI_IMAGE_URL + file
+										)
+									}
+									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white rounded-full md:hover:bg-slate-500 md:transition duration-300"
 								>
 									<IconPhoto size={14} stroke={2} /> View on
 									Wikimedia
 								</a>
 								<a
-									href={`${WIKI_CAT_URL}${cat}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white  rounded-full hover:bg-slate-500 transition duration-300"
+									href={WIKI_CAT_URL + cat}
+									onClick={(e) =>
+										handleLinkClick(e, WIKI_CAT_URL + cat)
+									}
+									className="flex items-center gap-2 text-white text-xs py-2 px-4 border-2 border-white  rounded-full hmd:over:bg-slate-500 md:transition duration-300"
 								>
 									<IconFolder size={14} stroke={2} /> View
 									Category
@@ -207,16 +224,20 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 							</div>
 						</div>
 						<button
-							className="absolute top-5 right-5 text-white"
+							className="absolute top-5 right-5"
 							onClick={onClose}
 						>
-							<IconX size={24} stroke={2.5} />
+							<IconX size={24} stroke={2.5} color="white" />
 						</button>
 						<button
-							className="absolute top-[22px] left-[21.5px] text-white"
+							className="absolute top-[22px] left-[21.5px]"
 							onClick={() => setIsMinimized(true)}
 						>
-							<IconWindowMinimize size={20} stroke={2.5} />
+							<IconWindowMinimize
+								size={20}
+								stroke={2.5}
+								color="white"
+							/>
 						</button>
 					</div>
 				</div>

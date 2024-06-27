@@ -19,12 +19,9 @@ import Mouse from "./Mouse";
 
 const ControlsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
 	<div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-		<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4 border-2">
-			<button
-				className="absolute top-5 right-5 text-white"
-				onClick={onClose}
-			>
-				<IconX size={24} stroke={2.5} />
+		<div className="relative bg-gray-600 text-white rounded-lg shadow-lg p-4 border-2 max-w-full">
+			<button className="absolute top-5 right-5" onClick={onClose}>
+				<IconX size={24} stroke={2.5} color="white" />
 			</button>
 			<div className="flex flex-col justify-start items-center">
 				<div className="flex flex-row gap-3 justify-center items-center text-3xl font-semibold font-cursive">

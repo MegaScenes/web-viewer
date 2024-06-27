@@ -21,6 +21,7 @@ const Cameras: React.FC<CamerasProps> = ({
 }) => {
 	const { camera, gl } = useThree();
 	const groupRef = useRef<THREE.Group>(null);
+	const lastTapRef = useRef(0);
 	const [loadedCount, setLoadedCount] = useState(0);
 	const [planeMeshes, setPlaneMeshes] = useState<THREE.Mesh[]>([]);
 	const [lineMeshes, setLineMeshes] = useState<THREE.Line[]>([]);
@@ -64,11 +65,13 @@ const Cameras: React.FC<CamerasProps> = ({
 	}, []);
 
 	const handleDoubleClick = useCallback(
-		(event: MouseEvent) => {
+		(x: number, y: number) => {
+			// Adjusted to accept coordinates directly
 			const raycaster = new THREE.Raycaster();
-			const mouse = new THREE.Vector2();
-			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			const mouse = new THREE.Vector2(
+				(x / window.innerWidth) * 2 - 1,
+				-(y / window.innerHeight) * 2 + 1
+			);
 
 			raycaster.setFromCamera(mouse, camera);
 
@@ -110,10 +113,31 @@ const Cameras: React.FC<CamerasProps> = ({
 	);
 
 	useEffect(() => {
-		gl.domElement.addEventListener("dblclick", handleDoubleClick);
+		const handleDbClick = (event: MouseEvent) => {
+			handleDoubleClick(event.clientX, event.clientY);
+		};
+
+		const handleTchEnd = (event: TouchEvent) => {
+			const now = Date.now();
+			const doubleTapDelay = 300;
+
+			// Ensure there's a touch event and check the double-tap timing
+			if (
+				event.changedTouches.length > 0 &&
+				now - lastTapRef.current < doubleTapDelay
+			) {
+				const touch = event.changedTouches[0];
+				handleDoubleClick(touch.clientX, touch.clientY);
+			}
+
+			lastTapRef.current = now;
+		};
+		gl.domElement.addEventListener("dblclick", handleDbClick);
+		gl.domElement.addEventListener("touchend", handleTchEnd);
 
 		return () => {
-			gl.domElement.removeEventListener("dblclick", handleDoubleClick);
+			gl.domElement.removeEventListener("dblclick", handleDbClick);
+			gl.domElement.removeEventListener("touchend", handleTchEnd);
 		};
 	}, [handleDoubleClick, gl.domElement]);
 

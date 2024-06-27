@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+	overscroll-behavior-y: none;
+}
+
 button:focus {
 	outline: none;
 }

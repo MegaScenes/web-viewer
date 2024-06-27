@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import { VariableSizeList as List } from "react-window";
 import { useRouter } from "next/navigation";
 import { SceneType } from "@/types/scene";
+import { IconMenu2 } from "@tabler/icons-react";
 
 const OuterElementContext = React.createContext({});
 const OuterElementType = React.memo(
@@ -60,6 +61,7 @@ ListboxComponent.displayName = "ListboxComponent";
 
 import catToIdData from "../../public/data/recon_cat_to_id.json";
 import idToRecCtData from "../../public/data/id_and_recon_ct.json";
+
 interface SearchBarProps {
 	onOptionClick: (scene: SceneType, rec_no: number) => void;
 	togglePanel: (bool: boolean) => void;
@@ -221,10 +223,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
 					InputLabelProps={{
 						...params.InputLabelProps,
 						shrink: false,
-						style: { transform: "translate(14px, 10px) scale(1)" },
+						style: {
+							transform: "translate(14px, 10px) scale(1)",
+						},
 					}}
 					InputProps={{
 						...params.InputProps,
+						startAdornment: (
+							<button
+								onClick={(
+									e: React.MouseEvent<HTMLButtonElement>
+								) => {
+									e.stopPropagation();
+									togglePanel(true);
+								}}
+							>
+								<IconMenu2
+									className="md:hidden mr-2"
+									size={20}
+									stroke={1.5}
+									color="currentColor"
+								/>
+							</button>
+						),
 						style: {
 							height: "40px",
 							borderRadius: isDropdownOpen
@@ -239,7 +260,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 				/>
 			)}
 			ListboxComponent={ListboxComponent}
-			className="w-full min-w-96 shadow-xl rounded-[20px]"
+			className="w-full min-w-64 md:min-w-96 shadow-xl rounded-[20px]"
 		/>
 	);
 };
