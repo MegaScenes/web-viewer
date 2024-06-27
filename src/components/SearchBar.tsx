@@ -97,7 +97,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 	// load scenes
 	useEffect(() => {
 		const loadedScenes = Object.entries(reconMetadata).map(
-			([id, details]) => ({
+			([id, details]: [string, [string, number, ...number[]]]) => ({
 				id: Number(id),
 				name: details[0],
 				normalized_name: details[0]
