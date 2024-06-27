@@ -65,13 +65,11 @@ const Cameras: React.FC<CamerasProps> = ({
 	}, []);
 
 	const handleDoubleClick = useCallback(
-		(x: number, y: number) => {
-			// Adjusted to accept coordinates directly
+		(event: MouseEvent) => {
 			const raycaster = new THREE.Raycaster();
-			const mouse = new THREE.Vector2(
-				(x / window.innerWidth) * 2 - 1,
-				-(y / window.innerHeight) * 2 + 1
-			);
+			const mouse = new THREE.Vector2();
+			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 			raycaster.setFromCamera(mouse, camera);
 
@@ -113,31 +111,10 @@ const Cameras: React.FC<CamerasProps> = ({
 	);
 
 	useEffect(() => {
-		const handleDbClick = (event: MouseEvent) => {
-			handleDoubleClick(event.clientX, event.clientY);
-		};
-
-		const handleTchEnd = (event: TouchEvent) => {
-			const now = Date.now();
-			const doubleTapDelay = 300;
-
-			// Ensure there's a touch event and check the double-tap timing
-			if (
-				event.changedTouches.length > 0 &&
-				now - lastTapRef.current < doubleTapDelay
-			) {
-				const touch = event.changedTouches[0];
-				handleDoubleClick(touch.clientX, touch.clientY);
-			}
-
-			lastTapRef.current = now;
-		};
-		gl.domElement.addEventListener("dblclick", handleDbClick);
-		gl.domElement.addEventListener("touchend", handleTchEnd);
+		gl.domElement.addEventListener("dblclick", handleDoubleClick);
 
 		return () => {
-			gl.domElement.removeEventListener("dblclick", handleDbClick);
-			gl.domElement.removeEventListener("touchend", handleTchEnd);
+			gl.domElement.removeEventListener("dblclick", handleDoubleClick);
 		};
 	}, [handleDoubleClick, gl.domElement]);
 
