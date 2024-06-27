@@ -100,12 +100,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
 			([id, details]) => ({
 				id: Number(id),
 				name: String(details[0]),
-				normalized_name: String(
-					details[0]
-						.replace(/_/g, " ")
-						.normalize("NFD")
-						.replace(/[\u0300-\u036f]/g, "")
-				),
+				normalized_name: String(details[0])
+					.replace(/_/g, " ")
+					.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, ""),
 				no_of_rec: Number(details[1]),
 			})
 		);
