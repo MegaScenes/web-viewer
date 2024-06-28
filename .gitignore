@@ -34,7 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# data
-/public/data/qutb_minar/0
-/public/data/statue_of_liberty/0

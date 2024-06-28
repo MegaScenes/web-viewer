@@ -30,7 +30,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 	return (
 		<Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
 			<ambientLight />
-			<pointLight />
 			<Scene
 				id={id}
 				rec_no={rec_no}
