@@ -149,6 +149,23 @@ const Home: React.FC = () => {
     const controlsRef = useRef<any>(null);
     const movementRef = useRef<{ [key: string]: boolean }>({});
 
+    const handleResetCamera = useCallback(() => {
+        if (controlsRef.current) {
+            const controls = controlsRef.current;
+            const camera = controls.object;
+
+            camera.position.set(...initialCameraSettings.position);
+            camera.fov = initialCameraSettings.fov;
+            camera.zoom = initialCameraSettings.zoom;
+            camera.updateProjectionMatrix();
+
+            controls.target.set(0, 0, 0);
+            controls.update();
+            setCamScale(CAM_DEFAULT_SCALE);
+            setPointScale(PT_DEFAULT_SCALE);
+        }
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (shortcutsDisabled) return;
@@ -241,7 +258,7 @@ const Home: React.FC = () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
         };
-    }, [shortcutsDisabled]);
+    }, [shortcutsDisabled, handleResetCamera]);
 
     useEffect(() => {
         const animate = () => {
@@ -318,23 +335,6 @@ const Home: React.FC = () => {
     const handleOnLoaded = useCallback(() => {
         if (hud) setIsLoading(false);
     }, [hud]);
-
-    const handleResetCamera = useCallback(() => {
-        if (controlsRef.current) {
-            const controls = controlsRef.current;
-            const camera = controls.object;
-
-            camera.position.set(...initialCameraSettings.position);
-            camera.fov = initialCameraSettings.fov;
-            camera.zoom = initialCameraSettings.zoom;
-            camera.updateProjectionMatrix();
-
-            controls.target.set(0, 0, 0);
-            controls.update();
-            setCamScale(CAM_DEFAULT_SCALE);
-            setPointScale(PT_DEFAULT_SCALE);
-        }
-    }, []);
 
     const handleDisableShortcuts = useCallback((value: boolean) => {
         setShortcutsDisabled(value);
