@@ -7,8 +7,6 @@ import {
     IconPaperclip,
     IconBrandGithub,
     IconDatabase,
-    IconMail,
-    IconMailOpened,
     IconWorld,
     IconCheck
 } from "@tabler/icons-react";
@@ -34,12 +32,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 }) => {
     const [iconState, setIconState] = useState<string>("right");
     const [showButton, setShowButton] = useState<boolean>(false);
-    const [isEmailVisible, setIsEmailVisible] = useState<boolean>(false);
     const [isCopied, setIsCopied] = useState<boolean>(false);
-
-    const toggleEmailVisibility = () => {
-        setIsEmailVisible((prev) => !prev);
-    };
 
     useEffect(() => {
         if (isOpen) {

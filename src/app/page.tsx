@@ -217,7 +217,7 @@ const Home: React.FC = () => {
                     break;
                 case "w": // translate forward
                 case "a": // translate left
-                case "s": // translate right
+                case "s": // translate backwards
                 case "d": // translate right
                 case "q": // translate down
                 case "e": // translate up
