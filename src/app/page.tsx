@@ -466,12 +466,12 @@ const Home: React.FC = () => {
                     {hud && (
                         <>
                             <button
-                                className="absolute right-6 mt-[26px] md:right-[30px] md:bottom-[147px] p-1 md:p-3 bg-red-500 rounded-full shadow-lg md:hover:bg-red-400 md:transition-bg md:duration-300 md:group active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)] z-10"
+                                className="hidden md:block absolute right-[30px] bottom-[147px] p-3 bg-red-500 rounded-full shadow-lg hover:bg-red-400 transition-bg duration-300 group active:shadow-[inset_0_-1px_10px_rgba(0,0,0,0.6)] z-10"
                                 aria-label="Reset Button"
                                 onClick={handleResetCamera}
                             >
                                 <IconRefresh
-                                    className="md:transform md:group-hover:rotate-180 md:duration-300 size-5 md:size-[24px]"
+                                    className="transform group-hover:rotate-180 duration-300 size-[24px]"
                                     stroke={1.5}
                                     color="white"
                                 />
