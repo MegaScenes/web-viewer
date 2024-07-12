@@ -7,6 +7,7 @@ import {
     IconBrandGithub,
     IconKeyboard,
     IconAxisX,
+    IconAlertCircle,
 } from "@tabler/icons-react";
 import ControlsModal from "./ControlsModal";
 
@@ -129,6 +130,18 @@ const OptionsDropdown: React.FC<OptionsDropdownProps> = ({
             onClick: () => {
                 window.open(
                     "https://github.com/MegaScenes/web-viewer/",
+                    "_blank"
+                );
+                toggleMenu(false);
+            },
+        },
+        {
+            id: "report",
+            label: "Report",
+            icon: <IconAlertCircle size={16} stroke={2.5} />,
+            onClick: () => {
+                window.open(
+                    "https://forms.gle/SbH8rwraTU2n5etC9",
                     "_blank"
                 );
                 toggleMenu(false);
