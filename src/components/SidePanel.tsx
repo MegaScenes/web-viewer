@@ -114,13 +114,13 @@ const SidePanel: React.FC<SidePanelProps> = ({
 
     return (
         <>
-            <div className="fixed inset-y-0 left-0 z-20 flex">
+            <div className="fixed inset-y-0 left-0 z-20 flex select-none">
                 <div
                     className={`transform transition-all duration-350 overflow-y-auto ${isOpen ? "translate-x-0" : "-translate-x-full"
                         } bg-greyish h-full fixed inset-y-0 left-0 w-full md:w-96 p-4 shadow-lg flex flex-row justify-center`}
                 >
                     <div className="flex flex-col justify-between items-center w-full h-auto">
-                        <div className="flex flex-col w-10/12 md:w-11/12 mt-4 md:mt-2 select-none">
+                        <div className="flex flex-col w-10/12 md:w-11/12 mt-4 md:mt-2">
                             {scene ? (
                                 <h2
                                     className={`text-lg md:text-xl font-bold mb-4 text-offwhite break-all`}
