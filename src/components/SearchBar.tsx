@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -101,6 +101,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
         ];
     }, []);
 
+    const isMdOrLarger = () => {
+        return window.innerWidth >= 768;
+    };
+
     // load scenes
     useEffect(() => {
         const loadedScenes: SceneType[] = Object.entries(reconMetadata).map(
@@ -126,7 +130,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
             if (foundScene) {
                 onOptionClick(foundScene, Number(rec_no));
                 setValue(foundScene.normalized_name);
-                togglePanel(true);
+                if (isMdOrLarger()) {
+                    togglePanel(true);
+                }
             }
         }
     }, [searchParams, onOptionClick, togglePanel]);
