@@ -66,6 +66,7 @@ const ListboxComponent = React.memo(
 );
 ListboxComponent.displayName = "ListboxComponent";
 
+import reconMetadata from "../../public/data/recon_metadata.json";
 interface SearchBarProps {
     onOptionClick: (scene: SceneType, rec_no: number) => void;
     togglePanel: (bool: boolean) => void;
@@ -106,34 +107,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
     // load scenes
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://megascenes.s3.us-west-2.amazonaws.com/metadata/recon_metadata.json');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                const loadedScenes = Object.entries(data).map(([id, details]: [string, any]) => ({
-                    id: Number(id),
-                    name: String(details[0]),
-                    normalized_name: String(details[0]).replace(/_/g, " ").normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-                    no_of_rec: Number(details[1]),
-                }));
-                setScenes(loadedScenes);
-            } catch (error) {
-                console.error('Failed to fetch scenes:', error);
-            }
-        };
+        const loadedScenes: SceneType[] = Object.entries(reconMetadata).map(
+            ([id, details]) => ({
+                id: Number(id),
+                name: String(details[0]),
+                normalized_name: String(details[0])
+                    .replace(/_/g, " ")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, ""),
+                no_of_rec: Number(details[1]),
+            })
+        );
+        setScenes(loadedScenes);
 
-        fetchData();
-    }, []);
-
-    useEffect(() => {
         const id = searchParams.get("id");
         const rec_no = searchParams.get("rec_no");
         if (id && rec_no) {
             const sceneId = parseInt(id, 10);
-            const foundScene = scenes.find(
+            const foundScene = loadedScenes.find(
                 (scene) => scene.id === sceneId
             );
             if (foundScene) {
@@ -144,7 +135,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 }
             }
         }
-    }, [searchParams, onOptionClick, togglePanel, scenes])
+    }, [searchParams, onOptionClick, togglePanel])
 
     const handleOptionClick = (option: SceneType) => {
         router.push(`/?id=${encodeURIComponent(option.id)}&rec_no=0`);

@@ -13,6 +13,7 @@ import {
 import Tooltip from "@mui/material/Tooltip";
 
 import Card from "./Card";
+import reconMetadata from "../../public/data/recon_metadata.json";
 import { SceneType } from "../../types";
 
 interface SidePanelProps {
@@ -32,7 +33,6 @@ const SidePanel: React.FC<SidePanelProps> = ({
     const [iconState, setIconState] = useState<string>("right");
     const [showButton, setShowButton] = useState<boolean>(false);
     const [isCopied, setIsCopied] = useState<boolean>(false);
-    const [reconData, setReconData] = useState<Map<number, any>>(new Map());
 
     useEffect(() => {
         if (isOpen) {
@@ -96,25 +96,12 @@ const SidePanel: React.FC<SidePanelProps> = ({
     };
 
     // process point + camera metadata
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://megascenes.s3.us-west-2.amazonaws.com/metadata/recon_metadata.json');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                const dataMap = new Map<number, any>();
-                Object.entries(data).forEach(([key, value]: [string, any]) => {
-                    dataMap.set(parseInt(key, 10), value.slice(2));
-                });
-                setReconData(dataMap)
-            } catch (error) {
-                console.error('Failed to fetch scenes:', error);
-            }
-        };
-
-        fetchData();
+    const reconData = useMemo(() => {
+        const dataMap = new Map();
+        Object.entries(reconMetadata).forEach(([key, value]) => {
+            dataMap.set(parseInt(key, 10), value.slice(2));
+        });
+        return dataMap;
     }, []);
 
     const handleEmailClick = () => {
