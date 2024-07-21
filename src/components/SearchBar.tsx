@@ -240,6 +240,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                                     ) => {
                                         e.stopPropagation();
                                         togglePanel(true);
+                                        setIsDropdownOpen(false);
                                     }}
                                 >
                                     <IconMenu2
