@@ -9,6 +9,26 @@ body {
 	overscroll-behavior-y: none;
 }
 
+::-webkit-scrollbar {
+	width: 5px;
+	border-radius: 10px;
+}
+
+:hover::-webkit-scrollbar {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: transparent;
+	border-radius: 10px;
+	background-clip: padding-box;
+}
+
+:active::-webkit-scrollbar-thumb,
+:hover::-webkit-scrollbar-thumb {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
 button:focus {
 	outline: none;
 }
