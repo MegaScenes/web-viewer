@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import type { ImageData, CameraData } from "../hooks/useCOLMAPLoader";
 import useDelayedLinkActivation from "../hooks/useDelayedLinkActivation";
+import { load } from 'cheerio';
 
 const S3_IMAGES_URL = "https://megascenes.s3.us-west-2.amazonaws.com/images/";
 const WIKI_IMAGE_URL = "https://commons.wikimedia.org/wiki/File:";
@@ -47,20 +48,12 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
         }
     };
 
-    const getFallbackDescription = (imageDesc: { [key: string]: string }): string => {
-        if (imageDesc.en) {
-            return imageDesc.en;
-        }
-
-        const keys = Object.keys(imageDesc);
-        for (const key of keys) {
-            if (key !== '_type' && imageDesc[key]) {
-                return imageDesc[key];
-            }
-        }
-
-        return 'no description available';
-    };
+    const extractDescription = (html: string): string | null => {
+        const $ = load(html);
+        $('td[align="center"]').remove();
+        const description = $(".description").first().html();
+        return description || null;
+    }
 
     useEffect(() => {
         if (id === undefined || data === undefined) return;
@@ -100,17 +93,15 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
                 }
 
                 // description
-                const descUrl = `https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata&iiextmetadatamultilang=1&format=json&titles=File:${encodeURIComponent(file)}&origin=*`;
-                const response = await fetch(descUrl);
-                const data = await response.json();
-                const pages = data.query.pages;
-                const pId = Object.keys(pages)[0];
-                const imageDesc = pages[pId].imageinfo[0].extmetadata.ImageDescription && pages[pId].imageinfo[0].extmetadata.ImageDescription.value
-                if (typeof imageDesc === 'string') {
-                    setDescription({ __html: imageDesc });
+                const dUrl = `https://commons.wikimedia.org/w/api.php?page=File:${encodeURIComponent(file)}&action=parse&format=json&origin=*`;
+                const dResponse = await fetch(dUrl);
+                const dData = await dResponse.json();
+                const html = dData.parse.text['*'].toString();
+                const desc = extractDescription(html);
+                if (desc) {
+                    setDescription({ __html: desc });
                 } else {
-                    const text = getFallbackDescription(imageDesc);
-                    setDescription({ __html: text });
+                    setDescription({ __html: 'no description available' });
                 }
             } catch (error) {
                 console.error(error);
