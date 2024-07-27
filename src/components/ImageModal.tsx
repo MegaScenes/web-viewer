@@ -52,7 +52,11 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
         const $ = load(html);
         $('td[align="center"]').remove();
         $(".description a").each(function () {
-            $(this).attr('style', 'color: #00A0F6; text-decoration: underline;');
+            $(this).attr({
+                'style': 'color: #00A0F6; text-decoration: underline;',
+                'target': '_blank',
+                'rel': 'noopener noreferrer'
+            });
         });
         const description = $(".description").first().html();
         return description || null;
