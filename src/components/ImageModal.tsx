@@ -50,14 +50,29 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
 
     const extractDescription = (html: string): string | null => {
         const $ = load(html);
+        console.log(html);
         $('td[align="center"]').remove();
         $(".description a").each(function () {
+            $(this).css({
+                'color': '#00A0F6',
+            });
+        });
+        $(".description a").each(function () {
             $(this).attr({
-                'style': 'color: #00A0F6; text-decoration: underline;',
                 'target': '_blank',
                 'rel': 'noopener noreferrer'
             });
         });
+        $("img").each(function () {
+            $(this).css({
+                'display': 'inline',
+                'vertical-align': 'baseline',
+            })
+            $(this).closest('tr').css({
+                'color': '#000000',
+            });
+        });
+
         const description = $(".description").first().html();
         return description || null;
     }
@@ -104,7 +119,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
                 const dResponse = await fetch(dUrl);
                 const dData = await dResponse.json();
                 const html = dData.parse.text['*'].toString();
-                const desc = extractDescription(html);
+                const desc = extractDescription(html)?.trim();
                 if (desc) {
                     setDescription({ __html: desc });
                 } else {
