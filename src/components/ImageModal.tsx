@@ -141,7 +141,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
     return (
         <>
             {isMinimized ? (
-                <div className="absolute flex flex-col justify-center items-start left-[30px] bottom-[30px] w-[300px] h-[300px] bg-green-500">
+                <div className="absolute flex flex-col justify-center items-start left-[30px] bottom-[30px] w-[300px] h-[300px]">
                     {imgSrc && (
                         <div className="absolute bottom-0 left-0 z-50 transition-opacity duration-300 group">
                             <Image
