@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 const ModelViewer = dynamic(() => import("../components/ModelViewer"), {
     ssr: false,
 });
+import { throttle } from 'lodash';
 
 import {
     IconZoomIn,
@@ -166,20 +167,36 @@ const Home: React.FC = () => {
         }
     }, []);
 
+    const throttledIncreaseCamScale = useCallback(
+        throttle(() => {
+            setCamScale((prev) => Math.min(prev + 0.025, CAM_MAX_SCALE));
+        }, 200),
+        []
+    );
+
+    const throttledDecreaseCamScale = useCallback(
+        throttle(() => {
+            setCamScale((prev) => Math.max(prev - 0.025, CAM_MIN_SCALE));
+        }, 200),
+        []
+    );
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (shortcutsDisabled) return;
 
             switch (event.key) {
                 case "[": // decrease camera scale
-                    setCamScale((prev) =>
-                        Math.max(prev - 0.025, CAM_MIN_SCALE)
-                    );
+                    // setCamScale((prev) =>
+                    //     Math.max(prev - 0.025, CAM_MIN_SCALE)
+                    // )
+                    throttledDecreaseCamScale();
                     break;
                 case "]": // increase camera scale
-                    setCamScale((prev) =>
-                        Math.min(prev + 0.025, CAM_MAX_SCALE)
-                    );
+                    // setCamScale((prev) =>
+                    //     Math.min(prev + 0.025, CAM_MAX_SCALE)
+                    // )
+                    throttledIncreaseCamScale();
                     break;
                 case "{": // decrease point scale
                     setPointScale((prev) =>
@@ -258,7 +275,7 @@ const Home: React.FC = () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
         };
-    }, [shortcutsDisabled, handleResetCamera]);
+    }, [shortcutsDisabled, handleResetCamera, throttle]);
 
     useEffect(() => {
         const animate = () => {

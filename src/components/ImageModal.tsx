@@ -141,7 +141,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
     return (
         <>
             {isMinimized ? (
-                <div className="absolute flex flex-col justify-center items-start left-[30px] bottom-[30px] w-[300px] h-[300px] bg-green-500">
+                <div className="absolute flex flex-col justify-center items-start left-[30px] bottom-[30px] w-[300px] h-[300px]">
                     {imgSrc && (
                         <div className="absolute bottom-0 left-0 z-50 transition-opacity duration-300 group">
                             <Image
@@ -226,6 +226,72 @@ const ImageModal: React.FC<ImageModalProps> = ({ id, data, onClose }) => {
                                             </td>
                                             <td className="py-2 px-4">
                                                 <div dangerouslySetInnerHTML={description} />
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                image_id:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                {imageData.id}
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                camera_id:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                {camData.cameraId}
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                camera_model:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                {camData.model}
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                camera_params:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                [
+                                                {camData.params
+                                                    .map((num) =>
+                                                        num.toFixed(3)
+                                                    )
+                                                    .join(", ")}
+                                                ]
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                qw, qx, qy, qz:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                [
+                                                {imageData.qvec
+                                                    .map((num) =>
+                                                        num.toFixed(3)
+                                                    )
+                                                    .join(", ")}
+                                                ]
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b">
+                                            <td className="py-2 px-4 font-semibold">
+                                                tx, ty, tz:
+                                            </td>
+                                            <td className="py-2 px-4">
+                                                [
+                                                {imageData.tvec
+                                                    .map((num) =>
+                                                        num.toFixed(3)
+                                                    )
+                                                    .join(", ")}
+                                                ]
                                             </td>
                                         </tr>
                                         <tr>
