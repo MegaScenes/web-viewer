@@ -167,19 +167,13 @@ const Home: React.FC = () => {
         }
     }, []);
 
-    const throttledIncreaseCamScale = useCallback(
-        throttle(() => {
-            setCamScale((prev) => Math.min(prev + 0.025, CAM_MAX_SCALE));
-        }, 200),
-        []
-    );
+    const throttledIncreaseCamScale = throttle(() => {
+        setCamScale((prev) => Math.min(prev + 0.025, CAM_MAX_SCALE));
+    }, 200);
 
-    const throttledDecreaseCamScale = useCallback(
-        throttle(() => {
-            setCamScale((prev) => Math.max(prev - 0.025, CAM_MIN_SCALE));
-        }, 200),
-        []
-    );
+    const throttledDecreaseCamScale = throttle(() => {
+        setCamScale((prev) => Math.max(prev - 0.025, CAM_MIN_SCALE));
+    }, 200);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -275,7 +269,7 @@ const Home: React.FC = () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
         };
-    }, [shortcutsDisabled, handleResetCamera, throttle]);
+    }, [shortcutsDisabled, handleResetCamera, throttledDecreaseCamScale, throttledIncreaseCamScale]);
 
     useEffect(() => {
         const animate = () => {
