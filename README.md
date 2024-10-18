@@ -4,7 +4,7 @@ Web viewer for 3D reconstructions of ~80,000 landmarks!
 ## Github Pages Site
 [https://megascenes.github.io/web-viewer/](https://megascenes.github.io/web-viewer/)
 
-## Setup
+## Local Setup
 
 First run
 ```bash
