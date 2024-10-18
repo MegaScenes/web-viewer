@@ -28,7 +28,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     onOpenImageModal,
 }) => {
     return (
-        <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
+        <Canvas camera={{ position: [0, 0, -10], fov: 75 }}>
             <ambientLight />
             <Scene
                 id={id}
