@@ -37,7 +37,7 @@ const PAN_DISTANCE = 0.5;
 const ROTATE_DISTANCE = 0.01;
 
 const initialCameraSettings = {
-    position: [0, 0, 10],
+    position: [0, 0, -10],
     fov: 75,
     zoom: 1,
 };
