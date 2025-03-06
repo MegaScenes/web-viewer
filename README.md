@@ -1,7 +1,8 @@
 # 3D Model Viewer
 Web viewer for 3D reconstructions of ~80,000 landmarks!
+Paper: [https://megascenes.github.io/](https://megascenes.github.io/)
 
-## Github Pages Site
+## Website
 [https://megascenes.github.io/web-viewer/](https://megascenes.github.io/web-viewer/)
 
 ## Local Setup
